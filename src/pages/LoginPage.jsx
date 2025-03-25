@@ -25,10 +25,10 @@ function LoginPage() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Iniciar Sesión</h2>
+        <h2>Log in</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Correo Electrónico</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
@@ -40,7 +40,7 @@ function LoginPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -52,13 +52,13 @@ function LoginPage() {
           </div>
           
           <button type="submit" className="auth-submit-button">
-            Iniciar Sesión
+            Log in
           </button>
         </form>
         
         <div className="auth-footer">
-          <p>¿No tienes una cuenta? <Link to="/register">Regístrate</Link></p>
-          <Link to="/">Volver al inicio</Link>
+          <p>¿Don´t have an account? <Link to="/register">Sign in</Link></p>
+          <Link to="/">Return to Homepage</Link>
         </div>
       </div>
     </div>
