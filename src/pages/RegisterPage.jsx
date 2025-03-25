@@ -30,7 +30,7 @@ function RegisterPage() {
         <h2>Crear Cuenta</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Nombre Completo</label>
+            <label htmlFor="name">Name</label>
             <input
               type="text"
               id="name"
@@ -42,7 +42,7 @@ function RegisterPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="email">Correo Electrónico</label>
+            <label htmlFor="email">Email</label>
             <input
               type="email"
               id="email"
@@ -54,7 +54,7 @@ function RegisterPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -66,7 +66,7 @@ function RegisterPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
               id="confirmPassword"
@@ -78,13 +78,13 @@ function RegisterPage() {
           </div>
           
           <button type="submit" className="auth-submit-button">
-            Registrarse
+            Sign in
           </button>
         </form>
         
         <div className="auth-footer">
-          <p>¿Ya tienes una cuenta? <Link to="/login">Inicia sesión</Link></p>
-          <Link to="/">Volver al inicio</Link>
+          <p>¿Already have an account? <Link to="/login">Log in</Link></p>
+          <Link to="/">Return to Homepage</Link>
         </div>
       </div>
     </div>
