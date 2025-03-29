@@ -16,6 +16,9 @@ function HomePage() {
           <Link to="/register" className="auth-button register-button">
             Sign in
           </Link>
+          <Link to="/GoogleMapsComponent" className="auth-button GoogleMapsComponent">
+            GoogleMaps
+          </Link>
         </div>
       </div>
     </div>
