@@ -1,66 +1,43 @@
-.home-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background-color: #f8f9fa;
-    padding: 20px;
-  }
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #007bff !important;
+}
+
+.nav-link {
   
-  .home-content {
-    text-align: center;
-    max-width: 600px;
-    padding: 40px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .home-content h1 {
-    color: #0d6efd;
-    margin-bottom: 10px;
-  }
-  
-  .home-content p {
-    color: #6c757d;
-    margin-bottom: 30px;
-  }
-  
-  .buttons-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 20px;
-  }
-  
-  .auth-button {
-    padding: 12px 24px;
-    border-radius: 5px;
-    font-size: 16px;
-    font-weight: 500;
-    text-decoration: none;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-  
-  .login-button {
-    background-color: #0d6efd;
-    color: white;
-  }
-  
-  .login-button:hover {
-    background-color: #0b5ed7;
-  }
-  
-  .register-button {
-    background-color: white;
-    color: #0d6efd;
-    border: 1px solid #0d6efd;
-  }
-  
-  .register-button:hover {
-    background-color: #f1f8ff;
-  }
-  
- 
+  font-size: 1rem;
+  margin-left: 1rem;
+}
+
+.hero-section {
+  padding: 4rem 1rem;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.btn {
+  border-radius: 25px;
+}
+
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+footer .input-group input {
+  border-radius: 30px 0 0 30px;
+}
+
+footer .input-group button {
+  border-radius: 0 30px 30px 0;
+}
