@@ -133,7 +133,7 @@ const GoogleMapsComponent = () => {
             center={userLocation || defaultCenter}
             zoom={13}
           >
-            {userLocation && <Marker position={userLocation} label="Tú" />}
+            {userLocation && <Marker position={userLocation} label="You" />}
 
             {filteredPharmacies.map((pharmacy) => (
               <Marker
