@@ -1,0 +1,43 @@
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #007bff !important;
+}
+
+.nav-link {
+  
+  font-size: 1rem;
+  margin-left: 1rem;
+}
+
+.hero-section {
+  padding: 4rem 1rem;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.btn {
+  border-radius: 25px;
+}
+
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+footer .input-group input {
+  border-radius: 30px 0 0 30px;
+}
+
+footer .input-group button {
+  border-radius: 0 30px 30px 0;
+}

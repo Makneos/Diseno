@@ -18,6 +18,7 @@ backend/.env.development.local
 backend/.env.test.local
 backend/.env.production.local
 
+#logs
 backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
