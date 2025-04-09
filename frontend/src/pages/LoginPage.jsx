@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import '../styles/AuthPages.css';
 
 function LoginPage() {
@@ -7,6 +8,7 @@ function LoginPage() {
     email: '',
     password: ''
   });
+  const { showWarning } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,8 +20,16 @@ function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para procesar el inicio de sesión
+    
+    // Verificar si hay campos vacíos
+    if (!formData.email || !formData.password) {
+      showWarning('Por favor, completa todos los campos');
+      return;
+    }
+    
+    // Si todos los campos están completos, continuar con el proceso de login
     console.log('Datos de inicio de sesión:', formData);
+    // Aquí iría la lógica para procesar el inicio de sesión
   };
 
   return (
@@ -35,7 +45,6 @@ function LoginPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
             />
           </div>
           
@@ -47,7 +56,6 @@ function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
             />
           </div>
           

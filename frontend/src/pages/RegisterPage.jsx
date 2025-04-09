@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import '../styles/AuthPages.css';
 
 function RegisterPage() {
@@ -9,6 +10,7 @@ function RegisterPage() {
     password: '',
     confirmPassword: ''
   });
+  const { showWarning } = useToast();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,8 +22,16 @@ function RegisterPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para procesar el registro
+    
+    // Verificar si hay campos vacíos
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      showWarning('Por favor, completa todos los campos');
+      return;
+    }
+    
+    // Si todos los campos están completos, continuar con el proceso de registro
     console.log('Datos de registro:', formData);
+    // Aquí iría la lógica para procesar el registro
   };
 
   return (
@@ -37,7 +47,6 @@ function RegisterPage() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              required
             />
           </div>
           
@@ -49,7 +58,6 @@ function RegisterPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              required
             />
           </div>
           
@@ -61,7 +69,6 @@ function RegisterPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              required
             />
           </div>
           
@@ -73,7 +80,6 @@ function RegisterPage() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              required
             />
           </div>
           
