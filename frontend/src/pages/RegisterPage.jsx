@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/AuthPages.css';
 
 function RegisterPage() {
@@ -9,6 +9,9 @@ function RegisterPage() {
     password: '',
     confirmPassword: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,10 +23,39 @@ function RegisterPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí iría la lógica para procesar el registro
-    console.log('Datos de registro:', formData);
+    setLoadingMessage('Registering...');
+    setIsLoading(true);
+    
+    // Simulación de llamada a API o servicio de registro
+    setTimeout(() => {
+      // Aquí iría la lógica para procesar el registro
+      console.log('Datos de registro:', formData);
+      setIsLoading(false);
+      // Después aquí podrías manejar la redirección o mostrar errores
+    }, 2000); // Simulando 2 segundos de espera
   };
 
+  const handleReturnHome = (e) => {
+    e.preventDefault();
+    setLoadingMessage('Returning to homepage...');
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
+
+  // Si está cargando, mostrar pantalla completa de carga
+  if (isLoading) {
+    return (
+      <div className="fullscreen-loader-container">
+        <div className="loader"></div>
+        <p className="loading-text">{loadingMessage}</p>
+      </div>
+    );
+  }
+
+  // Si no está cargando, mostrar formulario normal
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -84,7 +116,7 @@ function RegisterPage() {
         
         <div className="auth-footer">
           <p>¿Already have an account? <Link to="/login">Log in</Link></p>
-          <Link to="/">Return to Homepage</Link>
+          <a href="/" onClick={handleReturnHome}>Return to Homepage</a>
         </div>
       </div>
     </div>
