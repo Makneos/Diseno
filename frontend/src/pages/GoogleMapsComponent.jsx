@@ -5,6 +5,7 @@ import {
   Marker,
   InfoWindow,
 } from "@react-google-maps/api";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const containerStyle = {
   width: "100%",
@@ -27,6 +28,13 @@ const GoogleMapsComponent = () => {
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const [distanceKm, setDistanceKm] = useState(null);
   const [filter, setFilter] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Verificar si estamos en la página principal
+  const isHomePage = location.pathname === "/" || location.pathname === "/home";
 
   // Obtener ubicación
   useEffect(() => {
@@ -94,6 +102,15 @@ const GoogleMapsComponent = () => {
     }
   };
 
+  const handleReturnHome = (e) => {
+    e.preventDefault();
+    setLoadingMessage("Returning to homepage...");
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
+  };
 
   const getIconColor = (name) => {
     if (name.toLowerCase().includes("cruz")) {
@@ -105,8 +122,40 @@ const GoogleMapsComponent = () => {
     }
   };
 
+  // Si está cargando, mostrar pantalla completa de carga
+  if (isLoading) {
+    return (
+      <div className="fullscreen-loader-container">
+        <div className="loader"></div>
+        <p className="loading-text">{loadingMessage}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="map-container" style={{ textAlign: "center", padding: "20px" }}>
+    <div className="map-container" style={{ textAlign: "center", padding: "20px", position: "relative" }}>
+      {/* Mostrar el botón solo si NO estamos en la página principal */}
+      {!isHomePage && (
+        <button 
+          onClick={handleReturnHome}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "20px",
+            padding: "8px 15px",
+            backgroundColor: "#4285F4",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.2)",
+            zIndex: 1
+          }}
+        >
+          Return to Page
+        </button>
+      )}
+      
       <h2 style={{ marginBottom: "15px", color: "#333" }}>Pharmacies from Santiago</h2>
 
       <input
