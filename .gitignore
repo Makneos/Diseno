@@ -2,6 +2,8 @@
 
 # dependencies
 backend/node_modules
+node_modules
+
 /.pnp
 .pnp.js
 
@@ -23,3 +25,5 @@ backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
 node_modules
+
+frontend/.cache
