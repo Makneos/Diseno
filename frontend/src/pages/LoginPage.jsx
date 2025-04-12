@@ -1,10 +1,5 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD
 import { Link, useNavigate } from 'react-router-dom';
-=======
-import { Link } from 'react-router-dom';
-import { useToast } from '../context/ToastContext';
->>>>>>> 225da28013d44d94ee699e1a3cb193916d73afd0
 import '../styles/AuthPages.css';
 
 function LoginPage() {
@@ -12,13 +7,9 @@ function LoginPage() {
     email: '',
     password: ''
   });
-<<<<<<< HEAD
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const navigate = useNavigate();
-=======
-  const { showWarning } = useToast();
->>>>>>> 225da28013d44d94ee699e1a3cb193916d73afd0
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +21,6 @@ function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-<<<<<<< HEAD
     setLoadingMessage('Logging...');
     setIsLoading(true);
     
@@ -41,18 +31,6 @@ function LoginPage() {
       setIsLoading(false);
       // Después aquí podrías manejar la redirección o mostrar errores
     }, 2000); // Simulando 2 segundos de espera
-=======
-    
-    // Verificar si hay campos vacíos
-    if (!formData.email || !formData.password) {
-      showWarning('Por favor, completa todos los campos');
-      return;
-    }
-    
-    // Si todos los campos están completos, continuar con el proceso de login
-    console.log('Datos de inicio de sesión:', formData);
-    // Aquí iría la lógica para procesar el inicio de sesión
->>>>>>> 225da28013d44d94ee699e1a3cb193916d73afd0
   };
 
   const handleReturnHome = (e) => {
@@ -90,6 +68,7 @@ function LoginPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </div>
           
@@ -101,6 +80,7 @@ function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              required
             />
           </div>
           
