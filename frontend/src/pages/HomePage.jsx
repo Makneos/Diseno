@@ -1,25 +1,30 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
-import GoogleMapsComponent from './GoogleMapsComponent'; 
+import GoogleMapsComponent from './GoogleMapsComponent';
 
 function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [distance, setDistance] = useState(5); // km
+  const [selectedPharmacies, setSelectedPharmacies] = useState({
+    cruzverde: true,
+    salcobrand: true,
+    ahumada: true,
+  });
+
   const navigate = useNavigate();
 
   const handleNavigation = (e, path, message) => {
     e.preventDefault();
     setLoadingMessage(message);
     setIsLoading(true);
-    
-    // Simulamos un breve tiempo de carga antes de navegar
+
     setTimeout(() => {
       navigate(path);
     }, 1500);
   };
 
-  // Si está cargando, mostrar pantalla completa de carga
   if (isLoading) {
     return (
       <div className="fullscreen-loader-container">
@@ -31,11 +36,10 @@ function HomePage() {
 
   return (
     <>
-      {/* NAVBAR CON SOMBRA */}
-      <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm" style={{ boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)' }}>
-        <a 
-          className="navbar-brand fw-bold" 
-          href="/" 
+      <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
+        <a
+          className="navbar-brand fw-bold"
+          href="/"
           onClick={(e) => handleNavigation(e, '/', 'Refreshing home page...')}
         >
           Farmafia
@@ -49,43 +53,27 @@ function HomePage() {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span className="navbar-toggler-icon"></span>
+          <span className="navbar-toggler-icon" />
         </button>
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav">
             <li className="nav-item">
-              <a 
-                className="nav-link" 
-                href="/register" 
-                onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}
-              >
+              <a className="nav-link" href="/register" onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}>
                 Sign In
               </a>
             </li>
             <li className="nav-item">
-              <a 
-                className="nav-link" 
-                href="/login" 
-                onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}
-              >
+              <a className="nav-link" href="/login" onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}>
                 Login
               </a>
             </li>
             <li className="nav-item">
-              <a 
-                className="nav-link" 
-                href="/GoogleMapsComponent" 
-                onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}
-              >
+              <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
                 Nearby
               </a>
             </li>
             <li className="nav-item">
-              <a 
-                className="nav-link" 
-                href="/my-meds" 
-                onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}
-              >
+              <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
                 My Meds
               </a>
             </li>
@@ -93,52 +81,103 @@ function HomePage() {
         </div>
       </nav>
 
-      {/* HERO SECTION CON DEGRADADO */}
       <section
-        className="d-flex flex-column align-items-center justify-content-center text-center py-5"
+        className="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3"
         style={{
-          background: 'linear-gradient(to bottom, #007bff, #f8f9fa)',
+          background: 'linear-gradient(to bottom, #64b6ac, #f8f9fa)',
           color: '#333',
-          minHeight: '60vh'
+          minHeight: '60vh',
         }}
       >
         <h1 className="display-4 fw-bold">Welcome to Farmafia</h1>
         <p className="lead mb-4">Your Trusted Platform for Pharmaceutical Services</p>
+      </section>
 
-        <div className="d-flex gap-3 flex-wrap justify-content-center">
-          {/* Puedes agregar botones adicionales aquí */}
+      <section className="container my-5">
+        <div className="row gy-4">
+          <div className="col-md-4">
+            <div className="card shadow-sm p-3">
+              <h5 className="mb-3">Filter Pharmacies</h5>
+
+              <label className="form-label">Distance (km):</label>
+              <input
+                type="range"
+                className="form-range"
+                min="1"
+                max="20"
+                value={distance}
+                onChange={(e) => setDistance(e.target.value)}
+              />
+              <div className="text-muted mb-3">{distance} km</div>
+
+              <label className="form-label">Select Pharmacy Chains:</label>
+              <div className="d-flex flex-column gap-2">
+                <div className="form-check d-flex align-items-center gap-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={selectedPharmacies.cruzverde}
+                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, cruzverde: e.target.checked })}
+                    id="cruzverde"
+                  />
+                  <img src="/Pharmacy Pictures/cruz verde.png" alt="Cruz Verde" width={80} />
+                </div>
+
+                <div className="form-check d-flex align-items-center gap-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={selectedPharmacies.salcobrand}
+                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, salcobrand: e.target.checked })}
+                    id="salcobrand"
+                  />
+                  <img src="/Pharmacy Pictures/salcobrand.png" alt="Salcobrand" width={80} />
+                </div>
+
+                <div className="form-check d-flex align-items-center gap-2">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={selectedPharmacies.ahumada}
+                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, ahumada: e.target.checked })}
+                    id="ahumada"
+                  />
+                  <img src="/Pharmacy Pictures/Ahumada.png" alt="Ahumada" width={80} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-8">
+            <div className="card shadow-sm">
+              <GoogleMapsComponent
+                distance={distance}
+                selectedPharmacies={selectedPharmacies}
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* MAPA INCLUIDO EN LA HOME */}
-      <section className="container my-5">
-        <GoogleMapsComponent />
-      </section>
-
-      {/* FOOTER */}
       <footer className="bg-dark text-light text-center py-5 mt-auto">
         <div className="container">
           <h5 className="mb-3">About Farmafia</h5>
           <p className="mb-4">We connect you with nearby pharmacies and help you manage your medications efficiently and safely.</p>
 
-          <div className="input-group mx-auto" style={{ maxWidth: "400px" }}>
+          <div className="input-group mx-auto" style={{ maxWidth: '400px' }}>
             <input
               type="text"
               className="form-control"
               placeholder="Search for medications..."
-              aria-label="Search for medications"
             />
-            <button 
-              className="btn btn-outline-light" 
-              type="button"
+            <button
+              className="btn btn-outline-light"
               onClick={() => {
                 setLoadingMessage('Searching for medications...');
                 setIsLoading(true);
-                
-        
                 setTimeout(() => {
                   setIsLoading(false);
-                  alert('Search functionality will be implemented soon!');
+                  alert('Search functionality coming soon!');
                 }, 2000);
               }}
             >
