@@ -22,7 +22,15 @@ function HomePage() {
 
     setTimeout(() => {
       navigate(path);
+      setIsLoading(false); // Para reiniciar el estado de carga
     }, 1500);
+  };
+
+  const togglePharmacySelection = (pharmacy) => {
+    setSelectedPharmacies({
+      ...selectedPharmacies,
+      [pharmacy]: !selectedPharmacies[pharmacy],
+    });
   };
 
   if (isLoading) {
@@ -36,7 +44,7 @@ function HomePage() {
 
   return (
     <>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
+            <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
         <a
           className="navbar-brand fw-bold"
           href="/"
@@ -110,40 +118,25 @@ function HomePage() {
               />
               <div className="text-muted mb-3">{distance} km</div>
 
-              <label className="form-label">Select Pharmacy Chains:</label>
               <div className="d-flex flex-column gap-2">
-                <div className="form-check d-flex align-items-center gap-2">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={selectedPharmacies.cruzverde}
-                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, cruzverde: e.target.checked })}
-                    id="cruzverde"
-                  />
-                  <img src="/Pharmacy Pictures/cruz verde.png" alt="Cruz Verde" width={80} />
-                </div>
-
-                <div className="form-check d-flex align-items-center gap-2">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={selectedPharmacies.salcobrand}
-                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, salcobrand: e.target.checked })}
-                    id="salcobrand"
-                  />
-                  <img src="/Pharmacy Pictures/salcobrand.png" alt="Salcobrand" width={80} />
-                </div>
-
-                <div className="form-check d-flex align-items-center gap-2">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    checked={selectedPharmacies.ahumada}
-                    onChange={(e) => setSelectedPharmacies({ ...selectedPharmacies, ahumada: e.target.checked })}
-                    id="ahumada"
-                  />
-                  <img src="/Pharmacy Pictures/Ahumada.png" alt="Ahumada" width={80} />
-                </div>
+                <button
+                  className={`btn ${selectedPharmacies.cruzverde ? 'btn-success' : 'btn-outline-secondary'}`}
+                  onClick={() => togglePharmacySelection('cruzverde')}
+                >
+                  Cruz Verde
+                </button>
+                <button
+                  className={`btn ${selectedPharmacies.salcobrand ? 'btn-primary' : 'btn-outline-secondary'}`}
+                  onClick={() => togglePharmacySelection('salcobrand')}
+                >
+                  Salcobrand
+                </button>
+                <button
+                  className={`btn ${selectedPharmacies.ahumada ? 'btn-danger' : 'btn-outline-secondary'}`}
+                  onClick={() => togglePharmacySelection('ahumada')}
+                >
+                  Ahumada
+                </button>
               </div>
             </div>
           </div>
@@ -162,28 +155,9 @@ function HomePage() {
       <footer className="bg-dark text-light text-center py-5 mt-auto">
         <div className="container">
           <h5 className="mb-3">About Farmafia</h5>
-          <p className="mb-4">We connect you with nearby pharmacies and help you manage your medications efficiently and safely.</p>
-
-          <div className="input-group mx-auto" style={{ maxWidth: '400px' }}>
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search for medications..."
-            />
-            <button
-              className="btn btn-outline-light"
-              onClick={() => {
-                setLoadingMessage('Searching for medications...');
-                setIsLoading(true);
-                setTimeout(() => {
-                  setIsLoading(false);
-                  alert('Search functionality coming soon!');
-                }, 2000);
-              }}
-            >
-              Search
-            </button>
-          </div>
+          <p className="mb-4">
+            We connect you with nearby pharmacies and help you manage your medications efficiently and safely.
+          </p>
 
           <p className="mt-4 small">© 2025 Farmafia. All rights reserved.</p>
         </div>
