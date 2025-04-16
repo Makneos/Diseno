@@ -77,7 +77,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
 
   // Activar filtrado al modificar opciones
   useEffect(() => {
-    if (Object.values(selectedPharmacies).some((value) => value)) {
+    if (selectedPharmacies && Object.values(selectedPharmacies).some((value) => value)) {
       setIsFilteringActive(true);
     }
   }, [selectedPharmacies, distance]);
