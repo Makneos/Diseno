@@ -23,7 +23,7 @@ function RegisterPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // Verificar si hay campos vacíos
+    // Verificar si hay campos vacíos, Implementación de toast
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       showWarning('Por favor, completa todos los campos');
       return;
