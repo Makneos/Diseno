@@ -44,7 +44,7 @@ function HomePage() {
 
   return (
     <>
-            <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
         <a
           className="navbar-brand fw-bold"
           href="/"
