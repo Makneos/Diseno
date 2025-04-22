@@ -16,6 +16,13 @@ const defaultCenter = {
 
 const libraries = ["geometry"];
 
+// Mapeo de variantes de nombres para mejorar el filtrado
+const PHARMACY_NAME_VARIANTS = {
+  cruzverde: ["cruz", "verde", "cruz verde"],
+  salcobrand: ["salco", "brand", "salcobrand"],
+  ahumada: ["ahumada"]
+};
+
 const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg",
@@ -28,7 +35,6 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const [distanceKm, setDistanceKm] = useState(null);
   const [error, setError] = useState(null);
-  const [isFilteringActive, setIsFilteringActive] = useState(false);
 
   // Normalizar nombres
   const normalizedSelectedPharmacies = useMemo(() => {
@@ -39,6 +45,11 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       normalized[name.toLowerCase()] = selectedPharmacies[name];
     }
     return normalized;
+  }, [selectedPharmacies]);
+
+  // Verificar si alguna farmacia está seleccionada
+  const hasSelectedPharmacies = useMemo(() => {
+    return selectedPharmacies && Object.values(selectedPharmacies).some(value => value);
   }, [selectedPharmacies]);
 
   // Obtener la ubicación del usuario
@@ -95,7 +106,6 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         }).filter(Boolean); // Eliminar entradas nulas
         
         setPharmacies(parsedPharmacies);
-        setFilteredPharmacies(parsedPharmacies);
       } catch (err) {
         console.error("Error al cargar farmacias:", err);
         setError("No se pudieron cargar las farmacias.");
@@ -105,21 +115,16 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     fetchGeoJSON();
   }, []);
 
-  // Activar filtrado al modificar opciones
-  useEffect(() => {
-    if (selectedPharmacies && Object.values(selectedPharmacies).some((value) => value)) {
-      setIsFilteringActive(true);
-    } else {
-      setIsFilteringActive(false);
-    }
-  }, [selectedPharmacies, distance]);
-
   // Filtrar farmacias por nombre y distancia
   useEffect(() => {
-    if (!userLocation || !pharmacies || pharmacies.length === 0) return;
+    if (!userLocation || !pharmacies || pharmacies.length === 0) {
+      setFilteredPharmacies([]);
+      return;
+    }
 
-    if (!isFilteringActive) {
-      setFilteredPharmacies(pharmacies);
+    // Si no hay farmacias seleccionadas, no mostrar ninguna
+    if (!hasSelectedPharmacies) {
+      setFilteredPharmacies([]);
       return;
     }
 
@@ -138,25 +143,40 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       return R * c;
     };
 
-    const filtered = pharmacies.filter((pharmacy) => {
-      if (!pharmacy || !pharmacy.position) return false;
-      
-      const dist = calculateDistance(userLocation, pharmacy.position);
-      if (dist > Number(distance)) return false;
-      
-      // Check if pharmacy name contains any of the selected pharmacy chain names
-      if (!pharmacy.name) return false;
+    // Función mejorada para comprobar si una farmacia coincide con una cadena seleccionada
+    const matchesSelectedChain = (pharmacyName) => {
+      if (!pharmacyName) return false;
       
       for (const chainName in normalizedSelectedPharmacies) {
-        if (normalizedSelectedPharmacies[chainName] && pharmacy.name.includes(chainName)) {
-          return true;
+        if (!normalizedSelectedPharmacies[chainName]) continue; // Saltar si no está seleccionada
+        
+        // Obtener variantes de nombres para esta cadena
+        const variants = PHARMACY_NAME_VARIANTS[chainName] || [chainName];
+        
+        // Verificar coincidencia con cualquier variante
+        for (const variant of variants) {
+          if (pharmacyName.includes(variant)) {
+            return true;
+          }
         }
       }
       return false;
+    };
+
+    const filtered = pharmacies.filter((pharmacy) => {
+      if (!pharmacy || !pharmacy.position) return false;
+      
+      // Verificar distancia
+      const dist = calculateDistance(userLocation, pharmacy.position);
+      if (dist > Number(distance)) return false;
+      
+      // Verificar nombre
+      return matchesSelectedChain(pharmacy.name);
     });
 
+    console.log(`Filtro aplicado: ${filtered.length} farmacias encontradas de ${pharmacies.length} totales`);
     setFilteredPharmacies(filtered);
-  }, [userLocation, pharmacies, normalizedSelectedPharmacies, distance, isFilteringActive]);
+  }, [userLocation, pharmacies, normalizedSelectedPharmacies, distance, hasSelectedPharmacies]);
 
   // Iconos personalizados por nombre
   const getIconColor = (name) => {
@@ -236,6 +256,13 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           </InfoWindow>
         )}
       </GoogleMap>
+      
+      {!hasSelectedPharmacies && (
+        <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%" }}>
+          Selecciona al menos una farmacia para ver resultados en el mapa
+        </div>
+      )}
+      
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
     </div>
   );
