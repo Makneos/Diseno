@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
+import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
@@ -14,7 +14,14 @@ const defaultCenter = {
   lng: -70.64827,
 };
 
+const libraries = ["geometry"];
+
 const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg",
+    libraries,
+  });
+
   const [userLocation, setUserLocation] = useState(null);
   const [pharmacies, setPharmacies] = useState([]);
   const [filteredPharmacies, setFilteredPharmacies] = useState([]);
@@ -25,6 +32,8 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
 
   // Normalizar nombres
   const normalizedSelectedPharmacies = useMemo(() => {
+    if (!selectedPharmacies) return {};
+    
     const normalized = {};
     for (const name in selectedPharmacies) {
       normalized[name.toLowerCase()] = selectedPharmacies[name];
@@ -55,36 +64,59 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
 
   // Cargar farmacias desde archivo GeoJSON
   useEffect(() => {
-    fetch("/export.geojson")
-      .then((res) => res.json())
-      .then((data) => {
-        const parsedPharmacies = data.features.map((feature, index) => ({
-          id: index,
-          name: feature.properties?.name?.toLowerCase() || "farmacia sin nombre",
-          position: {
-            lat: feature.geometry.coordinates[1],
-            lng: feature.geometry.coordinates[0],
-          },
-        }));
+    const fetchGeoJSON = async () => {
+      try {
+        const response = await fetch("/export.geojson");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        if (!data || !data.features || !Array.isArray(data.features)) {
+          throw new Error("Invalid GeoJSON format");
+        }
+        
+        const parsedPharmacies = data.features.map((feature, index) => {
+          if (!feature.geometry || !feature.geometry.coordinates || 
+              !Array.isArray(feature.geometry.coordinates) || 
+              feature.geometry.coordinates.length < 2) {
+            console.warn("Invalid feature geometry", feature);
+            return null;
+          }
+          
+          return {
+            id: index,
+            name: (feature.properties?.name || "farmacia sin nombre").toLowerCase(),
+            position: {
+              lat: feature.geometry.coordinates[1],
+              lng: feature.geometry.coordinates[0],
+            },
+          };
+        }).filter(Boolean); // Eliminar entradas nulas
+        
         setPharmacies(parsedPharmacies);
         setFilteredPharmacies(parsedPharmacies);
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error al cargar farmacias:", err);
         setError("No se pudieron cargar las farmacias.");
-      });
+      }
+    };
+    
+    fetchGeoJSON();
   }, []);
 
   // Activar filtrado al modificar opciones
   useEffect(() => {
     if (selectedPharmacies && Object.values(selectedPharmacies).some((value) => value)) {
       setIsFilteringActive(true);
+    } else {
+      setIsFilteringActive(false);
     }
   }, [selectedPharmacies, distance]);
 
   // Filtrar farmacias por nombre y distancia
   useEffect(() => {
-    if (!userLocation) return;
+    if (!userLocation || !pharmacies || pharmacies.length === 0) return;
 
     if (!isFilteringActive) {
       setFilteredPharmacies(pharmacies);
@@ -92,6 +124,8 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     }
 
     const calculateDistance = (location1, location2) => {
+      if (!location1 || !location2) return Infinity;
+      
       const R = 6371;
       const dLat = ((location2.lat - location1.lat) * Math.PI) / 180;
       const dLng = ((location2.lng - location1.lng) * Math.PI) / 180;
@@ -105,8 +139,20 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     };
 
     const filtered = pharmacies.filter((pharmacy) => {
+      if (!pharmacy || !pharmacy.position) return false;
+      
       const dist = calculateDistance(userLocation, pharmacy.position);
-      return normalizedSelectedPharmacies[pharmacy.name] && dist <= distance;
+      if (dist > Number(distance)) return false;
+      
+      // Check if pharmacy name contains any of the selected pharmacy chain names
+      if (!pharmacy.name) return false;
+      
+      for (const chainName in normalizedSelectedPharmacies) {
+        if (normalizedSelectedPharmacies[chainName] && pharmacy.name.includes(chainName)) {
+          return true;
+        }
+      }
+      return false;
     });
 
     setFilteredPharmacies(filtered);
@@ -114,6 +160,8 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
 
   // Iconos personalizados por nombre
   const getIconColor = (name) => {
+    if (!name) return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
+    
     if (name.includes("cruz")) {
       return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
     } else if (name.includes("ahumada")) {
@@ -125,53 +173,71 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   };
 
   const handlePharmacyClick = (pharmacy) => {
+    if (!pharmacy) return;
+    
     setSelectedPharmacy(pharmacy);
-    if (userLocation && window.google?.maps?.geometry) {
-      const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
-        new window.google.maps.LatLng(userLocation.lat, userLocation.lng),
-        new window.google.maps.LatLng(pharmacy.position.lat, pharmacy.position.lng)
-      );
-      setDistanceKm((distance / 1000).toFixed(2));
+    if (userLocation && isLoaded && window.google?.maps?.geometry) {
+      try {
+        const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
+          new window.google.maps.LatLng(userLocation.lat, userLocation.lng),
+          new window.google.maps.LatLng(pharmacy.position.lat, pharmacy.position.lng)
+        );
+        setDistanceKm((distance / 1000).toFixed(2));
+      } catch (err) {
+        console.error("Error al calcular distancia:", err);
+      }
     }
   };
 
-  return (
-    <LoadScript googleMapsApiKey="AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg" libraries={["geometry"]}>
-      <div style={containerStyle}>
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "100%" }}
-          center={userLocation || defaultCenter}
-          zoom={13}
-        >
-          {userLocation && <Marker position={userLocation} label="Tú" />}
+  if (loadError) {
+    return <div className="alert alert-danger m-3">Error al cargar Google Maps: {loadError.message}</div>;
+  }
 
-          {filteredPharmacies.map((pharmacy) => (
+  if (!isLoaded) {
+    return <div className="d-flex justify-content-center p-5"><div className="spinner-border" role="status"></div></div>;
+  }
+
+  return (
+    <div style={containerStyle}>
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        center={userLocation || defaultCenter}
+        zoom={13}
+        options={{
+          fullscreenControl: false,
+          streetViewControl: false,
+        }}
+      >
+        {userLocation && <Marker position={userLocation} label="Tú" />}
+
+        {Array.isArray(filteredPharmacies) && filteredPharmacies.map((pharmacy) => (
+          pharmacy && pharmacy.position && (
             <Marker
               key={pharmacy.id}
               position={pharmacy.position}
               onClick={() => handlePharmacyClick(pharmacy)}
               icon={{ url: getIconColor(pharmacy.name) }}
             />
-          ))}
+          )
+        ))}
 
-          {selectedPharmacy && (
-            <InfoWindow
-              position={selectedPharmacy.position}
-              onCloseClick={() => {
-                setSelectedPharmacy(null);
-                setDistanceKm(null);
-              }}
-            >
-              <div>
-                <strong>{selectedPharmacy.name}</strong>
-                {distanceKm && <p>Distancia: {distanceKm} km</p>}
-              </div>
-            </InfoWindow>
-          )}
-        </GoogleMap>
-      </div>
+        {selectedPharmacy && (
+          <InfoWindow
+            position={selectedPharmacy.position}
+            onCloseClick={() => {
+              setSelectedPharmacy(null);
+              setDistanceKm(null);
+            }}
+          >
+            <div>
+              <strong>{selectedPharmacy.name}</strong>
+              {distanceKm && <p>Distancia: {distanceKm} km</p>}
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
       {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
-    </LoadScript>
+    </div>
   );
 };
 
