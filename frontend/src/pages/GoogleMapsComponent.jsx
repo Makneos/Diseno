@@ -228,7 +228,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           streetViewControl: false,
         }}
       >
-        {userLocation && <Marker position={userLocation} label="Tú" />}
+        {userLocation && <Marker position={userLocation} label="YOU" />}
 
         {Array.isArray(filteredPharmacies) && filteredPharmacies.map((pharmacy) => (
           pharmacy && pharmacy.position && (
