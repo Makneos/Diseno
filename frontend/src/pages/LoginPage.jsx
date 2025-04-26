@@ -9,6 +9,7 @@ function LoginPage() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -17,30 +18,75 @@ function LoginPage() {
       ...prevState,
       [name]: value
     }));
+    
+    // Clear error message when user starts typing again
+    if (errorMessage) {
+      setErrorMessage('');
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingMessage('Logging...');
+    
+    // Form validation
+    if (!formData.email || !formData.password) {
+      setErrorMessage('Por favor, completa todos los campos');
+      return;
+    }
+    
+    setLoadingMessage('Iniciando sesión...');
     setIsLoading(true);
     
-    // Simulación de llamada a API o servicio de autenticación
-    setTimeout(() => {
-      // Aquí iría la lógica para procesar el inicio de sesión
-      console.log('Datos de inicio de sesión:', formData);
+    try {
+      const response = await fetch('http://localhost:5000/api/usuarios/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          contrasena: formData.password
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al iniciar sesión');
+      }
+      
+      // Login exitoso
+      console.log('Usuario autenticado:', data);
+      
+      // Guardar información del usuario en localStorage o sessionStorage
+      sessionStorage.setItem('user', JSON.stringify({
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email
+      }));
+      
+      // Redirigir al home después de un breve retraso
+      setTimeout(() => {
+        setLoadingMessage('Inicio de sesión exitoso! Redirigiendo...');
+        setTimeout(() => {
+          navigate('/');
+        }, 1500);
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Error en el inicio de sesión:', error);
+      setErrorMessage(error.message);
       setIsLoading(false);
-      // Después aquí podrías manejar la redirección o mostrar errores
-    }, 2000); // Simulando 2 segundos de espera
+    }
   };
 
   const handleReturnHome = (e) => {
     e.preventDefault();
-    setLoadingMessage('Returning to homepage...');
+    setLoadingMessage('Volviendo a la página principal...');
     setIsLoading(true);
     
-    
     setTimeout(() => {
-      navigate('/'); 
+      navigate('/');
     }, 1500);
   };
 
@@ -58,7 +104,12 @@ function LoginPage() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Log in</h2>
+        <h2>Iniciar Sesión</h2>
+        {errorMessage && (
+          <div className="alert alert-danger" role="alert">
+            {errorMessage}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
@@ -73,7 +124,7 @@ function LoginPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Contraseña</label>
             <input
               type="password"
               id="password"
@@ -85,13 +136,13 @@ function LoginPage() {
           </div>
           
           <button type="submit" className="auth-submit-button">
-            Log in
+            Iniciar Sesión
           </button>
         </form>
         
         <div className="auth-footer">
-          <p>¿Don´t have an account? <Link to="/register">Sign in</Link></p>
-          <a href="/" onClick={handleReturnHome}>Return to Homepage</a>
+          <p>¿No tienes una cuenta? <Link to="/register">Registrarse</Link></p>
+          <a href="/" onClick={handleReturnHome}>Volver a la página principal</a>
         </div>
       </div>
     </div>

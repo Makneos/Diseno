@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
 import GoogleMapsComponent from './GoogleMapsComponent';
@@ -12,8 +12,17 @@ function HomePage() {
     salcobrand: true,
     ahumada: true,
   });
+  const [user, setUser] = useState(null);
 
   const navigate = useNavigate();
+
+  // Verificar si hay un usuario en sesión al cargar el componente
+  useEffect(() => {
+    const loggedInUser = sessionStorage.getItem('user');
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
+  }, []);
 
   const handleNavigation = (e, path, message) => {
     e.preventDefault();
@@ -65,26 +74,55 @@ function HomePage() {
         </button>
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav">
-            <li className="nav-item">
-              <a className="nav-link" href="/register" onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}>
-                Sign In
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/login" onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}>
-                Login
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
-                Nearby
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
-                My Meds
-              </a>
-            </li>
+            {user ? (
+              // Menú para usuarios autenticados
+              <>
+                <li className="nav-item">
+                  <a 
+                    className="nav-link" 
+                    href="/profile" 
+                    onClick={(e) => handleNavigation(e, '/profile', 'Cargando perfil...')}
+                  >
+                    <i className="bi bi-person-circle me-1"></i>
+                    {user.nombre}
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
+                    Nearby
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
+                    My Meds
+                  </a>
+                </li>
+              </>
+            ) : (
+              // Menú para usuarios no autenticados
+              <>
+                <li className="nav-item">
+                  <a className="nav-link" href="/register" onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}>
+                    Sign In
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/login" onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}>
+                    Login
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
+                    Nearby
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
+                    My Meds
+                  </a>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </nav>
@@ -99,6 +137,11 @@ function HomePage() {
       >
         <h1 className="display-4 fw-bold">Welcome to Farmafia</h1>
         <p className="lead mb-4">Your Trusted Platform for Pharmaceutical Services</p>
+        {user && (
+          <div className="alert alert-success mt-3">
+            ¡Bienvenido, {user.nombre}!
+          </div>
+        )}
       </section>
 
       <section className="container my-5">
