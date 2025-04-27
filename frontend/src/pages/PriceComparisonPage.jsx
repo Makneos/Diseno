@@ -59,7 +59,7 @@ function PriceComparisonPage() {
       setSearchResults(sampleResults);
       
       if (!sampleResults.length) {
-        setErrorMessage('No se encontraron medicamentos que coincidan con tu búsqueda');
+        setErrorMessage('No matching medications were found');
       }
     } finally {
       setIsSearching(false);
@@ -76,7 +76,7 @@ function PriceComparisonPage() {
     setComparisonResults([]);
     setErrorMessage('');
     setIsLoading(true);
-    setLoadingMessage('Comparando precios...');
+    setLoadingMessage('Comparing prices...');
     
     try {
       // Simulated API call - Replace with actual backend call when implemented
@@ -253,9 +253,9 @@ function PriceComparisonPage() {
       <div className="container py-5">
         <div className="row">
           <div className="col-12">
-            <h1 className="text-center mb-4">Comparador de Precios de Medicamentos</h1>
+            <h1 className="text-center mb-4">Medication Price Comparator</h1>
             <p className="text-center text-muted mb-5">
-              Encuentra el mejor precio para tus medicamentos en las principales farmacias de Chile
+            Save on Medications: Find the Best Prices in Chile
             </p>
           </div>
         </div>
@@ -269,10 +269,10 @@ function PriceComparisonPage() {
                     <input
                       type="text"
                       className="form-control form-control-lg"
-                      placeholder="Busca por nombre o principio activo..."
+                      placeholder="Search by name or active ingredient..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      aria-label="Nombre del medicamento"
+                      aria-label="Medicine name"
                     />
                     <button 
                       className="btn btn-primary" 
@@ -284,11 +284,11 @@ function PriceComparisonPage() {
                       ) : (
                         <i className="bi bi-search me-2"></i>
                       )}
-                      Buscar
+                      Search
                     </button>
                   </div>
                   {searchTerm.length > 0 && searchTerm.length < 3 && (
-                    <div className="form-text text-muted">Ingresa al menos 3 caracteres para buscar</div>
+                    <div className="form-text text-muted">Enter at least 3 characters to search</div>
                   )}
                 </form>
               </div>
@@ -307,17 +307,17 @@ function PriceComparisonPage() {
             <div className="col-12">
               <div className="card shadow">
                 <div className="card-header bg-light">
-                  <h5 className="mb-0">Resultados de la búsqueda</h5>
+                  <h5 className="mb-0">Search results</h5>
                 </div>
                 <div className="card-body p-0">
                   <div className="table-responsive">
                     <table className="table table-hover mb-0">
                       <thead>
                         <tr>
-                          <th>Nombre</th>
-                          <th>Principio Activo</th>
-                          <th>Tipo</th>
-                          <th>Acción</th>
+                          <th>Name</th>
+                          <th>Active Ingredient</th>
+                          <th>Type</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -327,9 +327,9 @@ function PriceComparisonPage() {
                             <td>{medication.principio_activo}</td>
                             <td>
                               {medication.es_generico ? (
-                                <span className="badge bg-success">Genérico</span>
+                                <span className="badge bg-success">Generic</span>
                               ) : (
-                                <span className="badge bg-info">Marca</span>
+                                <span className="badge bg-info">Brand</span>
                               )}
                             </td>
                             <td>
@@ -337,7 +337,7 @@ function PriceComparisonPage() {
                                 className="btn btn-outline-primary btn-sm"
                                 onClick={() => handleSelectMedication(medication)}
                               >
-                                Comparar precios
+                                Compare prices
                               </button>
                             </td>
                           </tr>
@@ -366,20 +366,20 @@ function PriceComparisonPage() {
             <div className="col-12">
               <div className="card shadow">
                 <div className="card-header bg-primary text-white">
-                  <h5 className="mb-0">Comparación de precios para {selectedMedication.nombre}</h5>
+                  <h5 className="mb-0">Price comparison for {selectedMedication.nombre}</h5>
                 </div>
                 <div className="card-body">
                   <div className="medication-info mb-4">
                     <div className="row">
                       <div className="col-md-6">
-                        <p><strong>Principio Activo:</strong> {selectedMedication.principio_activo}</p>
+                        <p><strong>Active Ingredient:</strong> {selectedMedication.principio_activo}</p>
                         <p>
                           <strong>Tipo:</strong> {' '}
                           {selectedMedication.es_generico ? 'Genérico' : 'Marca'}
                         </p>
                       </div>
                       <div className="col-md-6 text-md-end">
-                        <p className="text-muted">Última actualización: {new Date().toLocaleDateString()}</p>
+                        <p className="text-muted">Last Update: {new Date().toLocaleDateString()}</p>
                       </div>
                     </div>
                   </div>
@@ -399,7 +399,7 @@ function PriceComparisonPage() {
                                   <div className="d-flex justify-content-between align-items-center">
                                     <h5 className="mb-0">{result.farmacia.nombre}</h5>
                                     {isLowestPrice && (
-                                      <span className="badge bg-white text-success">Mejor precio</span>
+                                      <span className="badge bg-white text-success">Best price</span>
                                     )}
                                   </div>
                                 </div>
@@ -426,12 +426,12 @@ function PriceComparisonPage() {
                                       {result.disponible ? (
                                         <span className="text-success">
                                           <i className="bi bi-check-circle me-2"></i>
-                                          Disponible
+                                          Available
                                         </span>
                                       ) : (
                                         <span className="text-danger">
                                           <i className="bi bi-x-circle me-2"></i>
-                                          No disponible
+                                          Not Available
                                         </span>
                                       )}
                                     </div>
@@ -444,7 +444,7 @@ function PriceComparisonPage() {
                                     rel="noopener noreferrer"
                                     className="btn btn-outline-primary w-100"
                                   >
-                                    Ver en sitio
+                                    View on site
                                   </a>
                                 </div>
                               </div>
@@ -457,9 +457,9 @@ function PriceComparisonPage() {
                         <div className="d-flex align-items-center">
                           <i className="bi bi-info-circle-fill me-3 fs-4"></i>
                           <div>
-                            <h5 className="mb-1">¿Sabías que?</h5>
+                            <h5 className="mb-1">Did you know?</h5>
                             <p className="mb-0">
-                              Podrías ahorrar hasta ${Math.abs(Math.max(...comparisonResults.map(r => r.precio)) - 
+                              You could save up to ${Math.abs(Math.max(...comparisonResults.map(r => r.precio)) - 
                               Math.min(...comparisonResults.map(r => r.precio))).toLocaleString('es-CL')} en este medicamento comparando precios.
                             </p>
                           </div>
@@ -469,9 +469,9 @@ function PriceComparisonPage() {
                   ) : (
                     <div className="text-center py-5">
                       <div className="spinner-border text-primary" role="status">
-                        <span className="visually-hidden">Cargando...</span>
+                        <span className="visually-hidden">Loading...</span>
                       </div>
-                      <p className="mt-3">Buscando los mejores precios...</p>
+                      <p className="mt-3">Searching for the best prices...</p>
                     </div>
                   )}
                 </div>
@@ -487,7 +487,7 @@ function PriceComparisonPage() {
               <div className="card-body">
                 <h4 className="card-title">
                   <i className="bi bi-lightbulb me-2 text-warning"></i>
-                  Tips para ahorrar en medicamentos
+                  Tips to Save on Medications
                 </h4>
                 <div className="row mt-3">
                   <div className="col-md-4 mb-3">
@@ -496,8 +496,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-check-circle-fill text-success fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Compara siempre</h5>
-                        <p className="text-muted">Los precios de medicamentos pueden variar significativamente entre farmacias.</p>
+                        <h5>Compare always</h5>
+                        <p className="text-muted">Medication prices can vary significantly between pharmacies.</p>
                       </div>
                     </div>
                   </div>
@@ -507,8 +507,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-capsule text-primary fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Considera genéricos</h5>
-                        <p className="text-muted">Los medicamentos genéricos tienen el mismo principio activo y son más económicos.</p>
+                        <h5>Consider generics</h5>
+                        <p className="text-muted">Generic medicines have the same active ingredient and are more affordable.</p>
                       </div>
                     </div>
                   </div>
@@ -518,8 +518,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-calendar-check text-info fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Revisa promociones</h5>
-                        <p className="text-muted">Las farmacias ofrecen descuentos especiales en ciertos días de la semana.</p>
+                        <h5>Check for promotions</h5>
+                        <p className="text-muted">Pharmacies offer special discounts on certain days of the week.</p>
                       </div>
                     </div>
                   </div>
@@ -535,10 +535,10 @@ function PriceComparisonPage() {
           <div className="row">
             <div className="col-md-6">
               <h5>Farmafia</h5>
-              <p className="mb-0">Tu plataforma confiable para servicios farmacéuticos</p>
+              <p className="mb-0">Your trusted platform for pharmaceutical services.</p>
             </div>
             <div className="col-md-6 text-md-end">
-              <p className="mb-0">© 2025 Farmafia. Todos los derechos reservados.</p>
+              <p className="mb-0">© 2025 Farmafia. All rights reserved.</p>
             </div>
           </div>
         </div>
