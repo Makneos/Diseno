@@ -282,7 +282,7 @@ async function extractProductsFromPage(page, containerSelector) {
     
     return Array.from(productElements).map((product, index) => {
       try {
-        // Product ID (SKU) - Extract this first to validate uniqueness
+        // We still need the product ID for uniqueness tracking
         const productId = product.getAttribute('data-pid') || 'No product ID found';
         
         // Title - Use the specific provided selector for the name
@@ -301,7 +301,6 @@ async function extractProductsFromPage(page, containerSelector) {
         }
         
         // Price - Use the exact price selector provided
-        // Convert the full selector to a relative selector to use within each product
         const priceSelector = 'div.price > span > span > span';
         const priceElement = product.querySelector(priceSelector);
         
@@ -328,42 +327,18 @@ async function extractProductsFromPage(page, containerSelector) {
           }
         }
         
-        // Member price (if available)
-        const memberPriceSelector = '.price-with-card';
-        const memberPriceElement = product.querySelector(memberPriceSelector);
-        const memberPrice = memberPriceElement ? memberPriceElement.textContent.trim() : 'No member price found';
-        
         // Image
         const imageElement = product.querySelector('img.tile-image');
         const image = imageElement ? 
                      (imageElement.getAttribute('src') || imageElement.getAttribute('data-src')) : 
                      'No image found';
         
-        // Product URL
-        const urlElement = product.querySelector('a.link');
-        const url = urlElement ? urlElement.getAttribute('href') : 'No URL found';
-        
-        // Brand
-        const brandElement = product.querySelector('.brand');
-        const brand = brandElement ? brandElement.textContent.trim() : 'No brand found';
-        
-        // Stock status
-        const stockStatusElement = product.querySelector('.availability-msg');
-        const stockStatus = stockStatusElement ? stockStatusElement.textContent.trim() : 'No stock info found';
-        
-        // Product index for debugging
-        const productIndex = index + 1;
-        
+        // Return only title, price, image, and productId (needed internally)
         return {
-          productIndex,
-          productId,
+          productId, // Keep for uniqueness tracking
           title,
           price,
-          memberPrice,
-          image,
-          url: url.startsWith('/') ? `https://www.farmaciasahumada.cl${url}` : url,
-          brand,
-          stockStatus
+          image
         };
       } catch (err) {
         console.log(`Error extracting product data for index ${index + 1}:`, err);
