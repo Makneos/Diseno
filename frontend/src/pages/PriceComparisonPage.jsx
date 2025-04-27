@@ -78,29 +78,12 @@ function PriceComparisonPage() {
     setIsLoading(true);
     setLoadingMessage('Comparing prices...');
     
-    try {
-      // Simulated API call - Replace with actual backend call when implemented
-      const response = await fetch(`http://localhost:5000/api/medicamentos/precios/${medication.id}`);
-      
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      setTimeout(() => {
-        setComparisonResults(data);
-        setIsLoading(false);
-      }, 1000);
-    } catch (error) {
-      console.error('Error fetching price comparison:', error);
-      
-      // For demo purposes, generate sample comparison data
-      setTimeout(() => {
-        const sampleComparison = generateSampleComparison(medication);
-        setComparisonResults(sampleComparison);
-        setIsLoading(false);
-      }, 1500);
-    }
+    // Forzar el uso de datos de muestra sin intentar la llamada API
+    console.log("Generating sample data for:", medication);
+    const sampleComparison = generateSampleComparison(medication);
+    console.log("Sample data generated:", sampleComparison);
+    setComparisonResults(sampleComparison);
+    setIsLoading(false);
   };
 
   const handleReturnHome = (e) => {

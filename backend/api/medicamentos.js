@@ -39,38 +39,71 @@ router.get('/buscar', async (req, res) => {
  * @desc    Obtener precios de un medicamento específico
  * @access  Public
  */
-router.get('/precios/:id', async (req, res) => {
-  const { id } = req.params;
+router.get('/precios-por-principio/:principioActivo', async (req, res) => {
+  const { principioActivo } = req.params;
   
   try {
-    const [rows] = await req.db.query(
-      `SELECT pm.id, pm.precio, pm.disponible, pm.url_producto, pm.fecha_actualizacion,
-              f.id as farmacia_id, f.nombre as farmacia_nombre, f.logo_url as farmacia_logo
-       FROM precios_medicamentos pm
-       JOIN farmacias f ON pm.farmacia_id = f.id
-       WHERE pm.medicamento_id = ?
-       ORDER BY pm.precio ASC`,
-      [id]
+    // Primero obtener todos los medicamentos con ese principio activo
+    const [medicamentos] = await req.db.query(
+      `SELECT id, nombre, principio_activo, es_generico, imagen_url 
+       FROM medicamentos 
+       WHERE principio_activo = ?`,
+      [principioActivo]
     );
     
-    // Formatear los resultados
-    const formattedResults = rows.map(row => ({
-      id: row.id,
-      precio: row.precio,
-      disponible: row.disponible === 1,
-      url_producto: row.url_producto,
-      fecha_actualizacion: row.fecha_actualizacion,
-      farmacia: {
-        id: row.farmacia_id,
-        nombre: row.farmacia_nombre,
-        logo_url: row.farmacia_logo
-      }
-    }));
+    if (medicamentos.length === 0) {
+      return res.status(404).json({ error: 'No se encontraron medicamentos con ese principio activo' });
+    }
     
-    res.json(formattedResults);
+    // Obtener los IDs de todos estos medicamentos
+    const medicamentoIds = medicamentos.map(med => med.id);
+    
+    // Obtener precios para todos estos medicamentos
+    const [precios] = await req.db.query(
+      `SELECT pm.id, pm.medicamento_id, m.nombre as medicamento_nombre, m.es_generico,
+              pm.precio, pm.disponible, pm.url_producto, pm.fecha_actualizacion,
+              f.id as farmacia_id, f.nombre as farmacia_nombre, f.logo_url as farmacia_logo
+       FROM precios_medicamentos pm
+       JOIN medicamentos m ON pm.medicamento_id = m.id
+       JOIN farmacias f ON pm.farmacia_id = f.id
+       WHERE pm.medicamento_id IN (?)
+       ORDER BY pm.precio ASC`,
+      [medicamentoIds]
+    );
+    
+    // Agrupar por farmacia y medicamento para mejor visualización
+    const resultadosAgrupados = precios.reduce((acc, item) => {
+      if (!acc[item.farmacia_nombre]) {
+        acc[item.farmacia_nombre] = {
+          farmacia: {
+            id: item.farmacia_id,
+            nombre: item.farmacia_nombre,
+            logo_url: item.farmacia_logo
+          },
+          medicamentos: []
+        };
+      }
+      
+      acc[item.farmacia_nombre].medicamentos.push({
+        id: item.id,
+        medicamento_id: item.medicamento_id,
+        nombre: item.medicamento_nombre,
+        es_generico: item.es_generico === 1,
+        precio: item.precio,
+        disponible: item.disponible === 1,
+        url_producto: item.url_producto
+      });
+      
+      return acc;
+    }, {});
+    
+    res.json({
+      principio_activo: principioActivo,
+      farmacias: Object.values(resultadosAgrupados)
+    });
   } catch (error) {
-    console.error('Error al obtener precios de medicamento:', error);
-    res.status(500).json({ error: 'Error al obtener precios de medicamento' });
+    console.error('Error al obtener precios por principio activo:', error);
+    res.status(500).json({ error: 'Error al obtener precios por principio activo' });
   }
 });
 
