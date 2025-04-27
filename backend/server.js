@@ -18,8 +18,8 @@ app.use(express.json());
 // Crear pool de conexiones a MySQL
 const pool = mysql.createPool({
   host: 'localhost',
-  user: 'root',
-  password: '',
+  user: 'farmacia_app',
+  password: 'Farmacia?#2027',
   database: 'farmacia',
   waitForConnections: true,
   connectionLimit: 10,
