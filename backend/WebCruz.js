@@ -251,14 +251,9 @@ async function extractProductsFromPage(page, containerSelector) {
         const productIndex = index + 1;
         
         return {
-          productIndex,
           title,
           price,
-          memberPrice,
-          image,
-          url: url.startsWith('/') ? `https://www.cruzverde.cl${url}` : url,
-          brand,
-          description
+          image
         };
       } catch (err) {
         console.log(`Error extracting product data for index ${index + 1}:`, err);
