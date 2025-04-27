@@ -61,7 +61,7 @@ async function scrapeAllMedicamentos() {
     await page.screenshot({ path: 'error_screenshot.png' });
   } finally {
     console.log(`Scraping completed. Total products: ${allProducts.length}`);
-    fs.writeFileSync("todos_los_medicamentos.json", JSON.stringify(allProducts, null, 2));
+    fs.writeFileSync("salcobrand_medicamentos.json", JSON.stringify(allProducts, null, 2));
     await browser.close();
   }
 
@@ -70,6 +70,11 @@ async function scrapeAllMedicamentos() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Function to remove tildes (accent marks) from text
+function removeTildes(text) {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 async function setProductsPerPage(page, count) {
@@ -124,9 +129,15 @@ async function ensureProductsPerPageFilter(page, count) {
 }
 
 async function extractProductsFromPage(page) {
-  const titles = await page.$$eval(".product-catalog span.product-name", (elements) =>
+  // Get product descriptions but store them as title in the JSON
+  const titles = await page.$$eval("#content > div > div.ais-Hits > ul > li > div > div > div > div.info > a > span.product-info.truncate", (elements) =>
     elements.map((el) => el.textContent.trim())
-  );
+  ).catch(err => {
+    console.log("Error fetching titles, trying alternative selector");
+    return page.$$eval("span.product-info.truncate", (elements) =>
+      elements.map((el) => el.textContent.trim())
+    );
+  });
 
   const prices = await page.$$eval(".product-catalog .product-prices .sale-price", (elements) =>
     elements.map((el) => el.textContent.trim())
@@ -141,7 +152,7 @@ async function extractProductsFromPage(page) {
 
   for (let i = 0; i < minLength; i++) {
     products.push({
-      title: titles[i],
+      title: removeTildes(titles[i]), // Remove tildes from the title
       price: prices[i],
       image: images[i],
     });
@@ -214,8 +225,8 @@ async function navigateToNextPage(page) {
 // Ejecutar
 scrapeAllMedicamentos()
   .then((products) =>
-    console.log(`Process finished with ${products.length} products saved to JSON.`)
+    console.log(`Process finished with ${products.length} products saved to salcobrand_medicamentos.json.`)
   )
   .catch((error) => console.error("Error in scraping process:", error));
 
-  // se puso un limite de 3 paginas se genera un error luego de la cuarta (por revisar)
+// se puso un limite de 3 paginas se genera un error luego de la cuarta (por revisar)
