@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
 import GoogleMapsComponent from "./pages/GoogleMapsComponent";
+import PriceComparisonPage from "./pages/PriceComparisonPage";
 import './App.css';
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
               distance={defaultProps.distance} 
             />
           } />
+          <Route path="/price-comparison" element={<PriceComparisonPage />} />
           <Route path="/my-meds" element={<div>Página de mis medicamentos en desarrollo</div>} />
           <Route path="*" element={<div>Página no encontrada</div>} />
         </Routes>
