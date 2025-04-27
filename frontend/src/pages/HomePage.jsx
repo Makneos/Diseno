@@ -159,9 +159,63 @@ function HomePage() {
         <h1 className="display-4 fw-bold">Welcome to Farmafia</h1>
         <p className="lead mb-4">Your Trusted Platform for Pharmaceutical Services</p>
         {user && (
-          <div className="alert alert-success mt-3">
-            Welcome, {user.nombre}!
-          </div>
+          <>
+            <div className="alert alert-success mt-3">
+              Welcome, {user.nombre}!
+            </div>
+            
+            {/* Tools Section */}
+            <div className="tools-section container mt-4">
+              <h3 className="mb-4">Pharmacy Tools</h3>
+              <div className="row g-3">
+                <div className="col-12 col-md-6 col-lg-3">
+                  <div 
+                    className="card h-100 tool-card shadow-sm"
+                    onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison tool...')}
+                  >
+                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                      <i className="bi bi-graph-up-arrow mb-3" style={{ fontSize: '2rem', color: '#0d6efd' }}></i>
+                      <h5 className="card-title">Price Comparison</h5>
+                      <p className="card-text small text-muted">Compare medication prices across pharmacies</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-12 col-md-6 col-lg-3">
+                  <div className="card h-100 tool-card shadow-sm">
+                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                      <i className="bi bi-calendar-check mb-3" style={{ fontSize: '2rem', color: '#198754' }}></i>
+                      <h5 className="card-title">Medication Reminder</h5>
+                      <p className="card-text small text-muted">Set reminders for your medications</p>
+                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-12 col-md-6 col-lg-3">
+                  <div className="card h-100 tool-card shadow-sm">
+                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                      <i className="bi bi-capsule mb-3" style={{ fontSize: '2rem', color: '#dc3545' }}></i>
+                      <h5 className="card-title">Medication Info</h5>
+                      <p className="card-text small text-muted">Detailed information about medications</p>
+                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-12 col-md-6 col-lg-3">
+                  <div className="card h-100 tool-card shadow-sm">
+                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                      <i className="bi bi-chat-dots mb-3" style={{ fontSize: '2rem', color: '#6610f2' }}></i>
+                      <h5 className="card-title">Pharmacy Chat</h5>
+                      <p className="card-text small text-muted">Chat with pharmacy professionals</p>
+                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </section>
 
