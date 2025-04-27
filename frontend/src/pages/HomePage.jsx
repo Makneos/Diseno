@@ -16,7 +16,6 @@ function HomePage() {
 
   const navigate = useNavigate();
 
-  // Verificar si hay un usuario en sesión al cargar el componente
   useEffect(() => {
     const loggedInUser = sessionStorage.getItem('user');
     if (loggedInUser) {
@@ -31,7 +30,7 @@ function HomePage() {
 
     setTimeout(() => {
       navigate(path);
-      setIsLoading(false); // Para reiniciar el estado de carga
+      setIsLoading(false);
     }, 1500);
   };
 
@@ -75,49 +74,71 @@ function HomePage() {
         <div className="collapse navbar-collapse justify-content-end" id="navbarNav">
           <ul className="navbar-nav">
             {user ? (
-              // Menú para usuarios autenticados
               <>
                 <li className="nav-item">
-                  <a 
-                    className="nav-link" 
-                    href="/profile" 
-                    onClick={(e) => handleNavigation(e, '/profile', 'Cargando perfil...')}
+                  <a
+                    className="nav-link"
+                    href="/profile"
+                    onClick={(e) => handleNavigation(e, '/profile', 'Loading profile...')}
                   >
                     <i className="bi bi-person-circle me-1"></i>
                     {user.nombre}
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
+                  <a
+                    className="nav-link"
+                    href="/GoogleMapsComponent"
+                    onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}
+                  >
                     Nearby
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
+                  <a
+                    className="nav-link"
+                    href="/my-meds"
+                    onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}
+                  >
                     My Meds
                   </a>
                 </li>
               </>
             ) : (
-              // Menú para usuarios no autenticados
               <>
                 <li className="nav-item">
-                  <a className="nav-link" href="/register" onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}>
-                    Sign In
+                  <a
+                    className="nav-link"
+                    href="/register"
+                    onClick={(e) => handleNavigation(e, '/register', 'Loading registration page...')}
+                  >
+                    Sign Up
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/login" onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}>
+                  <a
+                    className="nav-link"
+                    href="/login"
+                    onClick={(e) => handleNavigation(e, '/login', 'Loading login page...')}
+                  >
                     Login
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/GoogleMapsComponent" onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}>
+                  <a
+                    className="nav-link"
+                    href="/GoogleMapsComponent"
+                    onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}
+                  >
                     Nearby
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="/my-meds" onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}>
+                  <a
+                    className="nav-link"
+                    href="/my-meds"
+                    onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}
+                  >
                     My Meds
                   </a>
                 </li>
@@ -139,7 +160,7 @@ function HomePage() {
         <p className="lead mb-4">Your Trusted Platform for Pharmaceutical Services</p>
         {user && (
           <div className="alert alert-success mt-3">
-            ¡Bienvenido, {user.nombre}!
+            Welcome, {user.nombre}!
           </div>
         )}
       </section>

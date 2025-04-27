@@ -8,29 +8,24 @@ function ProfilePage() {
   const [loadingMessage, setLoadingMessage] = useState('');
   const navigate = useNavigate();
 
-  // Cargar datos del usuario de la sesión
   useEffect(() => {
     const loggedInUser = sessionStorage.getItem('user');
     if (loggedInUser) {
       setUser(JSON.parse(loggedInUser));
     } else {
-      // Si no hay usuario en sesión, redirigir al login
       navigate('/login');
     }
   }, [navigate]);
 
   const handleLogout = () => {
     setIsLoading(true);
-    setLoadingMessage('Cerrando sesión...');
+    setLoadingMessage('Logging out...');
     
-    // Simular un breve retraso antes de cerrar sesión
     setTimeout(() => {
-      // Eliminar datos de sesión
       sessionStorage.removeItem('user');
       
-      setLoadingMessage('Sesión cerrada correctamente. Redirigiendo...');
+      setLoadingMessage('Logged out successfully. Redirecting...');
       
-      // Redirigir al home después de cerrar sesión
       setTimeout(() => {
         navigate('/');
       }, 1500);
@@ -42,7 +37,6 @@ function ProfilePage() {
     navigate('/');
   };
 
-  // Si está cargando, mostrar pantalla de carga
   if (isLoading) {
     return (
       <div className="fullscreen-loader-container">
@@ -52,12 +46,11 @@ function ProfilePage() {
     );
   }
 
-  // Si no hay datos de usuario aún, mostrar pantalla de carga
   if (!user) {
     return (
       <div className="fullscreen-loader-container">
         <div className="loader"></div>
-        <p className="loading-text">Cargando datos de usuario...</p>
+        <p className="loading-text">Loading user data...</p>
       </div>
     );
   }
@@ -65,7 +58,7 @@ function ProfilePage() {
   return (
     <div className="auth-container">
       <div className="auth-card profile-card">
-        <h2>Perfil de Usuario</h2>
+        <h2>User Profile</h2>
         
         <div className="profile-avatar">
           <div className="avatar-circle">
@@ -75,7 +68,7 @@ function ProfilePage() {
         
         <div className="profile-info">
           <div className="info-item">
-            <label>Nombre:</label>
+            <label>Name:</label>
             <p>{user.nombre}</p>
           </div>
           
@@ -89,11 +82,11 @@ function ProfilePage() {
           className="auth-submit-button logout-button"
           onClick={handleLogout}
         >
-          Cerrar Sesión
+          Log Out
         </button>
         
         <div className="auth-footer">
-          <a href="/" onClick={handleReturnHome}>Volver a la página principal</a>
+          <a href="/" onClick={handleReturnHome}>Return to main page</a>
         </div>
       </div>
     </div>

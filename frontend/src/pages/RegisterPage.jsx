@@ -21,7 +21,6 @@ function RegisterPage() {
       [name]: value
     }));
     
-    // Clear error message when user starts typing again
     if (errorMessage) {
       setErrorMessage('');
     }
@@ -30,23 +29,22 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Form validation
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
-      setErrorMessage('Por favor, completa todos los campos');
+      setErrorMessage('Please fill in all fields');
       return;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      setErrorMessage('Las contraseñas no coinciden');
+      setErrorMessage('Passwords do not match');
       return;
     }
     
     if (formData.password.length < 6) {
-      setErrorMessage('La contraseña debe tener al menos 6 caracteres');
+      setErrorMessage('Password must be at least 6 characters long');
       return;
     }
     
-    setLoadingMessage('Registrando usuario...');
+    setLoadingMessage('Registering user...');
     setIsLoading(true);
     
     try {
@@ -65,22 +63,20 @@ function RegisterPage() {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.error || 'Error al registrar usuario');
+        throw new Error(data.error || 'Error registering user');
       }
       
-      // Registro exitoso
-      console.log('Usuario registrado:', data);
+      console.log('User registered:', data);
       
-      // Redirigir al login después de un breve retraso
       setTimeout(() => {
-        setLoadingMessage('Registro exitoso! Redirigiendo al login...');
+        setLoadingMessage('Registration successful! Redirecting to login...');
         setTimeout(() => {
           navigate('/login');
         }, 1500);
       }, 1000);
       
     } catch (error) {
-      console.error('Error en el registro:', error);
+      console.error('Registration error:', error);
       setErrorMessage(error.message);
       setIsLoading(false);
     }
@@ -88,7 +84,7 @@ function RegisterPage() {
 
   const handleReturnHome = (e) => {
     e.preventDefault();
-    setLoadingMessage('Volviendo a la página principal...');
+    setLoadingMessage('Returning to the main page...');
     setIsLoading(true);
     
     setTimeout(() => {
@@ -96,7 +92,6 @@ function RegisterPage() {
     }, 1500);
   };
 
-  // Si está cargando, mostrar pantalla completa de carga
   if (isLoading) {
     return (
       <div className="fullscreen-loader-container">
@@ -106,11 +101,10 @@ function RegisterPage() {
     );
   }
 
-  // Si no está cargando, mostrar formulario normal
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Crear Cuenta</h2>
+        <h2>Create Account</h2>
         {errorMessage && (
           <div className="alert alert-danger" role="alert">
             {errorMessage}
@@ -118,7 +112,7 @@ function RegisterPage() {
         )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Nombre</label>
+            <label htmlFor="name">Name</label>
             <input
               type="text"
               id="name"
@@ -142,7 +136,7 @@ function RegisterPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="password">Password</label>
             <input
               type="password"
               id="password"
@@ -155,7 +149,7 @@ function RegisterPage() {
           </div>
           
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
               id="confirmPassword"
@@ -168,13 +162,13 @@ function RegisterPage() {
           </div>
           
           <button type="submit" className="auth-submit-button">
-            Registrarse
+            Sign Up
           </button>
         </form>
         
         <div className="auth-footer">
-          <p>¿Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link></p>
-          <a href="/" onClick={handleReturnHome}>Volver a la página principal</a>
+          <p>Already have an account? <Link to="/login">Log in</Link></p>
+          <a href="/" onClick={handleReturnHome}>Return to main page</a>
         </div>
       </div>
     </div>

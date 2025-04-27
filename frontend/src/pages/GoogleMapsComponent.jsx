@@ -16,7 +16,7 @@ const defaultCenter = {
 
 const libraries = ["geometry"];
 
-// Mapeo de variantes de nombres para mejorar el filtrado
+// Mapping pharmacy name variants for better filtering
 const PHARMACY_NAME_VARIANTS = {
   cruzverde: ["cruz", "verde", "cruz verde"],
   salcobrand: ["salco", "brand", "salcobrand"],
@@ -36,7 +36,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   const [distanceKm, setDistanceKm] = useState(null);
   const [error, setError] = useState(null);
 
-  // Normalizar nombres
+  // Normalize selected pharmacies names
   const normalizedSelectedPharmacies = useMemo(() => {
     if (!selectedPharmacies) return {};
     
@@ -47,12 +47,12 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     return normalized;
   }, [selectedPharmacies]);
 
-  // Verificar si alguna farmacia está seleccionada
+  // Check if any pharmacy is selected
   const hasSelectedPharmacies = useMemo(() => {
     return selectedPharmacies && Object.values(selectedPharmacies).some(value => value);
   }, [selectedPharmacies]);
 
-  // Obtener la ubicación del usuario
+  // Get user location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -63,17 +63,17 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           });
         },
         (err) => {
-          console.error("Error al obtener la ubicación:", err);
-          setError("No se pudo obtener tu ubicación.");
+          console.error("Error getting location:", err);
+          setError("Unable to retrieve your location.");
         },
         { enableHighAccuracy: true }
       );
     } else {
-      setError("Tu navegador no soporta geolocalización.");
+      setError("Your browser does not support geolocation.");
     }
   }, []);
 
-  // Cargar farmacias desde archivo GeoJSON
+  // Load pharmacies from GeoJSON file
   useEffect(() => {
     const fetchGeoJSON = async () => {
       try {
@@ -97,32 +97,32 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           
           return {
             id: index,
-            name: (feature.properties?.name || "farmacia sin nombre").toLowerCase(),
+            name: (feature.properties?.name || "unnamed pharmacy").toLowerCase(),
             position: {
               lat: feature.geometry.coordinates[1],
               lng: feature.geometry.coordinates[0],
             },
           };
-        }).filter(Boolean); // Eliminar entradas nulas
+        }).filter(Boolean); // Remove null entries
         
         setPharmacies(parsedPharmacies);
       } catch (err) {
-        console.error("Error al cargar farmacias:", err);
-        setError("No se pudieron cargar las farmacias.");
+        console.error("Error loading pharmacies:", err);
+        setError("Unable to load pharmacies.");
       }
     };
     
     fetchGeoJSON();
   }, []);
 
-  // Filtrar farmacias por nombre y distancia
+  // Filter pharmacies by name and distance
   useEffect(() => {
     if (!userLocation || !pharmacies || pharmacies.length === 0) {
       setFilteredPharmacies([]);
       return;
     }
 
-    // Si no hay farmacias seleccionadas, no mostrar ninguna
+    // If no pharmacy is selected, show none
     if (!hasSelectedPharmacies) {
       setFilteredPharmacies([]);
       return;
@@ -143,17 +143,14 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       return R * c;
     };
 
-    // Función mejorada para comprobar si una farmacia coincide con una cadena seleccionada
     const matchesSelectedChain = (pharmacyName) => {
       if (!pharmacyName) return false;
       
       for (const chainName in normalizedSelectedPharmacies) {
-        if (!normalizedSelectedPharmacies[chainName]) continue; // Saltar si no está seleccionada
+        if (!normalizedSelectedPharmacies[chainName]) continue;
         
-        // Obtener variantes de nombres para esta cadena
         const variants = PHARMACY_NAME_VARIANTS[chainName] || [chainName];
         
-        // Verificar coincidencia con cualquier variante
         for (const variant of variants) {
           if (pharmacyName.includes(variant)) {
             return true;
@@ -166,19 +163,16 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     const filtered = pharmacies.filter((pharmacy) => {
       if (!pharmacy || !pharmacy.position) return false;
       
-      // Verificar distancia
       const dist = calculateDistance(userLocation, pharmacy.position);
       if (dist > Number(distance)) return false;
       
-      // Verificar nombre
       return matchesSelectedChain(pharmacy.name);
     });
 
-    console.log(`Filtro aplicado: ${filtered.length} farmacias encontradas de ${pharmacies.length} totales`);
+    console.log(`Filter applied: ${filtered.length} pharmacies found out of ${pharmacies.length}`);
     setFilteredPharmacies(filtered);
   }, [userLocation, pharmacies, normalizedSelectedPharmacies, distance, hasSelectedPharmacies]);
 
-  // Iconos personalizados por nombre
   const getIconColor = (name) => {
     if (!name) return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
     
@@ -204,13 +198,13 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         );
         setDistanceKm((distance / 1000).toFixed(2));
       } catch (err) {
-        console.error("Error al calcular distancia:", err);
+        console.error("Error calculating distance:", err);
       }
     }
   };
 
   if (loadError) {
-    return <div className="alert alert-danger m-3">Error al cargar Google Maps: {loadError.message}</div>;
+    return <div className="alert alert-danger m-3">Error loading Google Maps: {loadError.message}</div>;
   }
 
   if (!isLoaded) {
@@ -251,7 +245,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           >
             <div>
               <strong>{selectedPharmacy.name}</strong>
-              {distanceKm && <p>Distancia: {distanceKm} km</p>}
+              {distanceKm && <p>Distance: {distanceKm} km</p>}
             </div>
           </InfoWindow>
         )}
@@ -259,7 +253,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       
       {!hasSelectedPharmacies && (
         <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%" }}>
-          Selecciona al menos una farmacia para ver resultados en el mapa
+          Please select at least one pharmacy to display results on the map
         </div>
       )}
       
