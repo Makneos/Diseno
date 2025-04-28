@@ -7,12 +7,11 @@ function PriceComparisonPage() {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedMedications, setSelectedMedications] = useState([]); // Changed to array for multiple selections
-  const [comparisonResults, setComparisonResults] = useState({});  // Changed to object with medication IDs as keys
+  const [selectedMedication, setSelectedMedication] = useState(null);
+  const [comparisonResults, setComparisonResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [user, setUser] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
-  const [isComparing, setIsComparing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -72,77 +71,44 @@ function PriceComparisonPage() {
     performSearch();
   };
 
-  // Modified to handle toggling medication selection
-  const handleSelectMedication = (medication) => {
-    // Check if medication is already selected
-    const isAlreadySelected = selectedMedications.some(med => med.id === medication.id);
-    
-    if (isAlreadySelected) {
-      // Remove medication from selection
-      setSelectedMedications(selectedMedications.filter(med => med.id !== medication.id));
-      // Remove from comparison results if exists
-      const newComparisonResults = {...comparisonResults};
-      delete newComparisonResults[medication.id];
-      setComparisonResults(newComparisonResults);
-    } else {
-      // Add medication to selection
-      setSelectedMedications([...selectedMedications, medication]);
-    }
-  };
-  
-  // Remove a medication from the comparison list
-  const handleRemoveMedication = (medicationId) => {
-    setSelectedMedications(selectedMedications.filter(med => med.id !== medicationId));
-    
-    // Remove from comparison results if exists
-    const newComparisonResults = {...comparisonResults};
-    delete newComparisonResults[medicationId];
-    setComparisonResults(newComparisonResults);
-  };
-
-  // New function to compare all selected medications
-  const handleCompareSelected = async () => {
-    if (selectedMedications.length === 0) return;
-    
-    setIsComparing(true);
+  const handleSelectMedication = async (medication) => {
+    setSelectedMedication(medication);
+    setComparisonResults([]);
     setErrorMessage('');
+    setIsLoading(true);
+    setLoadingMessage('Comparing prices for medications with the same active ingredient...');
     
     try {
-      // Create a new empty results object
-      let newResults = {};
+      // Llamada a la API por principio activo en lugar de por ID
+      const principioActivoEncoded = encodeURIComponent(medication.principio_activo);
+      console.log(`Calling API by active ingredient: http://localhost:5000/api/medicamentos/precios-por-principio/${principioActivoEncoded}`);
       
-      // Process each medication one by one
-      for (const medication of selectedMedications) {
-        setLoadingMessage(`Comparing prices for ${medication.nombre}...`);
-        
-        try {
-          // Simulated API call for each medication
-          const response = await fetch(`http://localhost:5000/api/medicamentos/precios/${medication.id}`);
-          
-          if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
-          }
-          
-          const data = await response.json();
-          // Store results with medication id as key
-          newResults[medication.id] = data;
-        } catch (error) {
-          console.error(`Error fetching price comparison for ${medication.nombre}:`, error);
-          // For demo purposes, generate sample comparison data
-          newResults[medication.id] = generateSampleComparison(medication);
-        }
-        
-        // Small delay between each medication to show progress
-        await new Promise(resolve => setTimeout(resolve, 500));
+      const response = await fetch(`http://localhost:5000/api/medicamentos/precios-por-principio/${principioActivoEncoded}`);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Error ${response.status}: ${errorText}`);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       
-      // Update all results at once
-      setComparisonResults(newResults);
+      const data = await response.json();
+      console.log("Datos reales de la API por principio activo:", data);
+      
+      if (!data.farmacias || data.farmacias.length === 0) {
+        setErrorMessage('No hay datos de precios disponibles para medicamentos con este principio activo');
+      } else {
+        // La estructura de datos es diferente cuando se busca por principio activo
+        setComparisonResults(data);
+      }
     } catch (error) {
-      console.error('Error during comparison:', error);
+      console.error('Error completo:', error);
+      
+      // Solo usar datos de muestra si la API falla
+      console.log("Usando datos de muestra como fallback debido a error:", error.message);
+      const sampleComparison = generateSampleComparison(medication);
+      setComparisonResults(sampleComparison);
     } finally {
-      setIsComparing(false);
-      setLoadingMessage('');
+      setIsLoading(false);
     }
   };
 
@@ -209,55 +175,6 @@ function PriceComparisonPage() {
     ];
   };
 
-  // Calculate total prices for all selected medications by pharmacy
-  const calculateTotalsByPharmacy = () => {
-    if (Object.keys(comparisonResults).length === 0) return [];
-    
-    // Get all unique pharmacies
-    const allPharmacies = new Set();
-    Object.values(comparisonResults).forEach(results => {
-      results.forEach(result => {
-        allPharmacies.add(result.farmacia.id);
-      });
-    });
-    
-    // Calculate totals
-    const pharmacyTotals = [];
-    allPharmacies.forEach(pharmacyId => {
-      let totalPrice = 0;
-      let pharmacyName = '';
-      let pharmacyUrl = '';
-      let allAvailable = true;
-      
-      // For each medication, add its price at this pharmacy (if available)
-      Object.entries(comparisonResults).forEach(([medicationId, pharmacyResults]) => {
-        const pharmacyResult = pharmacyResults.find(result => result.farmacia.id === pharmacyId);
-        if (pharmacyResult) {
-          totalPrice += pharmacyResult.precio;
-          pharmacyName = pharmacyResult.farmacia.nombre;
-          pharmacyUrl = pharmacyResult.url_producto;
-          if (!pharmacyResult.disponible) {
-            allAvailable = false;
-          }
-        } else {
-          // If a medication is not available at this pharmacy
-          allAvailable = false;
-        }
-      });
-      
-      pharmacyTotals.push({
-        id: pharmacyId,
-        nombre: pharmacyName,
-        precio_total: totalPrice,
-        disponible: allAvailable,
-        url: pharmacyUrl
-      });
-    });
-    
-    // Sort by total price
-    return pharmacyTotals.sort((a, b) => a.precio_total - b.precio_total);
-  };
-
   if (isLoading) {
     return (
       <div className="fullscreen-loader-container">
@@ -266,8 +183,6 @@ function PriceComparisonPage() {
       </div>
     );
   }
-
-  const pharmacyTotals = calculateTotalsByPharmacy();
 
   return (
     <div className="price-comparison-page">
@@ -390,75 +305,13 @@ function PriceComparisonPage() {
           </div>
         </div>
 
-        {/* Selected medications summary */}
-        {selectedMedications.length > 0 && (
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="card shadow-sm">
-                <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                  <h5 className="mb-0">Selected Medications ({selectedMedications.length})</h5>
-                  <button 
-                    className="btn btn-light btn-sm"
-                    onClick={handleCompareSelected}
-                    disabled={isComparing}
-                  >
-                    {isComparing ? (
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    ) : (
-                      <i className="bi bi-arrow-repeat me-2"></i>
-                    )}
-                    Compare Prices
-                  </button>
-                </div>
-                <div className="card-body">
-                  <div className="selected-medications">
-                    <div className="row">
-                      {selectedMedications.map((medication) => (
-                        <div className="col-md-4 mb-3" key={medication.id}>
-                          <div className="selected-medication p-3 border rounded">
-                            <div className="d-flex justify-content-between align-items-start">
-                              <div>
-                                <h6 className="mb-1">{medication.nombre}</h6>
-                                <p className="mb-1 small text-muted">{medication.principio_activo}</p>
-                                <span className={`badge ${medication.es_generico ? 'bg-success' : 'bg-info'} mt-1`}>
-                                  {medication.es_generico ? 'Generic' : 'Brand'}
-                                </span>
-                              </div>
-                              <button 
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={() => handleRemoveMedication(medication.id)}
-                              >
-                                <i className="bi bi-x"></i>
-                              </button>
-                            </div>
-                            
-                            {comparisonResults[medication.id] && (
-                              <div className="mt-2 pt-2 border-top">
-                                <p className="mb-1 small">Best price:</p>
-                                <p className="mb-0 fw-bold">
-                                  ${Math.min(...comparisonResults[medication.id].map(r => r.precio)).toLocaleString('es-CL')}
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {errorMessage && (
           <div className="alert alert-warning my-4" role="alert">
             {errorMessage}
           </div>
         )}
 
-        {/* Search results */}
-        {searchResults.length > 0 && (
+        {searchResults.length > 0 && !selectedMedication && (
           <div className="row">
             <div className="col-12">
               <div className="card shadow">
@@ -477,36 +330,27 @@ function PriceComparisonPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {searchResults.map((medication) => {
-                          const isSelected = selectedMedications.some(med => med.id === medication.id);
-                          
-                          return (
-                            <tr key={medication.id}>
-                              <td>{medication.nombre}</td>
-                              <td>{medication.principio_activo}</td>
-                              <td>
-                                {medication.es_generico ? (
-                                  <span className="badge bg-success">Generic</span>
-                                ) : (
-                                  <span className="badge bg-info">Brand</span>
-                                )}
-                              </td>
-                              <td>
-                                <button
-                                  className={`btn btn-sm ${isSelected ? 'btn-success' : 'btn-outline-primary'}`}
-                                  onClick={() => handleSelectMedication(medication)}
-                                >
-                                  {isSelected ? (
-                                    <>
-                                      <i className="bi bi-check me-1"></i>
-                                      Selected
-                                    </>
-                                  ) : 'Select for comparison'}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
+                        {searchResults.map((medication) => (
+                          <tr key={medication.id}>
+                            <td>{medication.nombre}</td>
+                            <td>{medication.principio_activo}</td>
+                            <td>
+                              {medication.es_generico ? (
+                                <span className="badge bg-success">Generic</span>
+                              ) : (
+                                <span className="badge bg-info">Brand</span>
+                              )}
+                            </td>
+                            <td>
+                              <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => handleSelectMedication(medication)}
+                              >
+                                Compare prices
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -516,221 +360,175 @@ function PriceComparisonPage() {
           </div>
         )}
 
-        {/* Price comparison results */}
-        {Object.keys(comparisonResults).length > 0 && (
+        {selectedMedication && (
           <div className="row mt-4">
-            {/* Summary of all pharmacies */}
             <div className="col-12 mb-4">
+              <button 
+                className="btn btn-outline-secondary" 
+                onClick={() => setSelectedMedication(null)}
+              >
+                <i className="bi bi-arrow-left me-2"></i>
+                Volver a resultados
+              </button>
+            </div>
+            
+            <div className="col-12">
               <div className="card shadow">
-                <div className="card-header bg-success text-white">
-                  <h5 className="mb-0">Total Comparison Summary</h5>
+                <div className="card-header bg-primary text-white">
+                  <h5 className="mb-0">Comparación de precios para medicamentos con {selectedMedication.principio_activo}</h5>
                 </div>
                 <div className="card-body">
-                  <div className="row">
-                    {pharmacyTotals.map((pharmacy, index) => {
-                      const isLowestPrice = index === 0; // First pharmacy has lowest price
-                      
-                      return (
-                        <div className="col-md-4 mb-4" key={pharmacy.id}>
-                          <div className={`card h-100 ${isLowestPrice ? 'border-success' : ''}`}>
-                            <div className={`card-header ${isLowestPrice ? 'bg-success text-white' : 'bg-light'}`}>
-                              <div className="d-flex justify-content-between align-items-center">
-                                <h5 className="mb-0">{pharmacy.nombre}</h5>
-                                {isLowestPrice && (
-                                  <span className="badge bg-white text-success">Best total price</span>
-                                )}
-                              </div>
-                            </div>
-                            <div className="card-body">
-                              <div className="text-center mb-3">
-                                <div className="pharmacy-logo-container mb-3">
-                                  {/* Replace with actual logos when available */}
-                                  {pharmacy.nombre === 'Ahumada' && (
-                                    <div className="pharmacy-logo bg-danger">FA</div>
-                                  )}
-                                  {pharmacy.nombre === 'Cruz Verde' && (
-                                    <div className="pharmacy-logo bg-success">CV</div>
-                                  )}
-                                  {pharmacy.nombre === 'Salcobrand' && (
-                                    <div className="pharmacy-logo bg-primary">SB</div>
-                                  )}
-                                </div>
-                                
-                                <h2 className="price mb-0">
-                                  ${pharmacy.precio_total.toLocaleString('es-CL')}
-                                </h2>
-                                
-                                <div className="availability mt-3">
-                                  {pharmacy.disponible ? (
-                                    <span className="text-success">
-                                      <i className="bi bi-check-circle me-2"></i>
-                                      All Available
-                                    </span>
-                                  ) : (
-                                    <span className="text-warning">
-                                      <i className="bi bi-exclamation-triangle me-2"></i>
-                                      Some items may not be available
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                <p className="text-muted mt-2 small">
-                                  For {selectedMedications.length} medication{selectedMedications.length > 1 ? 's' : ''}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="card-footer bg-white">
-                              <a 
-                                href={pharmacy.url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="btn btn-outline-primary w-100"
-                              >
-                                Visit website
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div className="medication-info mb-4">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <p><strong>Principio Activo:</strong> {selectedMedication.principio_activo}</p>
+                        <p><strong>Medicamento seleccionado:</strong> {selectedMedication.nombre}</p>
+                      </div>
+                      <div className="col-md-6 text-md-end">
+                        <p className="text-muted">Última actualización: {new Date().toLocaleDateString()}</p>
+                      </div>
+                    </div>
                   </div>
                   
-                  {pharmacyTotals.length > 0 && (
-                    <div className="saving-info mt-4 alert alert-info">
-                      <div className="d-flex align-items-center">
-                        <i className="bi bi-info-circle-fill me-3 fs-4"></i>
-                        <div>
-                          <h5 className="mb-1">Total Savings</h5>
-                          <p className="mb-0">
-                            By choosing the cheapest pharmacy, you could save up to 
-                            ${Math.abs(pharmacyTotals[pharmacyTotals.length-1].precio_total - 
-                              pharmacyTotals[0].precio_total).toLocaleString('es-CL')} on these medications.
-                          </p>
+                  {comparisonResults.farmacias ? (
+                    <div className="price-comparison-results">
+                      {comparisonResults.farmacias.map((farmacia) => (
+                        <div className="farmacia-section mb-4" key={farmacia.farmacia.id}>
+                          <h4 className="pharmacy-title mb-3">{farmacia.farmacia.nombre}</h4>
+                          <div className="row">
+                            {farmacia.medicamentos.map((medicamento) => {
+                              const isSelectedMed = medicamento.medicamento_id === selectedMedication.id;
+                              
+                              return (
+                                <div className="col-md-4 mb-3" key={medicamento.id}>
+                                  <div className={`card h-100 ${isSelectedMed ? 'border-primary' : ''}`}>
+                                    <div className={`card-header ${isSelectedMed ? 'bg-primary text-white' : 'bg-light'}`}>
+                                      <div className="d-flex justify-content-between align-items-center">
+                                        <h5 className="mb-0 small text-truncate">{medicamento.nombre}</h5>
+                                        {isSelectedMed && (
+                                          <span className="badge bg-white text-primary">Seleccionado</span>
+                                        )}
+                                        {medicamento.es_generico ? (
+                                          <span className="badge bg-success">Genérico</span>
+                                        ) : (
+                                          <span className="badge bg-info">Marca</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="card-body">
+                                      <div className="text-center mb-3">
+                                        <h2 className="price mb-0">
+                                          ${medicamento.precio.toLocaleString('es-CL')}
+                                        </h2>
+                                        
+                                        <div className="availability mt-3">
+                                          {medicamento.disponible ? (
+                                            <span className="text-success">
+                                              <i className="bi bi-check-circle me-2"></i>
+                                              Disponible
+                                            </span>
+                                          ) : (
+                                            <span className="text-danger">
+                                              <i className="bi bi-x-circle me-2"></i>
+                                              No disponible
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="card-footer bg-white">
+                                      {medicamento.url_producto && (
+                                        <a 
+                                          href={medicamento.url_producto} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="btn btn-outline-primary w-100"
+                                        >
+                                          Ver en sitio
+                                        </a>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Fallback a la visualización original si los datos tienen el formato antiguo
+                    <div className="price-comparison-results">
+                      <div className="row">
+                        {comparisonResults.map && comparisonResults.map((result) => {
+                          // Find the cheapest price for highlighting
+                          const cheapestPrice = Math.min(...comparisonResults.map(r => r.precio));
+                          const isLowestPrice = result.precio === cheapestPrice;
+                          
+                          return (
+                            <div className="col-md-4 mb-4" key={result.id}>
+                              <div className={`card h-100 ${isLowestPrice ? 'border-success' : ''}`}>
+                                <div className={`card-header ${isLowestPrice ? 'bg-success text-white' : 'bg-light'}`}>
+                                  <div className="d-flex justify-content-between align-items-center">
+                                    <h5 className="mb-0">{result.farmacia.nombre}</h5>
+                                    {isLowestPrice && (
+                                      <span className="badge bg-white text-success">Mejor precio</span>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="card-body">
+                                  <div className="text-center mb-3">
+                                    <div className="pharmacy-logo-container mb-3">
+                                      {result.farmacia.nombre === 'Ahumada' && (
+                                        <div className="pharmacy-logo bg-danger">FA</div>
+                                      )}
+                                      {result.farmacia.nombre === 'Cruz Verde' && (
+                                        <div className="pharmacy-logo bg-success">CV</div>
+                                      )}
+                                      {result.farmacia.nombre === 'Salcobrand' && (
+                                        <div className="pharmacy-logo bg-primary">SB</div>
+                                      )}
+                                    </div>
+                                    
+                                    <h2 className="price mb-0">
+                                      ${result.precio.toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}
+                                    </h2>
+                                    
+                                    <div className="availability mt-3">
+                                      {result.disponible ? (
+                                        <span className="text-success">
+                                          <i className="bi bi-check-circle me-2"></i>
+                                          Disponible
+                                        </span>
+                                      ) : (
+                                        <span className="text-danger">
+                                          <i className="bi bi-x-circle me-2"></i>
+                                          No disponible
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="card-footer bg-white">
+                                  <a 
+                                    href={result.url_producto} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="btn btn-outline-primary w-100"
+                                  >
+                                    Ver en sitio
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-            
-            {/* Individual medication comparison results */}
-            {selectedMedications.map(medication => (
-              <div className="col-12 mb-4" key={medication.id}>
-                <div className="card shadow">
-                  <div className="card-header bg-primary text-white">
-                    <h5 className="mb-0">Price comparison for {medication.nombre}</h5>
-                  </div>
-                  <div className="card-body">
-                    <div className="medication-info mb-4">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <p><strong>Active Ingredient:</strong> {medication.principio_activo}</p>
-                          <p>
-                            <strong>Type:</strong> {' '}
-                            {medication.es_generico ? 'Generic' : 'Brand'}
-                          </p>
-                        </div>
-                        <div className="col-md-6 text-md-end">
-                          <p className="text-muted">Last Update: {new Date().toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {comparisonResults[medication.id] ? (
-                      <div className="price-comparison-results">
-                        <div className="row">
-                          {comparisonResults[medication.id].map((result) => {
-                            // Find the cheapest price for highlighting
-                            const cheapestPrice = Math.min(...comparisonResults[medication.id].map(r => r.precio));
-                            const isLowestPrice = result.precio === cheapestPrice;
-                            
-                            return (
-                              <div className="col-md-4 mb-4" key={result.id}>
-                                <div className={`card h-100 ${isLowestPrice ? 'border-success' : ''}`}>
-                                  <div className={`card-header ${isLowestPrice ? 'bg-success text-white' : 'bg-light'}`}>
-                                    <div className="d-flex justify-content-between align-items-center">
-                                      <h5 className="mb-0">{result.farmacia.nombre}</h5>
-                                      {isLowestPrice && (
-                                        <span className="badge bg-white text-success">Best price</span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <div className="card-body">
-                                    <div className="text-center mb-3">
-                                      <div className="pharmacy-logo-container mb-3">
-                                        {/* Replace with actual logos when available */}
-                                        {result.farmacia.nombre === 'Ahumada' && (
-                                          <div className="pharmacy-logo bg-danger">FA</div>
-                                        )}
-                                        {result.farmacia.nombre === 'Cruz Verde' && (
-                                          <div className="pharmacy-logo bg-success">CV</div>
-                                        )}
-                                        {result.farmacia.nombre === 'Salcobrand' && (
-                                          <div className="pharmacy-logo bg-primary">SB</div>
-                                        )}
-                                      </div>
-                                      
-                                      <h2 className="price mb-0">
-                                        ${result.precio.toLocaleString('es-CL')}
-                                      </h2>
-                                      
-                                      <div className="availability mt-3">
-                                        {result.disponible ? (
-                                          <span className="text-success">
-                                            <i className="bi bi-check-circle me-2"></i>
-                                            Available
-                                          </span>
-                                        ) : (
-                                          <span className="text-danger">
-                                            <i className="bi bi-x-circle me-2"></i>
-                                            Not Available
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="card-footer bg-white">
-                                    <a 
-                                      href={result.url_producto} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="btn btn-outline-primary w-100"
-                                    >
-                                      View on site
-                                    </a>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                        
-                        <div className="saving-info mt-4 alert alert-info">
-                          <div className="d-flex align-items-center">
-                            <i className="bi bi-info-circle-fill me-3 fs-4"></i>
-                            <div>
-                              <h5 className="mb-1">Did you know?</h5>
-                              <p className="mb-0">
-                                You could save up to ${Math.abs(Math.max(...comparisonResults[medication.id].map(r => r.precio)) - 
-                                Math.min(...comparisonResults[medication.id].map(r => r.precio))).toLocaleString('es-CL')} on this medication by comparing prices.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-5">
-                        <div className="spinner-border text-primary" role="status">
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                        <p className="mt-3">Searching for the best prices...</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         )}
 
@@ -748,7 +546,7 @@ function PriceComparisonPage() {
                     <div className="d-flex">
                       <div className="flex-shrink-0">
                         <i className="bi bi-check-circle-fill text-success fs-4"></i>
-                        </div>
+                      </div>
                       <div className="flex-grow-1 ms-3">
                         <h5>Compare always</h5>
                         <p className="text-muted">Medication prices can vary significantly between pharmacies.</p>

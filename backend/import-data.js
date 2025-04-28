@@ -7,8 +7,8 @@ require('dotenv').config();
 // Configuración de conexión a la base de datos
 const dbConfig = {
   host: 'localhost',
-  user: 'root',
-  password: '',
+  user: 'farmacia_app',
+  password: 'Farmacia?#2027',
   database: 'farmacia',
   waitForConnections: true,
   connectionLimit: 10,
@@ -26,6 +26,7 @@ const limpiarTexto = (texto) => {
     .replace(/[\u0300-\u036f]/g, ""); // Eliminar acentos
 };
 
+
 // Función para limpiar precios y convertirlos a números
 const limpiarPrecio = (precioStr) => {
   if (!precioStr) return null;
@@ -33,13 +34,13 @@ const limpiarPrecio = (precioStr) => {
   // Eliminar textos como "Precio Internet:" o "Precio farmacia:"
   let limpio = precioStr.replace(/(Precio Internet:|Precio farmacia:)/gi, '').trim();
   
-  // Extraer el número y eliminar caracteres no numéricos excepto puntos y comas
-  limpio = limpio.replace(/[^\d,.]/g, '');
+  // Eliminar el símbolo de pesos y espacios
+  limpio = limpio.replace(/\$|\s/g, '');
   
-  // Eliminar todos los puntos (separadores de miles)
+  // En Chile, el punto (.) se usa como separador de miles, reemplazarlo
   limpio = limpio.replace(/\./g, '');
   
-  // Reemplazar coma por punto (para el separador decimal si existe)
+  // Si hay coma como separador decimal, reemplazarla por punto
   limpio = limpio.replace(',', '.');
   
   return parseFloat(limpio);
@@ -127,9 +128,10 @@ async function importarDatos() {
     console.log('Procesando archivos JSON...');
     
     // Cargar los archivos JSON
-    const ahumadaData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'ahumada_medicamentos.json'), 'utf8'));
-    const cruzVerdeData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'cruzverde_medicamentos_respiratorios.json'), 'utf8'));
-    const salcobrandData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'salcobrand_medicamentos.json'), 'utf8'));
+    const ahumadaData = JSON.parse(fs.readFileSync(path.join(__dirname, 'ahumada_medicamentos.json'), 'utf8'));
+    const cruzVerdeData = JSON.parse(fs.readFileSync(path.join(__dirname, 'cruzverde_medicamentos_respiratorios.json'), 'utf8'));
+    const salcobrandData = JSON.parse(fs.readFileSync(path.join(__dirname, 'salcobrand_medicamentos.json'), 'utf8'));
+    
     // Mapa para rastrear medicamentos ya procesados (evitar duplicados)
     const medicamentosMap = new Map();
     
@@ -184,7 +186,6 @@ async function importarDatos() {
       }
       
       let insertadosExitosamente = 0;
-      let actualizadosExitosamente = 0;
       
       for (const item of datos) {
         const nombreNormalizado = limpiarTexto(item.title);
@@ -201,33 +202,27 @@ async function importarDatos() {
         }
         
         try {
-          // Usar ON DUPLICATE KEY UPDATE para actualizar precios si ya existe la entrada
-          const [result] = await pool.query(
-            'INSERT INTO precios_medicamentos (medicamento_id, farmacia_id, precio, url_producto, disponible, fecha_actualizacion) ' +
-            'VALUES (?, ?, ?, ?, true, NOW()) ' +
-            'ON DUPLICATE KEY UPDATE precio = VALUES(precio), fecha_actualizacion = NOW()',
+          await pool.query(
+            'INSERT INTO precios_medicamentos (medicamento_id, farmacia_id, precio, url_producto, disponible, fecha_actualizacion) VALUES (?, ?, ?, ?, true, NOW())',
             [medicamentoId, farmaciaId, precio, null]
           );
           
-          if (result.affectedRows === 1 && result.insertId > 0) {
-            insertadosExitosamente++;
-          } else if (result.affectedRows === 2) {
-            actualizadosExitosamente++;
-          }
+          insertadosExitosamente++;
         } catch (error) {
-          console.error(`Error al insertar/actualizar precio para ${item.title}:`, error.message);
+          console.error(`Error al insertar precio para ${item.title}:`, error.message);
         }
       }
       
-      return { insertados: insertadosExitosamente, actualizados: actualizadosExitosamente };
+      return insertadosExitosamente;
     }
-
-// Insertar precios de cada farmacia
-const ahumadaResultado = await insertarPrecios(ahumadaData, 'Ahumada');
-const cruzVerdeResultado = await insertarPrecios(cruzVerdeData, 'Cruz Verde');
-const salcobrandResultado = await insertarPrecios(salcobrandData, 'Salcobrand');
-
-console.log(`Precios insertados: Ahumada=${ahumadaResultado.insertados} (${ahumadaResultado.actualizados} actualizados), Cruz Verde=${cruzVerdeResultado.insertados} (${cruzVerdeResultado.actualizados} actualizados), Salcobrand=${salcobrandResultado.insertados} (${salcobrandResultado.actualizados} actualizados)`);
+    
+    // Insertar precios de cada farmacia
+    const ahumadaInsertados = await insertarPrecios(ahumadaData, 'Ahumada');
+    const cruzVerdeInsertados = await insertarPrecios(cruzVerdeData, 'Cruz Verde');
+    const salcobrandInsertados = await insertarPrecios(salcobrandData, 'Salcobrand');
+    
+    console.log(`Precios insertados: Ahumada=${ahumadaInsertados}, Cruz Verde=${cruzVerdeInsertados}, Salcobrand=${salcobrandInsertados}`);
+    
     // Cerrar la conexión
     await pool.end();
     
