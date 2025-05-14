@@ -5,7 +5,7 @@ async function scrapeCruzVerdeMedicamentos() {
   const browser = await puppeteer.launch({
     headless: false,
     defaultViewport: null,
-    args: ['--window-size=1024,768'] // Ventana más pequeña
+    args: ['--window-size=1024,768'] 
   });
 
   const page = await browser.newPage();
