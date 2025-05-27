@@ -1,0 +1,48 @@
+{
+  "totalProducts": 96,
+  "productsWithSku": 96,
+  "productsWithoutSku": 0,
+  "estimatedProductsPerPage": 32,
+  "sampleApiUrls": [
+    {
+      "product": "Levotiroxina (B) 75mcg 50 Comprimidos - Cenabast",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589575"
+    },
+    {
+      "product": "Nastizol DN Dia-Noche 18 Comprimidos",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2590079"
+    },
+    {
+      "product": "Trio-Val DN Di­a y Noche 20 Comprimidos",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2979381"
+    },
+    {
+      "product": "Tapsin Limonada (B) Paracetamol  Dia 5g",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1991100"
+    },
+    {
+      "product": "Xumadol Paracetamol 20 Sobres Efervescentes",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=340011"
+    },
+    {
+      "product": "Tapsin Limonada Noche (B) Paracetamol 5g",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1999956"
+    },
+    {
+      "product": "Paracetamol (B) 16 Comprimidos",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=432432"
+    },
+    {
+      "product": "Engystol 50 Comprimidos Sublinguales",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8270009"
+    },
+    {
+      "product": "Kitadol (B) Paracetamol 1g 18 Comprimidos",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=435361"
+    },
+    {
+      "product": "Salicilato de Metilo 50g",
+      "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3303000"
+    }
+  ]
+}
