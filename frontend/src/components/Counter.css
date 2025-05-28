@@ -1,0 +1,116 @@
+/* Counter.css */
+.counter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    min-width: 150px;
+  }
+  
+  .counter-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .counter-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: white;
+    border-radius: 6px;
+    padding: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .counter-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+  }
+  
+  .counter-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  
+  .counter-btn-increment {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .counter-btn-increment:hover:not(:disabled) {
+    background-color: #218838;
+    transform: scale(1.05);
+  }
+  
+  .counter-btn-decrement {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .counter-btn-decrement:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: scale(1.05);
+  }
+  
+  .counter-display {
+    min-width: 40px;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+  
+  .counter-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #495057;
+  }
+  
+  .counter-reset-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .counter-reset-btn:hover {
+    background-color: #5a6268;
+  }
+  
+  .counter-info {
+    margin-top: 0.25rem;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 576px) {
+    .counter-container {
+      min-width: 120px;
+      padding: 0.75rem;
+    }
+    
+    .counter-btn {
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+    }
+    
+    .counter-value {
+      font-size: 1.25rem;
+    }
+  }
