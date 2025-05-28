@@ -54,12 +54,22 @@ function LoginPage() {
       }
 
       console.log('Authenticated user:', data);
+      console.log('JWT Token received:', data.token ? 'YES' : 'NO'); // Debug
 
+      // Guardar datos del usuario
       sessionStorage.setItem('user', JSON.stringify({
         id: data.id,
         nombre: data.nombre,
         email: data.email
       }));
+
+      // *** NUEVO: Guardar el token JWT ***
+      if (data.token) {
+        sessionStorage.setItem('token', data.token);
+        console.log('Token saved to sessionStorage'); // Debug
+      } else {
+        console.error('No token received from server');
+      }
 
       setTimeout(() => {
         setLoadingMessage('Login successful! Redirecting...');
