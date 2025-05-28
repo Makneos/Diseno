@@ -8,6 +8,26 @@ const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 console.log('Directorio actual:', process.cwd());
 
+// CONFIGURACIÓN TEMPORAL DIRECTA - IGNORAR .env
+const DB_CONFIG = {
+  host: 'localhost',
+  user: 'root',  // ← FORZAR root
+  password: 'Farmacia?#2027',  // ← CAMBIAR si root tiene contraseña
+  database: 'farmacia',
+  jwt_secret: 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345'
+};
+
+// Verificar que las variables estén disponibles
+console.log('Configuración cargada:');
+console.log('- DB_HOST:', DB_CONFIG.host);
+console.log('- DB_USER:', DB_CONFIG.user);
+console.log('- DB_PASSWORD:', DB_CONFIG.password ? 'SÍ' : 'NO');
+console.log('- DB_NAME:', DB_CONFIG.database);
+console.log('- JWT_SECRET:', DB_CONFIG.jwt_secret ? 'SÍ' : 'NO');
+
+// Exportar JWT_SECRET para que lo usen las rutas
+process.env.JWT_SECRET = DB_CONFIG.jwt_secret;
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -15,12 +35,12 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Crear pool de conexiones a MySQL
+// Crear pool de conexiones a MySQL usando la configuración
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'farmacia_app',
-  password: 'Farmacia?#2027',
-  database: 'farmacia',
+  host: DB_CONFIG.host,
+  user: DB_CONFIG.user,
+  password: DB_CONFIG.password,
+  database: DB_CONFIG.database,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -36,7 +56,8 @@ app.use((req, res, next) => {
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();
-    console.log('Conexión a MySQL establecida correctamente');
+    console.log('✅ Conexión a MySQL establecida correctamente');
+    console.log(`✅ Conectado a la base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
     
     // Verificar si la tabla usuarios existe
     try {
@@ -63,8 +84,15 @@ const testConnection = async () => {
     
     connection.release();
   } catch (error) {
-    console.error('Error al conectar a MySQL:', error);
-    console.error('Verifica tus credenciales en el archivo .env y asegúrate de que el servidor MySQL esté en ejecución.');
+    console.error('❌ Error al conectar a MySQL:', error.message);
+    console.error('Verifica que:');
+    console.error('1. MySQL esté ejecutándose');
+    console.error('2. El usuario "farmacia_app" exista');
+    console.error('3. La contraseña sea correcta');
+    console.error('\nPara crear el usuario ejecuta en MySQL:');
+    console.error("CREATE USER 'farmacia_app'@'localhost' IDENTIFIED BY 'Farmacia?#2027';");
+    console.error("GRANT ALL PRIVILEGES ON farmacia.* TO 'farmacia_app'@'localhost';");
+    console.error("FLUSH PRIVILEGES;");
   }
 };
 
@@ -155,16 +183,24 @@ try {
   // Registrar rutas
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/medicamentos', medicamentosRoutes);
+  console.log('✅ Rutas API cargadas correctamente');
 } catch (error) {
-  console.error('Error al cargar módulos de API:', error);
+  console.error('❌ Error al cargar módulos de API:', error);
 }
 
 // Ruta de prueba simple
 app.get('/', (req, res) => {
-  res.json({ message: 'API de Farmacia funcionando correctamente' });
+  res.json({ 
+    message: 'API de Farmacia funcionando correctamente',
+    database: DB_CONFIG.database,
+    environment: process.env.NODE_ENV || 'development',
+    jwt_configured: DB_CONFIG.jwt_secret ? true : false
+  });
 });
 
 // Iniciar servidor
 app.listen(port, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${port}`);
+  console.log(`🚀 Servidor ejecutándose en http://localhost:${port}`);
+  console.log(`📊 Usando base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
+  console.log(`🔐 JWT configurado: ${DB_CONFIG.jwt_secret ? 'SÍ' : 'NO'}`);
 });
