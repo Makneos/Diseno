@@ -1,578 +1,578 @@
 [
   {
-    "productName": "Levotiroxina (B) 75mcg 50 Comprimidos - Cenabast",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589575",
-    "sku": "589575",
-    "productUrl": "https://salcobrand.cl/products/levotiroxina-b-75mcg-50-comprimidos?default_sku=589575&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Nastizol DN Dia-Noche 18 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2590079",
-    "sku": "2590079",
-    "productUrl": "https://salcobrand.cl/products/nastizol-dn-dia-noche-18-comprimidos?default_sku=2590079&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Trio-Val DN Di­a y Noche 20 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2979381",
-    "sku": "2979381",
-    "productUrl": "https://salcobrand.cl/products/trio-val-dn-di-a-y-noche-20-comprimidos?default_sku=2979381&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
     "productName": "Tapsin Limonada (B) Paracetamol  Dia 5g",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1991100",
     "sku": "1991100",
-    "productUrl": "https://salcobrand.cl/products/tapsin-limonada-b-paracetamol-dia-5g?default_sku=1991100&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Xumadol Paracetamol 20 Sobres Efervescentes",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=340011",
-    "sku": "340011",
-    "productUrl": "https://salcobrand.cl/products/xumadol-paracetamol-20-sobres-efervescentes?default_sku=340011&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/tapsin-limonada-b-paracetamol-dia-5g?default_sku=1991100&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Tapsin Limonada Noche (B) Paracetamol 5g",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1999956",
     "sku": "1999956",
-    "productUrl": "https://salcobrand.cl/products/tapsin-limonada-noche-b-paracetamol-5g?default_sku=1999956&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/tapsin-limonada-noche-b-paracetamol-5g?default_sku=1999956&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Paracetamol (B) 16 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=432432",
-    "sku": "432432",
-    "productUrl": "https://salcobrand.cl/products/paracetamol-500mg-de-16-comprimidos-7d64a843-389b-4155-8a75-a284ec7f7b94?default_sku=432432&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Engystol 50 Comprimidos Sublinguales",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8270009",
-    "sku": "8270009",
-    "productUrl": "https://salcobrand.cl/products/engystol-50-comprimidos-sublinguales?default_sku=8270009&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Kitadol (B) Paracetamol 1g 18 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=435361",
-    "sku": "435361",
-    "productUrl": "https://salcobrand.cl/products/kitadol-b-paracetamol-1g-18-comprimidos?default_sku=435361&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Salicilato de Metilo 50g",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3303000",
-    "sku": "3303000",
-    "productUrl": "https://salcobrand.cl/products/salicilato-metilo-tubo?default_sku=3303000&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Unguento Vick VapoRub 50g",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=436209",
-    "sku": "436209",
-    "productUrl": "https://salcobrand.cl/products/unguento-vick-vaporub-50g?default_sku=436209&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Trio-Val DN Di­a y Noche 20 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2979381",
+    "sku": "2979381",
+    "productUrl": "https://salcobrand.cl/products/trio-val-dn-di-a-y-noche-20-comprimidos?default_sku=2979381&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Kitadol (B) Paracetamol 500mg 24 Comprimidos",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430924",
     "sku": "430924",
-    "productUrl": "https://salcobrand.cl/products/kitadol-b-paracetamol-500mg-24-comprimidos?default_sku=430924&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/kitadol-b-paracetamol-500mg-24-comprimidos?default_sku=430924&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Strepfen Flurbiprofeno 8.75mg Miel y Limon 16 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1105020",
-    "sku": "1105020",
-    "productUrl": "https://salcobrand.cl/products/strepfen-flurbiprofeno-8-75mg-miel-y-limon-16-comprimidos?default_sku=1105020&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Xumadol Paracetamol 20 Sobres Efervescentes",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=340011",
+    "sku": "340011",
+    "productUrl": "https://salcobrand.cl/products/xumadol-paracetamol-20-sobres-efervescentes?default_sku=340011&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Engystol 50 Comprimidos Sublinguales",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8270009",
+    "sku": "8270009",
+    "productUrl": "https://salcobrand.cl/products/engystol-50-comprimidos-sublinguales?default_sku=8270009&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Abrilar Hedera Helix 35mg/5ml Jarabe 100ml",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2570513",
     "sku": "2570513",
-    "productUrl": "https://salcobrand.cl/products/abrilar-hedera-helix-35mg-5ml-jarabe-100ml?default_sku=2570513&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Ibuprofeno (B) 600mg 20 Comprimidos",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=437135",
-    "sku": "437135",
-    "productUrl": "https://salcobrand.cl/products/ibuprofeno-600mg-oral-solido-6dbdcaf6-b919-4fe3-a55b-74b51d45280f?default_sku=437135&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/abrilar-hedera-helix-35mg-5ml-jarabe-100ml?default_sku=2570513&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "FreeStyle Libre 2 Plus Sensor Monitoreo Continuo de Glucosa",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1011029",
     "sku": "1011029",
-    "productUrl": "https://salcobrand.cl/products/freestyle-libre-2-plus-sensor-monitoreo-continuo-de-glucosa?default_sku=1011029&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/freestyle-libre-2-plus-sensor-monitoreo-continuo-de-glucosa?default_sku=1011029&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Caramelos de Propoleo Miel Zero",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093043",
     "sku": "8093043",
-    "productUrl": "https://salcobrand.cl/products/caramelos-de-propoleo-miel-zero?default_sku=8093043&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/caramelos-de-propoleo-miel-zero?default_sku=8093043&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Sal De Fruta Recetario",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3309038",
-    "sku": "3309038",
-    "productUrl": "https://salcobrand.cl/products/bicarbonato-de-sodio?default_sku=3309038&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Kitadol (B) Paracetamol 1g 18 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=435361",
+    "sku": "435361",
+    "productUrl": "https://salcobrand.cl/products/kitadol-b-paracetamol-1g-18-comprimidos?default_sku=435361&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Freestyle Libre Lector 2",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1011286",
-    "sku": "1011286",
-    "productUrl": "https://salcobrand.cl/products/freestyle-libre-lector-2?default_sku=1011286&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Strepfen Flurbiprofeno 8.75mg Miel y Limon 16 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1105020",
+    "sku": "1105020",
+    "productUrl": "https://salcobrand.cl/products/strepfen-flurbiprofeno-8-75mg-miel-y-limon-16-comprimidos?default_sku=1105020&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Levotiroxina (B) 88mcg 50 Comprimidos - Cenabast",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589574",
-    "sku": "589574",
-    "productUrl": "https://salcobrand.cl/products/levotiroxina-b-88mcg-50-comprimidos?default_sku=589574&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Ozempic Semaglutida 2mg/1.5ml Inyectable 1 Dispositivo 6 Agujas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=575180",
+    "sku": "575180",
+    "productUrl": "https://salcobrand.cl/products/principio-activo-semaglutida-2mg-1-5ml-inyectable?default_sku=575180&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Thyrofix (B) Levotiroxina 25mcg 50 Comprimidos - Cenabast",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=4957069",
-    "sku": "4957069",
-    "productUrl": "https://salcobrand.cl/products/thyrofix-b-levotiroxina-25mcg-50-comprimidos?default_sku=4957069&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Saxenda Liraglutida Solucion Inyectable 3 Dispositivos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2520036",
+    "sku": "2520036",
+    "productUrl": "https://salcobrand.cl/products/saxenda-liraglutida-solucion-inyectable-3-dispositivos?default_sku=2520036&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Kelzy Dienogest / Etinilestradiol 28 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589591",
+    "sku": "589591",
+    "productUrl": "https://salcobrand.cl/products/kelzy-dienogest-etinilestradiol-28-comprimidos-prolongados?default_sku=589591&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Rybelsus Semaglutida 7mg 30 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582979",
+    "sku": "582979",
+    "productUrl": "https://salcobrand.cl/products/rybelsus-semaglutida-7mg-30-comprimidos?default_sku=582979&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Mirena Levonorgestrel 20mcg Anticonceptivo Intrauterino DIU",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=195152",
+    "sku": "195152",
+    "productUrl": "https://salcobrand.cl/products/mirena-levonorgestrel-20mcg-anticonceptivo-intrauterino-diu?default_sku=195152&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Rybelsus Semaglutida 14mg 30 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582978",
+    "sku": "582978",
+    "productUrl": "https://salcobrand.cl/products/rybelsus-semaglutida-14mg-30-comprimidos?default_sku=582978&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Sterimar Bebe Solucion de Agua de Mar 50ml",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1071227",
     "sku": "1071227",
-    "productUrl": "https://salcobrand.cl/products/sterimar-bebe-solucion-de-agua-de-mar-50ml?default_sku=1071227&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/sterimar-bebe-solucion-de-agua-de-mar-50ml?default_sku=1071227&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Kit SinuRinse de 60 Sachet",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3340100",
     "sku": "3340100",
-    "productUrl": "https://salcobrand.cl/products/kit-sinu-rinse-de-60-sachet?default_sku=3340100&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/kit-sinu-rinse-de-60-sachet?default_sku=3340100&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Systane Ultra Lagrimas Artificiales Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=23130",
-    "sku": "23130",
-    "productUrl": "https://salcobrand.cl/products/systane-ultra-lagrimas-artificiales-solucion-oftalmica-10ml?default_sku=23130&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Acotol (B) 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2834786",
+    "sku": "2834786",
+    "productUrl": "https://salcobrand.cl/products/acotol-b-28-comprimidos-recubiertos?default_sku=2834786&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Tomapresion Brazo Omron HEM712",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=585108",
     "sku": "585108",
-    "productUrl": "https://salcobrand.cl/products/tomapresion-brazo-omron-hem712?default_sku=585108&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/tomapresion-brazo-omron-hem712?default_sku=585108&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Oftafilm SP Hialuronato Sodico 0.4% Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2974057",
-    "sku": "2974057",
-    "productUrl": "https://salcobrand.cl/products/oftafilm-sp-lagrimas-artificiales-hialuronato-sodico-0-4-solucion-oftalmica-10ml?default_sku=2974057&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Liberat Orlistat 120mg 90 Capsulas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=432370",
+    "sku": "432370",
+    "productUrl": "https://salcobrand.cl/products/liberat-120mg-90-capsulas?default_sku=432370&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Systane Complete SP Propilenglicol 0,6% Solucion Oftalmica 10ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=590965",
+    "sku": "590965",
+    "productUrl": "https://salcobrand.cl/products/systane-complete-sp-propilenglicol-0-6-solucion-oftalmica-10ml?default_sku=590965&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Exelring Etonogestrel / Etinilestradiol Anillo Vaginal 3 Anillos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1050047",
+    "sku": "1050047",
+    "productUrl": "https://salcobrand.cl/products/exelring-etonogestrel-etinilestradiol-anillo-vaginal-3-anillos?default_sku=1050047&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Broncho-Vaxom Pediatrico 3.5mg 30 Sobres",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1725219",
+    "sku": "1725219",
+    "productUrl": "https://salcobrand.cl/products/broncho-vaxom-pediatrico-3-5mg-30-sobres?default_sku=1725219&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "NeilMed SinuRinse Enjuague Nasal Salino Para Ninos",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3340140",
     "sku": "3340140",
-    "productUrl": "https://salcobrand.cl/products/neilmed-sinurinse-enjuague-nasal-salino-para-ninos?default_sku=3340140&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/neilmed-sinurinse-enjuague-nasal-salino-para-ninos?default_sku=3340140&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Thealoz Duo Lagrimas Artificiales Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=38592",
-    "sku": "38592",
-    "productUrl": "https://salcobrand.cl/products/thealoz-duo-lagrimas-artificiales-solucion-oftalmica-10ml?default_sku=38592&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Traumeel 50 Comprimidos Sublinguales",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8270014",
+    "sku": "8270014",
+    "productUrl": "https://salcobrand.cl/products/traumeel-50-comprimidos-sublinguales?default_sku=8270014&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Cardiosmile Ecopack Por 60 Sachets",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=588344",
-    "sku": "588344",
-    "productUrl": "https://salcobrand.cl/products/cardiosmile-ecopack-por-60-sachets?default_sku=588344&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Cromidin Tacrolimus 0.1% Unguento Topico 15g",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=576614",
+    "sku": "576614",
+    "productUrl": "https://salcobrand.cl/products/cromidin-tacrolimus-0-1-unguento-topico-15g?default_sku=576614&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "SinuRinse Recarga 50 Sachet",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3345200",
     "sku": "3345200",
-    "productUrl": "https://salcobrand.cl/products/sinurinse-recarga-50-sachet?default_sku=3345200&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/sinurinse-recarga-50-sachet?default_sku=3345200&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Femelle (B) Drospirenona / Etinilestradiol 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2835001",
+    "sku": "2835001",
+    "productUrl": "https://salcobrand.cl/products/femelle-b-drospirenona-etinilestradiol-28-comprimidos-recubiertos?default_sku=2835001&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Monez Mometasona 50mcg Suspension Nasal Spray 140 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430170",
+    "sku": "430170",
+    "productUrl": "https://salcobrand.cl/products/principio-activo-mometasona?default_sku=430170&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Slinda Drospirenona 4mg 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=575323",
+    "sku": "575323",
+    "productUrl": "https://salcobrand.cl/products/slinda-4-mg?default_sku=575323&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Jardiance Empagliflozina 25mg 30 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=160882",
+    "sku": "160882",
+    "productUrl": "https://salcobrand.cl/products/empagliflozina-25mg-oral-solido?default_sku=160882&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Tiras Para Medidor De Glucosa Optium",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=19649",
     "sku": "19649",
-    "productUrl": "https://salcobrand.cl/products/cintas-para-tomador-de-glucosa?default_sku=19649&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/cintas-para-tomador-de-glucosa?default_sku=19649&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Alerxo Forte (B) Fexofenadina 180mg 30 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582493",
+    "sku": "582493",
+    "productUrl": "https://salcobrand.cl/products/alerxo-forte-b-fexofenadina-180mg-30-comprimidos-recubiertos?default_sku=582493&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "DuoResp Spiromax Budesonida / Formoterol 160/4.5 Inhalacion 120 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430305",
+    "sku": "430305",
+    "productUrl": "https://salcobrand.cl/products/duoresp-spiromax-budesonida-formoterol-160-4-5-inhalacion-120-dosis?default_sku=430305&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Rybelsus Semaglutida 3mg 30 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582977",
+    "sku": "582977",
+    "productUrl": "https://salcobrand.cl/products/rybelsus-semaglutida-3mg-30-comprimidos?default_sku=582977&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Test de Embarazo Digital con Indicador de Semanas",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430384",
     "sku": "430384",
-    "productUrl": "https://salcobrand.cl/products/test-de-embarazo-digital-con-indicador-de-semanas?default_sku=430384&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/test-de-embarazo-digital-con-indicador-de-semanas?default_sku=430384&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Tensiometro Para El Brazo Bm 28",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=725228",
-    "sku": "725228",
-    "productUrl": "https://salcobrand.cl/products/toma-presion-para-el-brazo-bm-28?default_sku=725228&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "RedOff (B) Nafazolina 15ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=438100",
+    "sku": "438100",
+    "productUrl": "https://salcobrand.cl/products/redoff-b-nafazolina-15ml?default_sku=438100&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Accu-Chek Instant Kit",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=206739",
     "sku": "206739",
-    "productUrl": "https://salcobrand.cl/products/accu-chek-instant-kit?default_sku=206739&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/accu-chek-instant-kit?default_sku=206739&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Multiflora Advance 30 Capsulas",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=578511",
     "sku": "578511",
-    "productUrl": "https://salcobrand.cl/products/multiflora-advance-30-capsulas?default_sku=578511&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/multiflora-advance-30-capsulas?default_sku=578511&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Alenys Fluticasona 27.5mcg Suspension Nasal 120 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=657500",
+    "sku": "657500",
+    "productUrl": "https://salcobrand.cl/products/alenys-fluticasona-27-5mcg-suspension-nasal-120-dosis?default_sku=657500&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Fesema LF Salbutamol 100mcg Inhalacion 200 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=650544",
+    "sku": "650544",
+    "productUrl": "https://salcobrand.cl/products/fesema-lf-salbutamol-100mcg-inhalacion-200-dosis?default_sku=650544&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Gotas Para la Ansiedad Healty 30ml",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581492",
     "sku": "581492",
-    "productUrl": "https://salcobrand.cl/products/gotas-para-la-ansiedad-healty-30ml?default_sku=581492&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/gotas-para-la-ansiedad-healty-30ml?default_sku=581492&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Tensiometro Brazo",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3975000",
     "sku": "3975000",
-    "productUrl": "https://salcobrand.cl/products/toma-presion-dee-brazo?default_sku=3975000&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Prueba de Embarazo Rapida 1 Min.",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430383",
-    "sku": "430383",
-    "productUrl": "https://salcobrand.cl/products/test-de-embarazo-clear-blue-resultados-en-apenas-un-minuto?default_sku=430383&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/toma-presion-dee-brazo?default_sku=3975000&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Tomador De Presion Bua 6150 We",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=578730",
     "sku": "578730",
-    "productUrl": "https://salcobrand.cl/products/toma-presion-bua-6150-we?default_sku=578730&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/toma-presion-bua-6150-we?default_sku=578730&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Test de Embarazo Doble",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581276",
-    "sku": "581276",
-    "productUrl": "https://salcobrand.cl/products/test-de-embarazo-doble?default_sku=581276&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Relvar Fluticasona / Vilanterol 184/22mcg Polvo Inhalacion 30 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1000450",
+    "sku": "1000450",
+    "productUrl": "https://salcobrand.cl/products/relvar-fluticasona-vilanterol-184-22mcg-polvo-inhalacion-30-dosis?default_sku=1000450&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Solucion Desinfectante para Lentes de Contacto",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=26166,26165",
-    "sku": "26166,26165",
-    "productUrl": "https://salcobrand.cl/products/solucion-desinfectante-para-lentes-de-contacto?default_sku=26166&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Glafornil XR (R) Metformina 750mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2013001",
+    "sku": "2013001",
+    "productUrl": "https://salcobrand.cl/products/glafornil-xr-r-metformina-750mg-30-comprimidos-prolongados?default_sku=2013001&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Hyabak Solucion Oftalmica",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=39774",
-    "sku": "39774",
-    "productUrl": "https://salcobrand.cl/products/hyabak-sof-x10ml?default_sku=39774&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Glafornil XR (R) Metformina 1000mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2015001",
+    "sku": "2015001",
+    "productUrl": "https://salcobrand.cl/products/glafornil-xr-r-metformina-1000mg-30-comprimidos-prolongados?default_sku=2015001&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Systane Ultra SP Lagrimas Artificiales Sin Preservante 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581888",
-    "sku": "581888",
-    "productUrl": "https://salcobrand.cl/products/systane-ultra-sp-lagrimas-artificiales-sin-preservante-10ml?default_sku=581888&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Relvar Fluticasona / Vilanterol 92/22mcg Polvo Inhalacion 30 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1000452",
+    "sku": "1000452",
+    "productUrl": "https://salcobrand.cl/products/relvar-fluticasona-vilanterol-92-22mcg-polvo-inhalacion-30-dosis?default_sku=1000452&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Xumadol (B) Paracetamol 20 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=340180",
+    "sku": "340180",
+    "productUrl": "https://salcobrand.cl/products/xumadol-b-paracetamol-20-comprimidos?default_sku=340180&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Toma Presion de Brazo",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=580914",
     "sku": "580914",
-    "productUrl": "https://salcobrand.cl/products/toma-presion-de-brazo?default_sku=580914&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/toma-presion-de-brazo?default_sku=580914&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Protium F 30 Capsulas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2973919",
-    "sku": "2973919",
-    "productUrl": "https://salcobrand.cl/products/protium-f-30-capsulas?default_sku=2973919&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Cam Betametasona / Dexclorfenamina 30 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=430954",
+    "sku": "430954",
+    "productUrl": "https://salcobrand.cl/products/cam-betametasona-dexclorfenamina-30-comprimidos?default_sku=430954&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Systane Ultra SP Lagrimas Artificiales Sin Preservante 10ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581888",
+    "sku": "581888",
+    "productUrl": "https://salcobrand.cl/products/systane-ultra-sp-lagrimas-artificiales-sin-preservante-10ml?default_sku=581888&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Vildavitae (B) Vildagliptina 50mg 56 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=585781",
+    "sku": "585781",
+    "productUrl": "https://salcobrand.cl/products/vildavitae-b-vildagliptina-50mg-56-comprimidos?default_sku=585781&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Doxithal SR Doxiciclina 40mg 28 Capsulas Prolongadas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2510372",
+    "sku": "2510372",
+    "productUrl": "https://salcobrand.cl/products/doxiciclina-40mg-oral-solido?default_sku=2510372&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Glafornil XR (R) Metformina 500mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2010524",
+    "sku": "2010524",
+    "productUrl": "https://salcobrand.cl/products/glafornil-xr-r-metformina-500mg-30-comprimidos-prolongados?default_sku=2010524&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Aurituss Salmeterol / Fluticasona 25/125 Inhalador 120 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2832554",
+    "sku": "2832554",
+    "productUrl": "https://salcobrand.cl/products/aurituss-salmeterol-fluticasona-25-125-inhalador-120-dosis?default_sku=2832554&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Glafornil XR Metformina 850mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=583218",
+    "sku": "583218",
+    "productUrl": "https://salcobrand.cl/products/glafornil-xr-850-mg-30-comprimidos-prolongados?default_sku=583218&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Difusor 120 ml",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582522",
     "sku": "582522",
-    "productUrl": "https://salcobrand.cl/products/difusor-120-ml?default_sku=582522&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/difusor-120-ml?default_sku=582522&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Test VIH Mylan",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=583334",
-    "sku": "583334",
-    "productUrl": "https://salcobrand.cl/products/autotes-vih-mylan?default_sku=583334&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Flixotide LF Fluticasona 125mcg Solucion Nasal 120 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1000602",
+    "sku": "1000602",
+    "productUrl": "https://salcobrand.cl/products/flixotide-lf-fluticasona-125mcg-solucion-nasal-120-dosis?default_sku=1000602&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Solucion de Lentes de Contacto Renu Fresh 355ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=319467",
-    "sku": "319467",
-    "productUrl": "https://salcobrand.cl/products/renu-fresh-sol-lim-x355ml-regalo?default_sku=319467&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Nasonex Mometasona 50mcg Spray Nasal 140 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=584612",
+    "sku": "584612",
+    "productUrl": "https://salcobrand.cl/products/nasonex-mometasona-50mcg-spray-nasal-140-dosis?default_sku=584612&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Oxilin Oximetazolina 0.05% Solucion Nasal 15ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2501016",
-    "sku": "2501016",
-    "productUrl": "https://salcobrand.cl/products/oxilin-oximetazolina-0-05-solucion-nasal-15ml?default_sku=2501016&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Airduo Spiromax 232/14 Polvo Inhalacion 60 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=583524",
+    "sku": "583524",
+    "productUrl": "https://salcobrand.cl/products/airduo-spiromax-232-14-polvo-inhalacion-60-dosis?default_sku=583524&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Permetrina 5% Locion Corporal 250ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=586743",
-    "sku": "586743",
-    "productUrl": "https://salcobrand.cl/products/permetrina-5-locion-corporal-250ml?default_sku=586743&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Lactibiane Iki 30 Sachets",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=585985",
-    "sku": "585985",
-    "productUrl": "https://salcobrand.cl/products/lactibiane-iki-30-sachets?default_sku=585985&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Tiras para Medidor de Glucosa Optium",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=19506",
-    "sku": "19506",
-    "productUrl": "https://salcobrand.cl/products/tiras-para-medidor-de-glucosa-optium?default_sku=19506&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "VitaminLife Potassium Citrate 500mg 60 Capsulas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=573703",
-    "sku": "573703",
-    "productUrl": "https://salcobrand.cl/products/vitaminlife-potassium-citrate-500mg-60-capsulas?default_sku=573703&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Xaluron Gel",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3309086",
-    "sku": "3309086",
-    "productUrl": "https://salcobrand.cl/products/lubricante-vaginal?default_sku=3309086&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Gotas de Rescate Helty 30ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8090064",
-    "sku": "8090064",
-    "productUrl": "https://salcobrand.cl/products/gotas-de-rescate-helty-30ml?default_sku=8090064&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Aceite Esencial Lavandin",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093084",
-    "sku": "8093084",
-    "productUrl": "https://salcobrand.cl/products/aceite-esencial-lavandin?default_sku=8093084&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Sistema de Monitoreo Glucosa Optium Neo Kit",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=11361",
-    "sku": "11361",
-    "productUrl": "https://salcobrand.cl/products/sistema-de-monitoreo-glucosa-optium-neo-kit?default_sku=11361&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Modusik-A (B) Ciclosporina-A 0.1% Solucion Oftalmica 5ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3405388",
-    "sku": "3405388",
-    "productUrl": "https://salcobrand.cl/products/modusik-a-b-ciclosporina-a-0-1-solucion-oftalmica-5ml?default_sku=3405388&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Fat Binder Advanced",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=576860",
-    "sku": "576860",
-    "productUrl": "https://salcobrand.cl/products/fat-binder-advanced?default_sku=576860&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Alovis Gel Ofatlmologico 10 Ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3309107",
-    "sku": "3309107",
-    "productUrl": "https://salcobrand.cl/products/alovis-sof-x10ml?default_sku=3309107&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Fisiolimp Pediatrico 0.9 % Solucion Nasal 30ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2501470",
-    "sku": "2501470",
-    "productUrl": "https://salcobrand.cl/products/fisiolimp-pediatrico-0-9-solucion-nasal-30ml?default_sku=2501470&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Aceite esencial Eucalipto Helty 15ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093083",
-    "sku": "8093083",
-    "productUrl": "https://salcobrand.cl/products/aceite-esencial-eucalipto-helty-15ml?default_sku=8093083&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Cintas Para Medir Glucosa 50 Cintas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=206708",
-    "sku": "206708",
-    "productUrl": "https://salcobrand.cl/products/cintas-para-medir-glucosa-50-cintas?default_sku=206708&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Melena de Leon 60 Capsulas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589029",
-    "sku": "589029",
-    "productUrl": "https://salcobrand.cl/products/melena-de-leon-60-capsulas?default_sku=589029&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Aceite Esencial Arbol del Te Helty 15ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8094081",
-    "sku": "8094081",
-    "productUrl": "https://salcobrand.cl/products/aceite-esencial-arbol-del-te-helty-15ml?default_sku=8094081&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Vitabral de 60 Capsulas Blandas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2350288",
-    "sku": "2350288",
-    "productUrl": "https://salcobrand.cl/products/vitabral-de-60-capsulas-blandas?default_sku=2350288&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Lagricel Ofteno PF 0.4% Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3391369",
-    "sku": "3391369",
-    "productUrl": "https://salcobrand.cl/products/lagricel-pf-0-4-sol-oft?default_sku=3391369&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Aerocamara Bivalvulada Pediatrica",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=578509",
-    "sku": "578509",
-    "productUrl": "https://salcobrand.cl/products/aerocamara-bivalvulada-pediatrica?default_sku=578509&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "CARDIOSMILE X30 SACHET",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=579144",
-    "sku": "579144",
-    "productUrl": "https://salcobrand.cl/products/cardiosmile-x30-sachet?default_sku=579144&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Aerocamara Plus Pediatrica Masc. Amarillo 1 Unidad",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2831357",
-    "sku": "2831357",
-    "productUrl": "https://salcobrand.cl/products/aerocamara-plus-pediatrica-masc-amarillo-1-unidad?default_sku=2831357&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Multiflora ATB Probioticos 30 Capsulas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=579827",
-    "sku": "579827",
-    "productUrl": "https://salcobrand.cl/products/multiflora-atb-probioticos-30-capsulas?default_sku=579827&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Arnica Gel para el Dolor Muscular Helty 60gr",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8090055",
-    "sku": "8090055",
-    "productUrl": "https://salcobrand.cl/products/arnica-gel-para-el-dolor-muscular-helty-60gr?default_sku=8090055&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Sterimar Infantil Solucion de Agua de Mar 50ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1075421",
-    "sku": "1075421",
-    "productUrl": "https://salcobrand.cl/products/sterimar-infantil-solucion-de-agua-de-mar-50ml?default_sku=1075421&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Hylo-Comod Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1161036",
-    "sku": "1161036",
-    "productUrl": "https://salcobrand.cl/products/hylo-comod-sof-x10ml?default_sku=1161036&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Hylo Gel Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1161078",
-    "sku": "1161078",
-    "productUrl": "https://salcobrand.cl/products/hylo-gel-sof-x10ml?default_sku=1161078&queryID=ad5799541b0500894d7717b290682bcf"
-  },
-  {
-    "productName": "Gotas Para la Concentracion Healty 30ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581494",
-    "sku": "581494",
-    "productUrl": "https://salcobrand.cl/products/gotas-para-la-concentracion-healty-30ml?default_sku=581494&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Pluster Mometasona 50mcg Spray Nasal 120 Dosis",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2800088",
+    "sku": "2800088",
+    "productUrl": "https://salcobrand.cl/products/pluster-mometasona-50mcg-spray-nasal-120-dosis?default_sku=2800088&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Kit Para Irrigacion Nasal Con Solucion Salina",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3340308",
     "sku": "3340308",
-    "productUrl": "https://salcobrand.cl/products/kit-para-irrigacion-nasal-con-solucion-salina?default_sku=3340308&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/kit-para-irrigacion-nasal-con-solucion-salina?default_sku=3340308&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Pediamist 0.9% Solucion Nasal 75ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3345007",
-    "sku": "3345007",
-    "productUrl": "https://salcobrand.cl/products/spray-nasal-salino-para-ninos?default_sku=3345007&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Tinelle (B) Dienogest / Etinilestradiol 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3026598",
+    "sku": "3026598",
+    "productUrl": "https://salcobrand.cl/products/tinelle-b-dienogest-etinilestradiol-28-comprimidos-recubiertos?default_sku=3026598&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Aceite Esencial Bergamota",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093081",
-    "sku": "8093081",
-    "productUrl": "https://salcobrand.cl/products/aceite-esencial-bergamota-helty-15ml?default_sku=8093081&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Femelle 20 (B) Drospirenona / Etinilestradiol 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2830598",
+    "sku": "2830598",
+    "productUrl": "https://salcobrand.cl/products/femelle-20-b-drospirenona-etinilestradiol-28-comprimidos-recubiertos?default_sku=2830598&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Actron (R) Ibuprofeno 600mg 20 Capsulas Blandas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=578997",
-    "sku": "578997",
-    "productUrl": "https://salcobrand.cl/products/actron-r-ibuprofeno-600mg-20-capsulas-blandas?default_sku=578997&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Trittico (B) Trazodona 100mg 20 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=437300",
+    "sku": "437300",
+    "productUrl": "https://salcobrand.cl/products/trittico-b-trazodona-100mg-20-comprimidos-recubiertos?default_sku=437300&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Sterimar Descongestion Nasal Solucion de Agua de Mar 100ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1071228",
-    "sku": "1071228",
-    "productUrl": "https://salcobrand.cl/products/sterimar-descongestion-nasal-solucion-de-agua-de-mar-100ml?default_sku=1071228&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Neurexan 50 Comprimidos Sublinguales",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8270094",
+    "sku": "8270094",
+    "productUrl": "https://salcobrand.cl/products/neurexan-50-comprimidos-sublinguales?default_sku=8270094&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Thealoz Duo Gel Oftalmico",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=38551",
-    "sku": "38551",
-    "productUrl": "https://salcobrand.cl/products/thealoz-duo-gel?default_sku=38551&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Evra Norelgestromin / Etinilestradiol 3 Parches Transdermicos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=360019",
+    "sku": "360019",
+    "productUrl": "https://salcobrand.cl/products/evra-norelgestromin-etinilestradiol-3-parches-transdermicos?default_sku=360019&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Multiflora Gotas 8ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2570505",
-    "sku": "2570505",
-    "productUrl": "https://salcobrand.cl/products/multiflora-gotas-8ml?default_sku=2570505&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Oxilin Oximetazolina 0.05% Solucion Nasal 15ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2501016",
+    "sku": "2501016",
+    "productUrl": "https://salcobrand.cl/products/oxilin-oximetazolina-0-05-solucion-nasal-15ml?default_sku=2501016&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
     "productName": "Systane Hidratacion SP Gotas Oculares 10ml",
     "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582196",
     "sku": "582196",
-    "productUrl": "https://salcobrand.cl/products/systane-hidratacion-sp-gotas-oculares-10ml?default_sku=582196&queryID=ad5799541b0500894d7717b290682bcf"
+    "productUrl": "https://salcobrand.cl/products/systane-hidratacion-sp-gotas-oculares-10ml?default_sku=582196&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Nasogel Spray 30ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3344507",
-    "sku": "3344507",
-    "productUrl": "https://salcobrand.cl/products/nasogel-spray-30ml?default_sku=3344507&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Daniele (B) Dienogest / Etinilestradiol 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1050326",
+    "sku": "1050326",
+    "productUrl": "https://salcobrand.cl/products/daniele-b-dienogest-etinilestradiol-28-comprimidos-recubiertos?default_sku=1050326&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Nailner 2 en 1 Pincel",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3309106",
-    "sku": "3309106",
-    "productUrl": "https://salcobrand.cl/products/nailner-2-en-1-pincel?default_sku=3309106&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Neurobionta Advance Vitaminas del Complejo B 60 Tabletas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=587270",
+    "sku": "587270",
+    "productUrl": "https://salcobrand.cl/products/neurobionta-advance-vitaminas-del-complejo-b-60-tabletas?default_sku=587270&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Lactibiane Reference 30 Capsulas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=585934",
-    "sku": "585934",
-    "productUrl": "https://salcobrand.cl/products/lactibiane-reference-30-capsulas?default_sku=585934&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "VitaminLife Potassium Citrate 500mg 60 Capsulas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=573703",
+    "sku": "573703",
+    "productUrl": "https://salcobrand.cl/products/vitaminlife-potassium-citrate-500mg-60-capsulas?default_sku=573703&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Systane Gel Lagrimas Artificiales Solucion Oftalmica 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=24008",
-    "sku": "24008",
-    "productUrl": "https://salcobrand.cl/products/systane-gel-lagrimas-artificiales-solucion-oftalmica-10ml?default_sku=24008&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Griparex Echinacea Purpurea 20 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=581793",
+    "sku": "581793",
+    "productUrl": "https://salcobrand.cl/products/griparex-echinacea-purpurea-20-comprimidos-recubiertos?default_sku=581793&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "One Touch Ultra 50 Cintas",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=320008",
-    "sku": "320008",
-    "productUrl": "https://salcobrand.cl/products/one-touch-ult-x50cintas?default_sku=320008&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Strepfen Flurbiprofeno 8 Comprimidos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1100368",
+    "sku": "1100368",
+    "productUrl": "https://salcobrand.cl/products/strepfen-flurbiprofeno-8-comprimidos?default_sku=1100368&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Broncard Levodropropizina 60mg/10ml Jarabe 120ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1722860",
-    "sku": "1722860",
-    "productUrl": "https://salcobrand.cl/products/broncard-levodropropizina-60mg-10ml-jarabe-120ml?default_sku=1722860&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Normix Rifaximina 200mg 12 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=36369",
+    "sku": "36369",
+    "productUrl": "https://salcobrand.cl/products/normix-12com-rec?default_sku=36369&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "LuvriOft 0.4% Lagrimas Artificiales Hialuronato de Sodio Gotas Oftalmicas 10ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=586892",
-    "sku": "586892",
-    "productUrl": "https://salcobrand.cl/products/luvrioft-0-4-lagrimas-artificiales-hialuronato-de-sodio-gotas-oftalmicas-10ml?default_sku=586892&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Gotas de Rescate Helty 30ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8090064",
+    "sku": "8090064",
+    "productUrl": "https://salcobrand.cl/products/gotas-de-rescate-helty-30ml?default_sku=8090064&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Fersitol D 30 Sobres",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=579923",
-    "sku": "579923",
-    "productUrl": "https://salcobrand.cl/products/fersitol-d-30-sobres?default_sku=579923&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Aceite Esencial Lavandin",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093084",
+    "sku": "8093084",
+    "productUrl": "https://salcobrand.cl/products/aceite-esencial-lavandin?default_sku=8093084&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Fisiomar 0.9% Solucion Nasal 125ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2505001",
-    "sku": "2505001",
-    "productUrl": "https://salcobrand.cl/products/fisiomar-0-9-sol-nas-x125ml?default_sku=2505001&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Venlavitae (B) Venlafaxina 75mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2382030",
+    "sku": "2382030",
+    "productUrl": "https://salcobrand.cl/products/venlavitae-b-venlafaxina-75mg-30-comprimidos-prolongados?default_sku=2382030&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Aerocamara Plus Pediatrica Masc. Morado 1 Unidad",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2835089",
-    "sku": "2835089",
-    "productUrl": "https://salcobrand.cl/products/aerocamara-plus-pediatrica-masc-morado-1-unidad?default_sku=2835089&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Deprax (B) Sertralina 100mg 30 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2971576",
+    "sku": "2971576",
+    "productUrl": "https://salcobrand.cl/products/deprax-b-sertralina-100mg-30-comprimidos-recubiertos?default_sku=2971576&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Test Hc de Ovulacion",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=579490",
-    "sku": "579490",
-    "productUrl": "https://salcobrand.cl/products/test-hc-de-ovulacion?default_sku=579490&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Deprax (B) Sertralina 50mg 60 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2972785",
+    "sku": "2972785",
+    "productUrl": "https://salcobrand.cl/products/deprax-b-sertralina-50mg-60-comprimidos-recubiertos?default_sku=2972785&queryID=46a80506da3e53ec5cb823bf20667cc2"
   },
   {
-    "productName": "Hemoproct Spray 35ml",
-    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=582779",
-    "sku": "582779",
-    "productUrl": "https://salcobrand.cl/products/hemoproct-spray-x35-ml?default_sku=582779&queryID=ad5799541b0500894d7717b290682bcf"
+    "productName": "Citoneuron 30 Capsulas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=759020",
+    "sku": "759020",
+    "productUrl": "https://salcobrand.cl/products/cerebrotonico-oral-solido-3d4ac563-434f-486c-969b-740d3ac5882f?default_sku=759020&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Alovis Gel Ofatlmologico 10 Ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3309107",
+    "sku": "3309107",
+    "productUrl": "https://salcobrand.cl/products/alovis-sof-x10ml?default_sku=3309107&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Fisiolimp Pediatrico 0.9 % Solucion Nasal 30ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2501470",
+    "sku": "2501470",
+    "productUrl": "https://salcobrand.cl/products/fisiolimp-pediatrico-0-9-solucion-nasal-30ml?default_sku=2501470&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Aceite esencial Eucalipto Helty 15ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8093083",
+    "sku": "8093083",
+    "productUrl": "https://salcobrand.cl/products/aceite-esencial-eucalipto-helty-15ml?default_sku=8093083&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Poem Fem Nomegestrol Acetato / Estradiol 28 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3028198",
+    "sku": "3028198",
+    "productUrl": "https://salcobrand.cl/products/poem-fem-nomegestrol-acetato-estradiol-28-comprimidos-recubiertos?default_sku=3028198&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Glifortex XR (B) Metformina 750mg 30 Comprimidos Prolongados",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=37913",
+    "sku": "37913",
+    "productUrl": "https://salcobrand.cl/products/glifortex-xr-b-metformina-750mg-30-comprimidos-prolongados?default_sku=37913&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Systane Ultra Lagrimas Artificiales Solucion Oftalmica 10ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=23130",
+    "sku": "23130",
+    "productUrl": "https://salcobrand.cl/products/systane-ultra-lagrimas-artificiales-solucion-oftalmica-10ml?default_sku=23130&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Aceite Esencial Arbol del Te Helty 15ml",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=8094081",
+    "sku": "8094081",
+    "productUrl": "https://salcobrand.cl/products/aceite-esencial-arbol-del-te-helty-15ml?default_sku=8094081&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Melena de Leon 60 Capsulas",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=589029",
+    "sku": "589029",
+    "productUrl": "https://salcobrand.cl/products/melena-de-leon-60-capsulas?default_sku=589029&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Tinelle 3 91 Comprimidos Recubiertos",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=3028178",
+    "sku": "3028178",
+    "productUrl": "https://salcobrand.cl/products/tinelle-3-b-91-comprimidos-recubiertos?default_sku=3028178&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Exelring Etonogestrel / Etinilestradiol 1 Anillo Vaginal",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=1050031",
+    "sku": "1050031",
+    "productUrl": "https://salcobrand.cl/products/exelring-etonogestrel-etinilestradiol-1-anillo-vaginal?default_sku=1050031&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Solucion De Limpieza Para Lentes De Contacto",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=313334",
+    "sku": "313334",
+    "productUrl": "https://salcobrand.cl/products/solucion-de-limpieza-para-lentes-de-contacto?default_sku=313334&queryID=46a80506da3e53ec5cb823bf20667cc2"
+  },
+  {
+    "productName": "Aerocamara Plus Pediatrica Masc. Amarillo 1 Unidad",
+    "apiUrl": "https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=2831357",
+    "sku": "2831357",
+    "productUrl": "https://salcobrand.cl/products/aerocamara-plus-pediatrica-masc-amarillo-1-unidad?default_sku=2831357&queryID=46a80506da3e53ec5cb823bf20667cc2"
   }
 ]

@@ -36,12 +36,7 @@ async function scrapeAllMedicamentos() {
       const productsWithSku = await extractSkusFromProducts(page, pageProducts);
       allProducts.push(...productsWithSku);
 
-      // Guardar progreso después de cada página (no solo cada 5)
-      fs.writeFileSync(
-        `medicamentos_progreso_pagina_${currentPage}.json`,
-        JSON.stringify(allProducts, null, 2)
-      );
-      console.log(`Progress saved for page ${currentPage}. Total products so far: ${allProducts.length}`);
+      console.log(`Total products so far: ${allProducts.length}`);
 
       // Si hemos completado las 3 páginas, terminar
       if (currentPage >= MAX_PAGES) {
@@ -384,36 +379,9 @@ async function navigateToNextPage(page) {
   }
 }
 
-// Función adicional para generar un reporte resumido
-function generateReport(products) {
-  const report = {
-    totalProducts: products.length,
-    productsWithSku: products.filter(p => p.sku).length,
-    productsWithoutSku: products.filter(p => !p.sku).length,
-    estimatedProductsPerPage: Math.round(products.length / 3),
-    sampleApiUrls: products
-      .filter(p => p.sku)
-      .slice(0, 10)
-      .map(p => ({
-        product: p.title,
-        apiUrl: `https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=${p.sku}`
-      }))
-  };
-  
-  fs.writeFileSync("scraping_report.json", JSON.stringify(report, null, 2));
-  console.log("\n=== SCRAPING REPORT ===");
-  console.log(`Total products scraped: ${report.totalProducts}`);
-  console.log(`Products with SKU: ${report.productsWithSku}`);
-  console.log(`Products without SKU: ${report.productsWithoutSku}`);
-  console.log(`Estimated products per page: ${report.estimatedProductsPerPage}`);
-  console.log(`Success rate: ${((report.productsWithSku / report.totalProducts) * 100).toFixed(2)}%`);
-  console.log("Report saved to scraping_report.json");
-}
-
 // Ejecutar
 scrapeAllMedicamentos()
   .then((products) => {
     console.log(`Process finished with ${products.length} products saved.`);
-    generateReport(products);
   })
   .catch((error) => console.error("Error in scraping process:", error));
