@@ -7,6 +7,46 @@ const express = require('express');
 const router = express.Router();
 
 /**
+ * Función para asignar imagen por defecto basada en el principio activo
+ */
+const getDefaultImageUrl = (principioActivo, nombre = '') => {
+  const activo = principioActivo?.toLowerCase() || '';
+  const nombreLower = nombre?.toLowerCase() || '';
+  
+  // Imágenes específicas por principio activo
+  if (activo.includes('ibuprofeno')) {
+    return 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw8f4e4e1e/images/large/103738-ibuprofeno-400-mg-20-comprimidos.jpg';
+  }
+  
+  if (activo.includes('paracetamol')) {
+    return 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw5a7de0d6/images/large/186508-paracetamol-mk-500-mg-20-comprimidos.jpg';
+  }
+  
+  if (activo.includes('gesidol')) {
+    return 'https://via.placeholder.com/200x200/ff6b6b/ffffff?text=Gesidol';
+  }
+  
+  if (activo.includes('día') || nombreLower.includes('tapsin día')) {
+    return 'https://via.placeholder.com/200x200/4ecdc4/ffffff?text=Tapsin+Día';
+  }
+  
+  if (activo.includes('noche') || nombreLower.includes('tapsin noche')) {
+    return 'https://via.placeholder.com/200x200/2c3e50/ffffff?text=Tapsin+Noche';
+  }
+  
+  if (activo.includes('aspirina') || activo.includes('ácido acetilsalicílico')) {
+    return 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw1c5c8c1f/images/large/103715-aspirina-100-mg-30-comprimidos.jpg';
+  }
+  
+  if (activo.includes('avamys')) {
+    return 'https://via.placeholder.com/200x200/9b59b6/ffffff?text=Avamys';
+  }
+  
+  // Imagen por defecto
+  return 'https://via.placeholder.com/200x200/95a5a6/ffffff?text=Medicamento';
+};
+
+/**
  * @route   GET /api/medicamentos/buscar
  * @desc    Buscar medicamentos por nombre o principio activo
  * @access  Public
@@ -27,8 +67,14 @@ router.get('/buscar', async (req, res) => {
       [`%${q}%`, `%${q}%`]
     );
     
-    console.log(`Búsqueda: "${q}" - Encontrados: ${rows.length} medicamentos`);
-    res.json(rows);
+    // Asegurar que todos los medicamentos tengan una imagen
+    const medicamentosConImagenes = rows.map(med => ({
+      ...med,
+      imagen_url: med.imagen_url || getDefaultImageUrl(med.principio_activo, med.nombre)
+    }));
+    
+    console.log(`Búsqueda: "${q}" - Encontrados: ${medicamentosConImagenes.length} medicamentos`);
+    res.json(medicamentosConImagenes);
   } catch (error) {
     console.error('Error al buscar medicamentos:', error);
     res.status(500).json({ error: 'Error al buscar medicamentos' });
@@ -37,14 +83,14 @@ router.get('/buscar', async (req, res) => {
 
 /**
  * @route   GET /api/medicamentos/precios-por-principio/:principioActivo
- * @desc    Obtener precios de medicamentos por principio activo con imágenes
+ * @desc    Obtener precios de medicamentos por principio activo con imágenes garantizadas
  * @access  Public
  */
 router.get('/precios-por-principio/:principioActivo', async (req, res) => {
   const { principioActivo } = req.params;
   
   try {
-    console.log(`Buscando medicamentos con principio activo: "${principioActivo}"`);
+    console.log(`🔍 Buscando medicamentos con principio activo: "${principioActivo}"`);
     
     // Primero obtener todos los medicamentos con ese principio activo
     const [medicamentos] = await req.db.query(
@@ -54,7 +100,7 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
       [principioActivo]
     );
     
-    console.log(`Medicamentos encontrados: ${medicamentos.length}`);
+    console.log(`📋 Medicamentos encontrados: ${medicamentos.length}`);
     
     if (medicamentos.length === 0) {
       return res.status(404).json({ error: 'No se encontraron medicamentos con ese principio activo' });
@@ -62,9 +108,9 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
     
     // Obtener los IDs de todos estos medicamentos
     const medicamentoIds = medicamentos.map(med => med.id);
-    console.log(`IDs de medicamentos: ${medicamentoIds.join(', ')}`);
+    console.log(`🆔 IDs de medicamentos: ${medicamentoIds.join(', ')}`);
     
-    // Obtener precios para todos estos medicamentos CON LA IMAGEN
+    // Obtener precios para todos estos medicamentos
     const [precios] = await req.db.query(
       `SELECT pm.id, pm.medicamento_id, m.nombre as medicamento_nombre, 
               m.es_generico, m.imagen_url as medicamento_imagen,
@@ -78,19 +124,9 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
       medicamentoIds
     );
     
-    console.log(`Precios encontrados: ${precios.length}`);
+    console.log(`💰 Precios encontrados: ${precios.length}`);
     
-    // Debug: Mostrar algunos datos de ejemplo
-    if (precios.length > 0) {
-      console.log('Ejemplo de precio encontrado:', {
-        medicamento: precios[0].medicamento_nombre,
-        imagen: precios[0].medicamento_imagen,
-        farmacia: precios[0].farmacia_nombre,
-        precio: precios[0].precio
-      });
-    }
-    
-    // Agrupar por farmacia y medicamento para mejor visualización
+    // Agrupar por farmacia y medicamento
     const resultadosAgrupados = precios.reduce((acc, item) => {
       if (!acc[item.farmacia_nombre]) {
         acc[item.farmacia_nombre] = {
@@ -103,13 +139,16 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
         };
       }
       
+      // Asegurar que siempre haya una imagen
+      const imagenFinal = item.medicamento_imagen || getDefaultImageUrl(principioActivo, item.medicamento_nombre);
+      
       acc[item.farmacia_nombre].medicamentos.push({
         id: item.id,
         medicamento_id: item.medicamento_id,
         nombre: item.medicamento_nombre,
         es_generico: item.es_generico === 1,
-        imagen_url: item.medicamento_imagen || null, // Asegurar que sea null si está vacío
-        precio: parseFloat(item.precio), // Asegurar que sea número
+        imagen_url: imagenFinal, // ¡SIEMPRE TENDRÁ UNA IMAGEN!
+        precio: parseFloat(item.precio),
         disponible: item.disponible === 1,
         url_producto: item.url_producto,
         fecha_actualizacion: item.fecha_actualizacion
@@ -123,11 +162,15 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
       farmacias: Object.values(resultadosAgrupados)
     };
     
-    console.log(`Resultado final: ${resultado.farmacias.length} farmacias`);
+    console.log(`✅ Resultado final: ${resultado.farmacias.length} farmacias`);
+    
+    // Debug de imágenes en el resultado final
     resultado.farmacias.forEach(farmacia => {
-      console.log(`${farmacia.farmacia.nombre}: ${farmacia.medicamentos.length} medicamentos`);
+      console.log(`🏪 ${farmacia.farmacia.nombre}: ${farmacia.medicamentos.length} medicamentos`);
       farmacia.medicamentos.forEach(med => {
-        console.log(`  - ${med.nombre} (imagen: ${med.imagen_url ? 'SÍ' : 'NO'})`);
+        console.log(`  💊 ${med.nombre}`);
+        console.log(`     📸 Imagen: ${med.imagen_url}`);
+        console.log(`     ✅ Tiene imagen válida: ${!!med.imagen_url}`);
       });
     });
     
@@ -135,59 +178,6 @@ router.get('/precios-por-principio/:principioActivo', async (req, res) => {
   } catch (error) {
     console.error('Error al obtener precios por principio activo:', error);
     res.status(500).json({ error: 'Error al obtener precios por principio activo' });
-  }
-});
-
-/**
- * @route   GET /api/medicamentos/precios/:id
- * @desc    Obtener precios de un medicamento específico (alternativo)
- * @access  Public
- */
-router.get('/precios/:id', async (req, res) => {
-  const { id } = req.params;
-  
-  try {
-    const [precios] = await req.db.query(
-      `SELECT pm.id, pm.precio, pm.disponible, pm.url_producto, pm.fecha_actualizacion,
-              m.nombre as medicamento_nombre, m.imagen_url as medicamento_imagen,
-              f.id as farmacia_id, f.nombre as farmacia_nombre, f.logo_url as farmacia_logo
-       FROM precios_medicamentos pm
-       JOIN medicamentos m ON pm.medicamento_id = m.id
-       JOIN farmacias f ON pm.farmacia_id = f.id
-       WHERE pm.medicamento_id = ?
-       ORDER BY pm.precio ASC`,
-      [id]
-    );
-    
-    if (precios.length === 0) {
-      return res.status(404).json({ error: 'No se encontraron precios para este medicamento' });
-    }
-    
-    res.json(precios);
-  } catch (error) {
-    console.error('Error al obtener precios del medicamento:', error);
-    res.status(500).json({ error: 'Error al obtener precios del medicamento' });
-  }
-});
-
-/**
- * @route   GET /api/medicamentos/populares
- * @desc    Obtener los medicamentos más populares
- * @access  Public
- */
-router.get('/populares', async (req, res) => {
-  try {
-    const [rows] = await req.db.query(
-      `SELECT id, nombre, principio_activo, es_generico, imagen_url 
-       FROM medicamentos 
-       ORDER BY RAND()
-       LIMIT 10`
-    );
-    
-    res.json(rows);
-  } catch (error) {
-    console.error('Error al obtener medicamentos populares:', error);
-    res.status(500).json({ error: 'Error al obtener medicamentos populares' });
   }
 });
 
@@ -211,10 +201,44 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Medicamento no encontrado' });
     }
     
-    res.json(rows[0]);
+    const medicamento = rows[0];
+    
+    // Asegurar que tenga una imagen
+    if (!medicamento.imagen_url) {
+      medicamento.imagen_url = getDefaultImageUrl(medicamento.principio_activo, medicamento.nombre);
+    }
+    
+    res.json(medicamento);
   } catch (error) {
     console.error('Error al obtener medicamento:', error);
     res.status(500).json({ error: 'Error al obtener medicamento' });
+  }
+});
+
+/**
+ * @route   GET /api/medicamentos/populares
+ * @desc    Obtener los medicamentos más populares
+ * @access  Public
+ */
+router.get('/populares', async (req, res) => {
+  try {
+    const [rows] = await req.db.query(
+      `SELECT id, nombre, principio_activo, es_generico, imagen_url 
+       FROM medicamentos 
+       ORDER BY RAND()
+       LIMIT 10`
+    );
+    
+    // Asegurar que todos tengan imágenes
+    const medicamentosConImagenes = rows.map(med => ({
+      ...med,
+      imagen_url: med.imagen_url || getDefaultImageUrl(med.principio_activo, med.nombre)
+    }));
+    
+    res.json(medicamentosConImagenes);
+  } catch (error) {
+    console.error('Error al obtener medicamentos populares:', error);
+    res.status(500).json({ error: 'Error al obtener medicamentos populares' });
   }
 });
 

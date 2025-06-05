@@ -7,8 +7,6 @@ function PriceComparisonPage() {
   const [loadingMessage, setLoadingMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedMedication, setSelectedMedication] = useState(null);
-  const [comparisonResults, setComparisonResults] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [user, setUser] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -69,62 +67,14 @@ function PriceComparisonPage() {
     performSearch();
   };
 
-  const handleSelectMedication = async (medication) => {
-    console.log('Medicamento seleccionado:', medication);
+  const handleSelectMedication = (medication) => {
+    console.log('Navegando a detalles del medicamento:', medication);
     
-    setSelectedMedication(medication);
-    setComparisonResults([]);
-    setErrorMessage('');
-    setIsLoading(true);
-    setLoadingMessage('Comparing prices for medications with the same active ingredient...');
+    // Guardar el medicamento seleccionado en sessionStorage para pasarlo a la siguiente página
+    sessionStorage.setItem('selectedMedication', JSON.stringify(medication));
     
-    try {
-      const principioActivoEncoded = encodeURIComponent(medication.principio_activo);
-      console.log(`Calling API: http://localhost:5000/api/medicamentos/precios-por-principio/${principioActivoEncoded}`);
-      
-      const response = await fetch(`http://localhost:5000/api/medicamentos/precios-por-principio/${principioActivoEncoded}`);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Error ${response.status}: ${errorText}`);
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      
-      const data = await response.json();
-      console.log("Datos reales de la API:", data);
-      
-      // Debug detallado de las imágenes
-      if (data.farmacias) {
-        data.farmacias.forEach(farmacia => {
-          console.log(`Farmacia: ${farmacia.farmacia.nombre}`);
-          farmacia.medicamentos.forEach(med => {
-            console.log(`  - ${med.nombre}`);
-            console.log(`    Imagen URL: "${med.imagen_url}"`);
-            console.log(`    Tiene imagen: ${med.imagen_url ? 'SÍ' : 'NO'}`);
-          });
-        });
-      }
-      
-      if (!data.farmacias || data.farmacias.length === 0) {
-        setErrorMessage('No price data available for medications with this active ingredient');
-        
-        // Fallback con datos de muestra que incluyen imágenes
-        console.log("Usando fallback con datos de muestra");
-        const sampleComparison = generateSampleComparison(medication);
-        setComparisonResults(sampleComparison);
-      } else {
-        setComparisonResults(data);
-      }
-    } catch (error) {
-      console.error('Error completo:', error);
-      
-      // Fallback con datos de muestra
-      console.log("Usando datos de muestra como fallback debido a error:", error.message);
-      const sampleComparison = generateSampleComparison(medication);
-      setComparisonResults(sampleComparison);
-    } finally {
-      setIsLoading(false);
-    }
+    // Navegar a la página de detalles
+    navigate(`/medication/${medication.id}`);
   };
 
   const handleReturnHome = (e) => {
@@ -138,34 +88,21 @@ function PriceComparisonPage() {
     }, 1500);
   };
 
-  // Componente mejorado para manejar imágenes con mejor debugging
+  // Componente para manejar imágenes con fallback
   const MedicationImage = ({ src, alt, className = "" }) => {
     const [imageSrc, setImageSrc] = useState(src);
     const [hasError, setHasError] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
 
-    const handleImageLoad = () => {
-      setIsLoading(false);
-      setHasError(false);
-      console.log(`Imagen cargada exitosamente: ${src}`);
-    };
-
-    const handleImageError = (e) => {
-      console.error(`Error cargando imagen: ${src}`, e);
+    const handleImageError = () => {
       setHasError(true);
-      setIsLoading(false);
     };
 
     useEffect(() => {
-      console.log(`MedicationImage: src="${src}", alt="${alt}"`);
       setImageSrc(src);
       setHasError(false);
-      setIsLoading(true);
     }, [src]);
 
-    // Si no hay src o está vacío
-    if (!src || src === 'null' || src === 'undefined') {
-      console.log(`Sin imagen para: ${alt}`);
+    if (!src || hasError) {
       return (
         <div className={`medication-image-placeholder d-flex align-items-center justify-content-center ${className}`} 
              style={{ backgroundColor: '#f8f9fa', border: '1px dashed #dee2e6' }}>
@@ -174,42 +111,15 @@ function PriceComparisonPage() {
       );
     }
 
-    // Si hubo error cargando la imagen
-    if (hasError) {
-      console.log(`Error en imagen para: ${alt}`);
-      return (
-        <div className={`medication-image-placeholder d-flex align-items-center justify-content-center ${className}`} 
-             style={{ backgroundColor: '#f8f9fa', border: '1px dashed #dee2e6' }}>
-          <div className="text-center">
-            <i className="bi bi-exclamation-triangle fs-2 text-warning"></i>
-            <div className="small text-muted mt-1">Error loading image</div>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div className={className} style={{ position: 'relative' }}>
-        {isLoading && (
-          <div className="position-absolute top-50 start-50 translate-middle">
-            <div className="spinner-border spinner-border-sm text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        )}
-        <img 
-          src={imageSrc} 
-          alt={alt} 
-          className={`medication-image w-100 h-100 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-          loading="lazy"
-          style={{ 
-            objectFit: 'contain',
-            transition: 'opacity 0.3s ease'
-          }}
-        />
-      </div>
+      <img 
+        src={imageSrc} 
+        alt={alt} 
+        className={`medication-image w-100 h-100 ${className}`}
+        onError={handleImageError}
+        loading="lazy"
+        style={{ objectFit: 'contain' }}
+      />
     );
   };
 
@@ -241,17 +151,17 @@ function PriceComparisonPage() {
       },
       { 
         id: 4, 
-        nombre: 'Loratadina 10mg', 
-        principio_activo: 'Loratadina', 
-        es_generico: true,
-        imagen_url: 'https://via.placeholder.com/150x150?text=Loratadina'
+        nombre: 'Tapsin Compuesto Día', 
+        principio_activo: 'Día', 
+        es_generico: false,
+        imagen_url: 'https://via.placeholder.com/150x150/4ecdc4/ffffff?text=Tapsin'
       },
       { 
         id: 5, 
-        nombre: 'Omeprazol 20mg', 
-        principio_activo: 'Omeprazol', 
-        es_generico: true,
-        imagen_url: 'https://via.placeholder.com/150x150?text=Omeprazol'
+        nombre: 'Gesidol Paracetamol', 
+        principio_activo: 'Gesidol', 
+        es_generico: false,
+        imagen_url: 'https://via.placeholder.com/150x150/ff6b6b/ffffff?text=Gesidol'
       },
     ];
     
@@ -259,85 +169,6 @@ function PriceComparisonPage() {
       med.nombre.toLowerCase().includes(lowercaseTerm) || 
       med.principio_activo.toLowerCase().includes(lowercaseTerm)
     );
-  };
-
-  // Helper function to generate sample comparison data con imágenes reales
-  const generateSampleComparison = (medication) => {
-    console.log('Generando datos de muestra para:', medication);
-    
-    const sampleData = {
-      principio_activo: medication.principio_activo,
-      farmacias: [
-        {
-          farmacia: { id: 1, nombre: 'Ahumada', logo_url: null },
-          medicamentos: [
-            {
-              id: 1,
-              medicamento_id: medication.id,
-              nombre: medication.nombre,
-              es_generico: medication.es_generico,
-              imagen_url: medication.imagen_url || 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw5a7de0d6/images/large/186508-paracetamol-mk-500-mg-20-comprimidos.jpg',
-              precio: 1500 + Math.floor(Math.random() * 500),
-              disponible: true,
-              url_producto: 'https://www.farmaciasahumada.cl'
-            },
-            {
-              id: 11,
-              medicamento_id: medication.id + 10,
-              nombre: `${medication.principio_activo} Genérico`,
-              es_generico: true,
-              imagen_url: 'https://via.placeholder.com/150x150?text=Generic',
-              precio: 800 + Math.floor(Math.random() * 300),
-              disponible: true,
-              url_producto: 'https://www.farmaciasahumada.cl'
-            }
-          ]
-        },
-        {
-          farmacia: { id: 2, nombre: 'Cruz Verde', logo_url: null },
-          medicamentos: [
-            {
-              id: 2,
-              medicamento_id: medication.id,
-              nombre: medication.nombre,
-              es_generico: medication.es_generico,
-              imagen_url: medication.imagen_url || 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw5a7de0d6/images/large/186508-paracetamol-mk-500-mg-20-comprimidos.jpg',
-              precio: 1200 + Math.floor(Math.random() * 300),
-              disponible: true,
-              url_producto: 'https://www.cruzverde.cl'
-            }
-          ]
-        },
-        {
-          farmacia: { id: 3, nombre: 'Salcobrand', logo_url: null },
-          medicamentos: [
-            {
-              id: 3,
-              medicamento_id: medication.id,
-              nombre: medication.nombre,
-              es_generico: medication.es_generico,
-              imagen_url: medication.imagen_url || 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw5a7de0d6/images/large/186508-paracetamol-mk-500-mg-20-comprimidos.jpg',
-              precio: 1800 + Math.floor(Math.random() * 200),
-              disponible: true,
-              url_producto: 'https://salcobrand.cl'
-            },
-            {
-              id: 12,
-              medicamento_id: medication.id + 20,
-              nombre: `${medication.principio_activo} MK`,
-              es_generico: false,
-              imagen_url: 'https://via.placeholder.com/150x150?text=MK',
-              precio: 2200 + Math.floor(Math.random() * 400),
-              disponible: false,
-              url_producto: 'https://salcobrand.cl'
-            }
-          ]
-        }
-      ]
-    };
-    
-    console.log('Datos de muestra generados:', sampleData);
-    return sampleData;
   };
 
   if (isLoading) {
@@ -451,12 +282,12 @@ function PriceComparisonPage() {
         )}
 
         {/* Search Results */}
-        {searchResults.length > 0 && !selectedMedication && (
+        {searchResults.length > 0 && (
           <div className="row">
             <div className="col-12">
               <div className="card shadow">
                 <div className="card-header bg-light">
-                  <h5 className="mb-0">Search results</h5>
+                  <h5 className="mb-0">Search results ({searchResults.length} found)</h5>
                 </div>
                 <div className="card-body p-0">
                   <div className="table-responsive">
@@ -482,7 +313,12 @@ function PriceComparisonPage() {
                                 />
                               </div>
                             </td>
-                            <td><strong>{medication.nombre}</strong></td>
+                            <td>
+                              <div>
+                                <strong>{medication.nombre}</strong>
+                                <div className="small text-muted">ID: {medication.id}</div>
+                              </div>
+                            </td>
                             <td>{medication.principio_activo}</td>
                             <td>
                               {medication.es_generico ? (
@@ -496,7 +332,8 @@ function PriceComparisonPage() {
                                 className="btn btn-outline-primary btn-sm"
                                 onClick={() => handleSelectMedication(medication)}
                               >
-                                Compare prices
+                                <i className="bi bi-search-heart me-1"></i>
+                                View Details & Compare
                               </button>
                             </td>
                           </tr>
@@ -510,188 +347,46 @@ function PriceComparisonPage() {
           </div>
         )}
 
-        {/* Price Comparison Results */}
-        {selectedMedication && (
-          <div className="row mt-4">
-            <div className="col-12 mb-4">
-              <button 
-                className="btn btn-outline-secondary" 
-                onClick={() => setSelectedMedication(null)}
-              >
-                <i className="bi bi-arrow-left me-2"></i>
-                Back to results
-              </button>
-            </div>
-            
-            <div className="col-12">
-              <div className="card shadow">
-                <div className="card-header bg-primary text-white">
-                  <h5 className="mb-0">Price comparison for medications with {selectedMedication.principio_activo}</h5>
-                </div>
-                <div className="card-body">
-                  <div className="medication-info mb-4">
-                    <div className="row align-items-center">
-                      <div className="col-md-2">
-                        <div style={{ width: '80px', height: '80px' }}>
-                          <MedicationImage 
-                            src={selectedMedication.imagen_url} 
-                            alt={selectedMedication.nombre}
-                            className="w-100 h-100 rounded"
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <p><strong>Active Ingredient:</strong> {selectedMedication.principio_activo}</p>
-                        <p><strong>Selected Medication:</strong> {selectedMedication.nombre}</p>
-                      </div>
-                      <div className="col-md-4 text-md-end">
-                        <p className="text-muted">Last update: {new Date().toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {comparisonResults.farmacias && (
-                    <div className="price-comparison-results">
-                      {comparisonResults.farmacias.map((farmacia) => (
-                        <div className="farmacia-section mb-4" key={farmacia.farmacia.id}>
-                          <h4 className="pharmacy-title mb-3 d-flex align-items-center">
-                            <i className="bi bi-shop me-2"></i>
-                            {farmacia.farmacia.nombre}
-                            <span className="badge bg-secondary ms-2">{farmacia.medicamentos.length} productos</span>
-                          </h4>
-                          <div className="row">
-                            {farmacia.medicamentos.map((medicamento) => {
-                              const isSelectedMed = medicamento.medicamento_id === selectedMedication.id;
-                              const allPrices = comparisonResults.farmacias.flatMap(f => f.medicamentos.map(m => m.precio));
-                              const minPrice = Math.min(...allPrices);
-                              const isBestPrice = medicamento.precio === minPrice;
-                              
-                              return (
-                                <div className="col-lg-4 col-md-6 mb-3" key={medicamento.id}>
-                                  <div className={`card h-100 ${isSelectedMed ? 'border-primary border-2' : isBestPrice ? 'border-success border-2' : ''}`}>
-                                    <div className={`card-header ${isSelectedMed ? 'bg-primary text-white' : isBestPrice ? 'bg-success text-white' : 'bg-light'}`}>
-                                      <div className="d-flex justify-content-between align-items-start">
-                                        <h6 className="mb-1 text-truncate flex-grow-1 me-2">{medicamento.nombre}</h6>
-                                        <div className="d-flex flex-column gap-1">
-                                          {isSelectedMed && (
-                                            <span className="badge bg-white text-primary">Selected</span>
-                                          )}
-                                          {isBestPrice && !isSelectedMed && (
-                                            <span className="badge bg-white text-success">Best Price</span>
-                                          )}
-                                          {medicamento.es_generico ? (
-                                            <span className="badge bg-success">Generic</span>
-                                          ) : (
-                                            <span className="badge bg-info">Brand</span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="card-body d-flex flex-column">
-                                      {/* IMAGEN DEL MEDICAMENTO */}
-                                      <div className="text-center mb-3">
-                                        <div style={{ width: '100px', height: '100px', margin: '0 auto' }}>
-                                          <MedicationImage 
-                                            src={medicamento.imagen_url} 
-                                            alt={medicamento.nombre}
-                                            className="w-100 h-100 rounded shadow-sm"
-                                          />
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="text-center mb-3 flex-grow-1">
-                                        <h3 className={`price mb-2 fw-bold ${isBestPrice ? 'text-success' : 'text-primary'}`}>
-                                          ${medicamento.precio.toLocaleString('es-CL')}
-                                        </h3>
-                                        
-                                        <div className="availability">
-                                          {medicamento.disponible ? (
-                                            <span className="text-success">
-                                              <i className="bi bi-check-circle me-2"></i>
-                                              Available
-                                            </span>
-                                          ) : (
-                                            <span className="text-danger">
-                                              <i className="bi bi-x-circle me-2"></i>
-                                              Not available
-                                            </span>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="card-footer bg-white">
-                                      {medicamento.url_producto ? (
-                                        <a 
-                                          href={medicamento.url_producto} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className={`btn w-100 ${medicamento.disponible ? 'btn-outline-primary' : 'btn-outline-secondary disabled'}`}
-                                        >
-                                          <i className="bi bi-external-link me-2"></i>
-                                          View on site
-                                        </a>
-                                      ) : (
-                                        <button className="btn btn-outline-secondary w-100" disabled>
-                                          <i className="bi bi-exclamation-circle me-2"></i>
-                                          Link not available
-                                        </button>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tips section */}
+        {/* Quick Tips */}
         <div className="row mt-5">
           <div className="col-md-12">
             <div className="card shadow-sm">
               <div className="card-body">
                 <h4 className="card-title">
                   <i className="bi bi-lightbulb me-2 text-warning"></i>
-                  Tips to Save on Medications
+                  Search Tips
                 </h4>
                 <div className="row mt-3">
                   <div className="col-md-4 mb-3">
                     <div className="d-flex">
                       <div className="flex-shrink-0">
-                        <i className="bi bi-check-circle-fill text-success fs-4"></i>
+                        <i className="bi bi-search text-primary fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Compare always</h5>
-                        <p className="text-muted">Medication prices can vary significantly between pharmacies.</p>
+                        <h5>Search by name or ingredient</h5>
+                        <p className="text-muted">Try "Paracetamol", "Tapsin", or "Gesidol"</p>
                       </div>
                     </div>
                   </div>
                   <div className="col-md-4 mb-3">
                     <div className="d-flex">
                       <div className="flex-shrink-0">
-                        <i className="bi bi-capsule text-primary fs-4"></i>
+                        <i className="bi bi-eye text-success fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Consider generics</h5>
-                        <p className="text-muted">Generic medicines have the same active ingredient and are more affordable.</p>
+                        <h5>View detailed comparison</h5>
+                        <p className="text-muted">Click "View Details" to see prices across all pharmacies</p>
                       </div>
                     </div>
                   </div>
                   <div className="col-md-4 mb-3">
                     <div className="d-flex">
                       <div className="flex-shrink-0">
-                        <i className="bi bi-calendar-check text-info fs-4"></i>
+                        <i className="bi bi-currency-dollar text-info fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Check for promotions</h5>
-                        <p className="text-muted">Pharmacies offer special discounts on certain days of the week.</p>
+                        <h5>Find best prices</h5>
+                        <p className="text-muted">Compare medications with the same active ingredient</p>
                       </div>
                     </div>
                   </div>
