@@ -1,4 +1,3 @@
-//Para compilar el codigo escribir en la terminal node Webscraping.js
 import puppeteer from "puppeteer";
 import fs from "fs";
 
@@ -18,11 +17,10 @@ async function scrapeAllMedicamentos() {
   try {
     await page.goto("https://salcobrand.cl/t/medicamentos", { waitUntil: "networkidle2" });
 
-    // Cambiar a 96 productos por página
     await setProductsPerPage(page, 96);
 
     while (hasMorePages && currentPage <= MAX_PAGES) {
-      console.log(`Processing page ${currentPage}...`);
+      console.log(`Processing page ${currentPage}/${MAX_PAGES}...`);
 
       await page.waitForSelector(".product-catalog", { timeout: 10000 }).catch(e => {
         console.log("Timeout waiting for catalog. Reloading page...");
@@ -33,16 +31,21 @@ async function scrapeAllMedicamentos() {
 
       const pageProducts = await extractProductsFromPage(page);
       console.log(`Found ${pageProducts.length} products on page ${currentPage}`);
-      allProducts.push(...pageProducts);
 
-      if (currentPage % 5 === 0) {
-        fs.writeFileSync(
-          `medicamentos_progreso_pagina_${currentPage}.json`,
-          JSON.stringify(allProducts, null, 2)
-        );
-        console.log(`Progress saved up to page ${currentPage}`);
+      // Extraer SKUs de cada producto visitando su página individual
+      const productsWithSku = await extractSkusFromProducts(page, pageProducts);
+      allProducts.push(...productsWithSku);
+
+      console.log(`Total products so far: ${allProducts.length}`);
+
+      // Si hemos completado las 3 páginas, terminar
+      if (currentPage >= MAX_PAGES) {
+        console.log(`Completed ${MAX_PAGES} pages. Finishing...`);
+        hasMorePages = false;
+        break;
       }
 
+      // Intentar navegar a la siguiente página
       hasMorePages = await navigateToNextPage(page);
 
       if (hasMorePages) {
@@ -50,9 +53,10 @@ async function scrapeAllMedicamentos() {
         await ensureProductsPerPageFilter(page, 96);
         currentPage++;
 
-        if (currentPage % 5 === 0) {
-          await page.screenshot({ path: `pagina_${currentPage}.png` });
-        }
+        // Screenshot de la nueva página para verificar
+        await page.screenshot({ path: `pagina_${currentPage}.png` });
+      } else {
+        console.log("No more pages available or navigation failed.");
       }
     }
   } catch (error) {
@@ -61,18 +65,147 @@ async function scrapeAllMedicamentos() {
     await page.screenshot({ path: 'error_screenshot.png' });
   } finally {
     console.log(`Scraping completed. Total products: ${allProducts.length}`);
-    fs.writeFileSync("salcobrand_medicamentos.json", JSON.stringify(allProducts, null, 2));
+    console.log(`Pages processed: ${Math.min(currentPage, MAX_PAGES)}`);
+    
+    // Guardar productos con información completa
+    fs.writeFileSync("salcobrand_medicamentos_con_sku.json", JSON.stringify(allProducts, null, 2));
+    
+    // Generar lista de URLs de API
+    const apiUrls = allProducts
+      .filter(product => product.sku)
+      .map(product => ({
+        productName: product.title,
+        apiUrl: `https://salcobrand.cl/api/v2/products/store_stock?state_id=375&sku=${product.sku}`,
+        sku: product.sku,
+        productUrl: product.url
+      }));
+    
+    fs.writeFileSync("salcobrand_api_urls.json", JSON.stringify(apiUrls, null, 2));
+    console.log(`Generated ${apiUrls.length} API URLs`);
+    
     await browser.close();
   }
 
   return allProducts;
 }
 
+async function extractSkusFromProducts(page, products) {
+  const productsWithSku = [];
+  
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    console.log(`Extracting SKU for product ${i + 1}/${products.length}: ${product.title}`);
+    
+    try {
+      // Si el producto tiene URL, visitarla para extraer el SKU
+      if (product.url) {
+        await page.goto(product.url, { waitUntil: "networkidle2", timeout: 15000 });
+        await sleep(1000);
+        
+        const sku = await extractSkuFromProductPage(page);
+        
+        productsWithSku.push({
+          ...product,
+          sku: sku
+        });
+        
+        console.log(`SKU found: ${sku || 'No SKU found'}`);
+        
+        // Pausa entre requests para no sobrecargar el servidor
+        await sleep(1500);
+      } else {
+        productsWithSku.push({
+          ...product,
+          sku: null
+        });
+      }
+    } catch (error) {
+      console.error(`Error extracting SKU for ${product.title}:`, error.message);
+      productsWithSku.push({
+        ...product,
+        sku: null
+      });
+    }
+  }
+  
+  return productsWithSku;
+}
+
+async function extractSkuFromProductPage(page) {
+  try {
+    // Método 1: Buscar en el HTML el SKU directamente
+    const sku = await page.evaluate(() => {
+      // Buscar en scripts que contengan información del producto
+      const scripts = document.querySelectorAll('script');
+      for (const script of scripts) {
+        const content = script.textContent || script.innerText;
+        
+        // Buscar patrones comunes de SKU
+        const skuMatch = content.match(/sku['":\s]*['"]?(\d+)['"]?/i) ||
+                        content.match(/product[_-]?id['":\s]*['"]?(\d+)['"]?/i) ||
+                        content.match(/item[_-]?id['":\s]*['"]?(\d+)['"]?/i);
+        
+        if (skuMatch) {
+          return skuMatch[1];
+        }
+      }
+      
+      // Buscar en elementos data-* attributes
+      const dataElements = document.querySelectorAll('[data-sku], [data-product-id], [data-item-id]');
+      for (const el of dataElements) {
+        const sku = el.getAttribute('data-sku') || 
+                   el.getAttribute('data-product-id') || 
+                   el.getAttribute('data-item-id');
+        if (sku) return sku;
+      }
+      
+      // Buscar en la URL actual
+      const urlMatch = window.location.href.match(/\/(\d{6,})/);
+      if (urlMatch) {
+        return urlMatch[1];
+      }
+      
+      return null;
+    });
+    
+    // Método 2: Si no se encuentra, buscar en network requests
+    if (!sku) {
+      const skuFromNetwork = await page.evaluate(() => {
+        // Intentar encontrar el SKU en requests realizados
+        return new Promise((resolve) => {
+          const observer = new PerformanceObserver((list) => {
+            const entries = list.getEntries();
+            for (const entry of entries) {
+              if (entry.name.includes('api') && entry.name.includes('sku=')) {
+                const match = entry.name.match(/sku=(\d+)/);
+                if (match) {
+                  resolve(match[1]);
+                  return;
+                }
+              }
+            }
+          });
+          observer.observe({ entryTypes: ['resource'] });
+          
+          // Timeout después de 2 segundos
+          setTimeout(() => resolve(null), 2000);
+        });
+      });
+      
+      return skuFromNetwork;
+    }
+    
+    return sku;
+  } catch (error) {
+    console.error("Error extracting SKU:", error);
+    return null;
+  }
+}
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Function to remove tildes (accent marks) from text
 function removeTildes(text) {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -103,9 +236,9 @@ async function setProductsPerPage(page, count) {
         console.log("Timeout after changing filter.");
       });
       await sleep(2000);
-      console.log(" Products per page filter correctly set.");
+      console.log("✓ Products per page filter correctly set.");
     } else {
-      console.log(" Couldn't set products per page filter.");
+      console.log("✗ Couldn't set products per page filter.");
     }
   } catch (error) {
     console.error("Error setting products per page filter:", error);
@@ -129,40 +262,54 @@ async function ensureProductsPerPageFilter(page, count) {
 }
 
 async function extractProductsFromPage(page) {
-  // Get product descriptions but store them as title in the JSON
-  const titles = await page.$$eval("#content > div > div.ais-Hits > ul > li > div > div > div > div.info > a > span.product-info.truncate", (elements) =>
-    elements.map((el) => el.textContent.trim())
-  ).catch(err => {
-    console.log("Error fetching titles, trying alternative selector");
-    return page.$$eval("span.product-info.truncate", (elements) =>
-      elements.map((el) => el.textContent.trim())
-    );
-  });
-
-  const prices = await page.$$eval(".product-catalog .product-prices .sale-price", (elements) =>
-    elements.map((el) => el.textContent.trim())
-  );
-
-  const images = await page.$$eval(".product-catalog .product-image img", (elements) =>
-    elements.map((el) => el.getAttribute("src")?.trim())
-  );
-
-  const products = [];
-  const minLength = Math.min(titles.length, prices.length, images.length);
-
-  for (let i = 0; i < minLength; i++) {
-    products.push({
-      title: removeTildes(titles[i]), // Remove tildes from the title
-      price: prices[i],
-      image: images[i],
+  // Extraer información básica de productos incluyendo URLs
+  const products = await page.evaluate(() => {
+    const productElements = document.querySelectorAll("#content > div > div.ais-Hits > ul > li > div > div");
+    const products = [];
+    
+    productElements.forEach((productEl) => {
+      try {
+        // Título
+        const titleEl = productEl.querySelector("div > div.info > a > span.product-info.truncate");
+        const title = titleEl ? titleEl.textContent.trim() : null;
+        
+        // Precio
+        const priceEl = productEl.querySelector(".product-prices .sale-price");
+        const price = priceEl ? priceEl.textContent.trim() : null;
+        
+        // Imagen
+        const imageEl = productEl.querySelector(".product-image img");
+        const image = imageEl ? imageEl.getAttribute("src") : null;
+        
+        // URL del producto
+        const linkEl = productEl.querySelector("div > div.info > a") || 
+                      productEl.querySelector("a");
+        const url = linkEl ? linkEl.getAttribute("href") : null;
+        const fullUrl = url ? (url.startsWith('http') ? url : `https://salcobrand.cl${url}`) : null;
+        
+        if (title) {
+          products.push({
+            title: title.normalize("NFD").replace(/[\u0300-\u036f]/g, ""), // Remove tildes
+            price: price,
+            image: image,
+            url: fullUrl
+          });
+        }
+      } catch (error) {
+        console.error("Error extracting product info:", error);
+      }
     });
-  }
+    
+    return products;
+  });
 
   return products;
 }
 
 async function navigateToNextPage(page) {
   try {
+    console.log("Attempting to navigate to next page...");
+    
     const nextButtonClicked = await page.evaluate(() => {
       const findByText = () => {
         const allPaginationLinks = document.querySelectorAll('nav ul li a');
@@ -170,6 +317,7 @@ async function navigateToNextPage(page) {
           if (link.textContent.includes('Siguiente') || link.textContent.includes('>')) {
             const parentLi = link.closest('li');
             if (!parentLi || !parentLi.classList.contains('disabled')) {
+              console.log("Found 'Siguiente' button, clicking...");
               link.click();
               return true;
             }
@@ -186,6 +334,7 @@ async function navigateToNextPage(page) {
             const lastActiveItem = activeItems[activeItems.length - 1];
             const link = lastActiveItem.querySelector('a');
             if (link) {
+              console.log("Found pagination link by position, clicking...");
               link.click();
               return true;
             }
@@ -195,25 +344,33 @@ async function navigateToNextPage(page) {
       };
 
       const findBySpecificStructure = () => {
-        const specificButton = document.querySelector('#content > nav > ul > li:nth-child(6) > a');
-        if (specificButton) {
-          specificButton.click();
-          return true;
-        }
-
-        for (let i = 5; i <= 7; i++) {
+        // Intentar encontrar el botón de siguiente página por estructura específica
+        for (let i = 5; i <= 8; i++) {
           const button = document.querySelector(`#content > nav > ul > li:nth-child(${i}) > a`);
-          if (button && (button.textContent.includes('>') || button.textContent.includes('Siguiente'))) {
-            button.click();
-            return true;
+          if (button) {
+            const text = button.textContent.trim();
+            if (text.includes('>') || text.includes('Siguiente') || (!isNaN(parseInt(text)) && parseInt(text) > 1)) {
+              console.log(`Found next page button at position ${i}, clicking...`);
+              button.click();
+              return true;
+            }
           }
         }
-
         return false;
       };
 
       return findByText() || findByPosition() || findBySpecificStructure();
     });
+
+    if (nextButtonClicked) {
+      // Esperar a que se cargue la nueva página
+      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 15000 }).catch(() => {
+        console.log("Timeout waiting for navigation after clicking next page");
+      });
+      console.log("✓ Successfully navigated to next page");
+    } else {
+      console.log("✗ Could not find next page button");
+    }
 
     return nextButtonClicked;
   } catch (error) {
@@ -224,9 +381,7 @@ async function navigateToNextPage(page) {
 
 // Ejecutar
 scrapeAllMedicamentos()
-  .then((products) =>
-    console.log(`Process finished with ${products.length} products saved to salcobrand_medicamentos.json.`)
-  )
+  .then((products) => {
+    console.log(`Process finished with ${products.length} products saved.`);
+  })
   .catch((error) => console.error("Error in scraping process:", error));
-
-// se puso un limite de 3 paginas se genera un error luego de la cuarta (por revisar)
