@@ -176,14 +176,22 @@ if (!fs.existsSync(apiDir)) {
 
 // Cargar módulos de API
 try {
-  // Importar rutas
+  // Importar rutas existentes
   const usuariosRoutes = require('./api/usuarios');
   const medicamentosRoutes = require('./api/medicamentos');
+  
+  // Importar nueva ruta de stock
+  const pharmacyStockRoutes = require('./api/pharmacyStock');
 
   // Registrar rutas
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/medicamentos', medicamentosRoutes);
-  console.log('✅ Rutas API cargadas correctamente');
+  app.use('/api/stock', pharmacyStockRoutes);
+  
+  console.log('✅ Rutas API cargadas correctamente:');
+  console.log('   - /api/usuarios');
+  console.log('   - /api/medicamentos');
+  console.log('   - /api/stock');
 } catch (error) {
   console.error('❌ Error al cargar módulos de API:', error);
 }
@@ -194,7 +202,12 @@ app.get('/', (req, res) => {
     message: 'API de Farmacia funcionando correctamente',
     database: DB_CONFIG.database,
     environment: process.env.NODE_ENV || 'development',
-    jwt_configured: DB_CONFIG.jwt_secret ? true : false
+    jwt_configured: DB_CONFIG.jwt_secret ? true : false,
+    available_apis: [
+      '/api/usuarios',
+      '/api/medicamentos',
+      '/api/stock'
+    ]
   });
 });
 
@@ -203,4 +216,8 @@ app.listen(port, () => {
   console.log(`🚀 Servidor ejecutándose en http://localhost:${port}`);
   console.log(`📊 Usando base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
   console.log(`🔐 JWT configurado: ${DB_CONFIG.jwt_secret ? 'SÍ' : 'NO'}`);
+  console.log(`📦 APIs disponibles:`);
+  console.log(`   - Usuarios: /api/usuarios`);
+  console.log(`   - Medicamentos: /api/medicamentos`);
+  console.log(`   - Stock: /api/stock`);
 });
