@@ -1,0 +1,224 @@
+/* MedicationComponents.css */
+
+/* Medication Card Styles */
+.medication-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.medication-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.medication-status {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+
+.medication-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.dosage-info {
+  background: rgba(0,123,255,0.1);
+  border-left: 4px solid #007bff;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 0 8px 8px 0;
+}
+
+.reminder-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  margin: 2px;
+  border-radius: 12px;
+}
+
+.treatment-progress {
+  background: linear-gradient(90deg, #28a745, #20c997);
+  height: 8px;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* Add Medication Card */
+.add-medication-card {
+  border: 2px dashed #dee2e6;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 200px;
+  border-radius: 15px;
+}
+
+.add-medication-card:hover {
+  border-color: #007bff;
+  background: rgba(0,123,255,0.05);
+  transform: translateY(-2px);
+}
+
+.add-medication-card .add-content {
+  color: #6c757d;
+  transition: color 0.3s ease;
+}
+
+.add-medication-card:hover .add-content {
+  color: #007bff;
+}
+
+/* Quick Actions */
+.quick-actions .btn {
+  border-radius: 25px;
+  padding: 8px 16px;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+.quick-actions .btn:hover {
+  transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.form-control:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+/* Schedule Items */
+.schedule-item {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 5px 0;
+  transition: all 0.2s ease;
+}
+
+.schedule-item:hover {
+  background: #e9ecef;
+  border-color: #007bff;
+}
+
+.time-slot-input {
+  border-radius: 8px;
+}
+
+/* Category Icons */
+.category-prescription { background: linear-gradient(135deg, #dc3545, #c82333); }
+.category-supplement { background: linear-gradient(135deg, #28a745, #20c997); }
+.category-otc { background: linear-gradient(135deg, #007bff, #0056b3); }
+
+/* Status Badges */
+.status-active { background-color: #28a745; }
+.status-standby { background-color: #ffc107; color: #212529; }
+.status-completed { background-color: #17a2b8; }
+.status-expired { background-color: #dc3545; }
+
+/* Progress Ring Animation */
+.progress-ring {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+}
+
+.progress-ring circle {
+  transition: stroke-dasharray 0.3s ease;
+  stroke-width: 3;
+  fill: transparent;
+}
+
+/* Medication List Animations */
+.medication-grid {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .medication-card {
+    margin-bottom: 15px;
+  }
+  
+  .medication-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+    margin-right: 10px;
+  }
+  
+  .quick-actions {
+    justify-content: center;
+  }
+  
+  .quick-actions .btn {
+    padding: 6px 12px;
+    font-size: 0.875rem;
+  }
+  
+  .dosage-info {
+    padding: 8px;
+    margin: 8px 0;
+  }
+  
+  .reminder-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .add-medication-card {
+    min-height: 150px;
+  }
+  
+  .modal-dialog {
+    margin: 10px;
+  }
+  
+  .schedule-item {
+    padding: 8px;
+  }
+}
