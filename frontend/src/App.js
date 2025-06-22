@@ -7,6 +7,7 @@ import ProfilePage from './pages/ProfilePage';
 import GoogleMapsComponent from "./pages/GoogleMapsComponent";
 import PriceComparisonPage from "./pages/PriceComparisonPage";
 import MedicationDetailPage from "./pages/MedicationDetailPage";
+import MyMedicationsPage from './pages/MyMedicationsPage';
 import './App.css';
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
           } />
           <Route path="/price-comparison" element={<PriceComparisonPage />} />
           <Route path="/medication/:medicationId" element={<MedicationDetailPage />} />
-          <Route path="/my-meds" element={<div>Página de mis medicamentos en desarrollo</div>} />
+          <Route path="/my-meds" element={<MyMedicationsPage />} />
           <Route path="*" element={<div>Página no encontrada</div>} />
         </Routes>
       </div>
