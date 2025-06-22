@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
 import GoogleMapsComponent from './GoogleMapsComponent';
+import SimpleMedicationSearch from '../components/SimpleMedicationSearch';
 
 function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +14,9 @@ function HomePage() {
     ahumada: true,
   });
   const [user, setUser] = useState(null);
+  
+  // New states for medication search functionality
+  const [selectedMedication, setSelectedMedication] = useState(null);
 
   const navigate = useNavigate();
 
@@ -39,6 +43,16 @@ function HomePage() {
       ...selectedPharmacies,
       [pharmacy]: !selectedPharmacies[pharmacy],
     });
+  };
+
+  // Handle medication selection from search component
+  const handleMedicationSelect = (medicationName) => {
+    setSelectedMedication(medicationName);
+  };
+
+  // Handle clearing medication search
+  const handleClearMedicationSearch = () => {
+    setSelectedMedication(null);
   };
 
   if (isLoading) {
@@ -172,6 +186,7 @@ function HomePage() {
                   <div 
                     className="card h-100 tool-card shadow-sm"
                     onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison tool...')}
+                    style={{ cursor: 'pointer' }}
                   >
                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
                       <i className="bi bi-graph-up-arrow mb-3" style={{ fontSize: '2rem', color: '#0d6efd' }}></i>
@@ -182,7 +197,7 @@ function HomePage() {
                 </div>
                 
                 <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm">
+                  <div className="card h-100 tool-card shadow-sm position-relative">
                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
                       <i className="bi bi-calendar-check mb-3" style={{ fontSize: '2rem', color: '#198754' }}></i>
                       <h5 className="card-title">Medication Reminder</h5>
@@ -193,7 +208,7 @@ function HomePage() {
                 </div>
                 
                 <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm">
+                  <div className="card h-100 tool-card shadow-sm position-relative">
                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
                       <i className="bi bi-capsule mb-3" style={{ fontSize: '2rem', color: '#dc3545' }}></i>
                       <h5 className="card-title">Medication Info</h5>
@@ -204,7 +219,7 @@ function HomePage() {
                 </div>
                 
                 <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm">
+                  <div className="card h-100 tool-card shadow-sm position-relative">
                     <div className="card-body d-flex flex-column align-items-center justify-content-center">
                       <i className="bi bi-chat-dots mb-3" style={{ fontSize: '2rem', color: '#6610f2' }}></i>
                       <h5 className="card-title">Pharmacy Chat</h5>
@@ -223,7 +238,10 @@ function HomePage() {
         <div className="row gy-4">
           <div className="col-md-4">
             <div className="card shadow-sm p-3">
-              <h5 className="mb-3">Filter Pharmacies</h5>
+              <h5 className="mb-3">
+                <i className="bi bi-funnel me-2"></i>
+                Filter Pharmacies
+              </h5>
 
               <label className="form-label">Distance (km):</label>
               <input
@@ -241,30 +259,109 @@ function HomePage() {
                   className={`btn ${selectedPharmacies.cruzverde ? 'btn-success' : 'btn-outline-secondary'}`}
                   onClick={() => togglePharmacySelection('cruzverde')}
                 >
+                  <i className="bi bi-check-circle me-2"></i>
                   Cruz Verde
                 </button>
                 <button
                   className={`btn ${selectedPharmacies.salcobrand ? 'btn-primary' : 'btn-outline-secondary'}`}
                   onClick={() => togglePharmacySelection('salcobrand')}
                 >
+                  <i className="bi bi-check-circle me-2"></i>
                   Salcobrand
                 </button>
                 <button
                   className={`btn ${selectedPharmacies.ahumada ? 'btn-danger' : 'btn-outline-secondary'}`}
                   onClick={() => togglePharmacySelection('ahumada')}
                 >
+                  <i className="bi bi-check-circle me-2"></i>
                   Ahumada
                 </button>
+              </div>
+
+              {/* Medication Search Section */}
+              <div className="mt-4 pt-3 border-top">
+                <h6 className="mb-3">
+                  <i className="bi bi-search me-2"></i>
+                  Search Medication Availability
+                </h6>
+                <SimpleMedicationSearch
+                  selectedMedication={selectedMedication}
+                  onMedicationSelect={handleMedicationSelect}
+                  onClearSearch={handleClearMedicationSearch}
+                />
               </div>
             </div>
           </div>
 
           <div className="col-md-8">
             <div className="card shadow-sm">
+              <div className="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">
+                  <i className="bi bi-geo-alt me-2"></i>
+                  Nearby Pharmacies
+                  {selectedMedication && (
+                    <span className="badge bg-primary ms-2">
+                      Showing {selectedMedication} availability
+                    </span>
+                  )}
+                </h5>
+                {selectedMedication && (
+                  <button 
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={handleClearMedicationSearch}
+                    title="Clear medication search"
+                  >
+                    <i className="bi bi-x"></i>
+                  </button>
+                )}
+              </div>
               <GoogleMapsComponent
                 distance={distance}
                 selectedPharmacies={selectedPharmacies}
+                selectedMedication={selectedMedication}
+                onMedicationSelect={handleMedicationSelect}
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-light py-5">
+        <div className="container">
+          <div className="row text-center">
+            <div className="col-12 mb-4">
+              <h2 className="fw-bold">Why Choose Farmafia?</h2>
+              <p className="text-muted">Your complete pharmaceutical companion</p>
+            </div>
+          </div>
+          <div className="row g-4">
+            <div className="col-md-4">
+              <div className="text-center">
+                <div className="feature-icon mb-3">
+                  <i className="bi bi-geo-alt-fill" style={{ fontSize: '3rem', color: '#0d6efd' }}></i>
+                </div>
+                <h4>Real-time Availability</h4>
+                <p className="text-muted">Check medication stock across nearby pharmacies in real-time</p>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="text-center">
+                <div className="feature-icon mb-3">
+                  <i className="bi bi-graph-up" style={{ fontSize: '3rem', color: '#28a745' }}></i>
+                </div>
+                <h4>Price Comparison</h4>
+                <p className="text-muted">Compare prices and find the best deals on your medications</p>
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="text-center">
+                <div className="feature-icon mb-3">
+                  <i className="bi bi-heart-pulse" style={{ fontSize: '3rem', color: '#dc3545' }}></i>
+                </div>
+                <h4>Health Management</h4>
+                <p className="text-muted">Track your treatments and medication schedules</p>
+              </div>
             </div>
           </div>
         </div>
@@ -276,7 +373,30 @@ function HomePage() {
           <p className="mb-4">
             We connect you with nearby pharmacies and help you manage your medications efficiently and safely.
           </p>
-
+          <div className="row">
+            <div className="col-md-4">
+              <h6>Quick Links</h6>
+              <ul className="list-unstyled">
+                <li><a href="/" className="text-light text-decoration-none">Home</a></li>
+                <li><a href="/price-comparison" className="text-light text-decoration-none">Price Comparison</a></li>
+                <li><a href="/my-meds" className="text-light text-decoration-none">My Medications</a></li>
+              </ul>
+            </div>
+            <div className="col-md-4">
+              <h6>Contact</h6>
+              <p className="mb-1">📧 info@farmafia.cl</p>
+              <p className="mb-1">📱 +56 2 1234 5678</p>
+            </div>
+            <div className="col-md-4">
+              <h6>Follow Us</h6>
+              <div className="d-flex justify-content-center gap-3">
+                <a href="#" className="text-light"><i className="bi bi-facebook"></i></a>
+                <a href="#" className="text-light"><i className="bi bi-twitter"></i></a>
+                <a href="#" className="text-light"><i className="bi bi-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+          <hr className="my-4" />
           <p className="mt-4 small">© 2025 Farmafia. All rights reserved.</p>
         </div>
       </footer>
