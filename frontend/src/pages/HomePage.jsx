@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/HomePage.css';
 import GoogleMapsComponent from './GoogleMapsComponent';
 import SimpleMedicationSearch from '../components/SimpleMedicationSearch';
+import MedicationDashboardSection from '../components/MedicationDashboardSection';
 
 function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +67,7 @@ function HomePage() {
 
   return (
     <>
+      {/* Navigation */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
         <a
           className="navbar-brand fw-bold"
@@ -89,15 +91,45 @@ function HomePage() {
           <ul className="navbar-nav">
             {user ? (
               <>
-                <li className="nav-item">
+                <li className="nav-item dropdown">
                   <a
-                    className="nav-link"
-                    href="/profile"
-                    onClick={(e) => handleNavigation(e, '/profile', 'Loading profile...')}
+                    className="nav-link dropdown-toggle"
+                    href="#"
+                    id="navbarDropdown"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
                   >
                     <i className="bi bi-person-circle me-1"></i>
                     {user.nombre}
                   </a>
+                  <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li>
+                      <a
+                        className="dropdown-item"
+                        href="/profile"
+                        onClick={(e) => handleNavigation(e, '/profile', 'Loading profile...')}
+                      >
+                        <i className="bi bi-person me-2"></i>
+                        Profile
+                      </a>
+                    </li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li>
+                      <a
+                        className="dropdown-item"
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          sessionStorage.removeItem('user');
+                          setUser(null);
+                        }}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i>
+                        Logout
+                      </a>
+                    </li>
+                  </ul>
                 </li>
                 <li className="nav-item">
                   <a
@@ -105,6 +137,7 @@ function HomePage() {
                     href="/GoogleMapsComponent"
                     onClick={(e) => handleNavigation(e, '/GoogleMapsComponent', 'Finding nearby pharmacies...')}
                   >
+                    <i className="bi bi-geo-alt me-1"></i>
                     Nearby
                   </a>
                 </li>
@@ -114,7 +147,18 @@ function HomePage() {
                     href="/my-meds"
                     onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}
                   >
+                    <i className="bi bi-prescription2 me-1"></i>
                     My Meds
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/price-comparison"
+                    onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison...')}
+                  >
+                    <i className="bi bi-graph-up me-1"></i>
+                    Compare Prices
                   </a>
                 </li>
               </>
@@ -150,10 +194,10 @@ function HomePage() {
                 <li className="nav-item">
                   <a
                     className="nav-link"
-                    href="/my-meds"
-                    onClick={(e) => handleNavigation(e, '/my-meds', 'Loading your medications...')}
+                    href="/price-comparison"
+                    onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison...')}
                   >
-                    My Meds
+                    Compare Prices
                   </a>
                 </li>
               </>
@@ -162,78 +206,88 @@ function HomePage() {
         </div>
       </nav>
 
+      {/* Hero Section */}
       <section
         className="d-flex flex-column align-items-center justify-content-center text-center py-5 px-3"
         style={{
           background: 'linear-gradient(to bottom, #64b6ac, #f8f9fa)',
           color: '#333',
-          minHeight: '60vh',
+          minHeight: user ? '40vh' : '60vh', // Reduced height when user is logged in
         }}
       >
         <h1 className="display-4 fw-bold">Welcome to Farmafia</h1>
         <p className="lead mb-4">Your Trusted Platform for Pharmaceutical Services</p>
-        {user && (
-          <>
-            <div className="alert alert-success mt-3">
-              Welcome, {user.nombre}!
-            </div>
-            
-            {/* Tools Section */}
-            <div className="tools-section container mt-4">
-              <h3 className="mb-4">Pharmacy Tools</h3>
-              <div className="row g-3">
-                <div className="col-12 col-md-6 col-lg-3">
-                  <div 
-                    className="card h-100 tool-card shadow-sm"
-                    onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison tool...')}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                      <i className="bi bi-graph-up-arrow mb-3" style={{ fontSize: '2rem', color: '#0d6efd' }}></i>
-                      <h5 className="card-title">Price Comparison</h5>
-                      <p className="card-text small text-muted">Compare medication prices across pharmacies</p>
-                    </div>
+        
+        {user ? (
+          <div className="alert alert-success mt-3 shadow-sm">
+            <i className="bi bi-heart-pulse me-2"></i>
+            Welcome back, <strong>{user.nombre}</strong>! 
+            <span className="d-block mt-1 small">
+              Manage your health and medications with ease
+            </span>
+          </div>
+        ) : (
+          // Tools Section for non-logged users
+          <div className="tools-section container mt-4">
+            <h3 className="mb-4">Pharmacy Tools</h3>
+            <div className="row g-3">
+              <div className="col-12 col-md-6 col-lg-3">
+                <div 
+                  className="card h-100 tool-card shadow-sm"
+                  onClick={(e) => handleNavigation(e, '/price-comparison', 'Loading price comparison tool...')}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i className="bi bi-graph-up-arrow mb-3" style={{ fontSize: '2rem', color: '#0d6efd' }}></i>
+                    <h5 className="card-title">Price Comparison</h5>
+                    <p className="card-text small text-muted">Compare medication prices across pharmacies</p>
                   </div>
                 </div>
-                
-                <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm position-relative">
-                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                      <i className="bi bi-calendar-check mb-3" style={{ fontSize: '2rem', color: '#198754' }}></i>
-                      <h5 className="card-title">Medication Reminder</h5>
-                      <p className="card-text small text-muted">Set reminders for your medications</p>
-                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
-                    </div>
+              </div>
+              
+              <div className="col-12 col-md-6 col-lg-3">
+                <div className="card h-100 tool-card shadow-sm position-relative">
+                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i className="bi bi-calendar-check mb-3" style={{ fontSize: '2rem', color: '#198754' }}></i>
+                    <h5 className="card-title">Medication Reminder</h5>
+                    <p className="card-text small text-muted">Set reminders for your medications</p>
+                    <span className="badge bg-warning position-absolute top-0 end-0 m-2">Login Required</span>
                   </div>
                 </div>
-                
-                <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm position-relative">
-                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                      <i className="bi bi-capsule mb-3" style={{ fontSize: '2rem', color: '#dc3545' }}></i>
-                      <h5 className="card-title">Medication Info</h5>
-                      <p className="card-text small text-muted">Detailed information about medications</p>
-                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
-                    </div>
+              </div>
+              
+              <div className="col-12 col-md-6 col-lg-3">
+                <div className="card h-100 tool-card shadow-sm position-relative">
+                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i className="bi bi-capsule mb-3" style={{ fontSize: '2rem', color: '#dc3545' }}></i>
+                    <h5 className="card-title">Medication Info</h5>
+                    <p className="card-text small text-muted">Detailed information about medications</p>
+                    <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
                   </div>
                 </div>
-                
-                <div className="col-12 col-md-6 col-lg-3">
-                  <div className="card h-100 tool-card shadow-sm position-relative">
-                    <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                      <i className="bi bi-chat-dots mb-3" style={{ fontSize: '2rem', color: '#6610f2' }}></i>
-                      <h5 className="card-title">Pharmacy Chat</h5>
-                      <p className="card-text small text-muted">Chat with pharmacy professionals</p>
-                      <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
-                    </div>
+              </div>
+              
+              <div className="col-12 col-md-6 col-lg-3">
+                <div className="card h-100 tool-card shadow-sm position-relative">
+                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i className="bi bi-chat-dots mb-3" style={{ fontSize: '2rem', color: '#6610f2' }}></i>
+                    <h5 className="card-title">Pharmacy Chat</h5>
+                    <p className="card-text small text-muted">Chat with pharmacy professionals</p>
+                    <span className="badge bg-warning position-absolute top-0 end-0 m-2">Coming Soon</span>
                   </div>
                 </div>
               </div>
             </div>
-          </>
+          </div>
         )}
       </section>
 
+      {/* ✅ NUEVA SECCIÓN - Dashboard de Medicamentos (solo si está logueado) */}
+      {user && (
+        <MedicationDashboardSection user={user} />
+      )}
+
+      {/* Pharmacy Map Section */}
       <section className="container my-5">
         <div className="row gy-4">
           <div className="col-md-4">
@@ -367,6 +421,7 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="bg-dark text-light text-center py-5 mt-auto">
         <div className="container">
           <h5 className="mb-3">About Farmafia</h5>
