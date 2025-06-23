@@ -163,6 +163,68 @@ async function checkAndCreateTables(connection) {
     `);
     console.log('Tabla precios_medicamentos creada correctamente');
   }
+
+  // ✅ NUEVAS TABLAS PARA TRATAMIENTOS
+  // Verificar si la tabla tratamientos existe
+  const [tratamientosTables] = await connection.query('SHOW TABLES LIKE "tratamientos"');
+  if (tratamientosTables.length === 0) {
+    console.log('La tabla tratamientos no existe, creándola...');
+    await connection.query(`
+      CREATE TABLE tratamientos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        nombre VARCHAR(100) NOT NULL,
+        descripcion TEXT,
+        fecha_inicio DATE,
+        fecha_fin DATE,
+        activo BOOLEAN DEFAULT TRUE,
+        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+      )
+    `);
+    console.log('Tabla tratamientos creada correctamente');
+  }
+
+  // Verificar si la tabla medicamentos_tratamientos existe
+  const [medTratTables] = await connection.query('SHOW TABLES LIKE "medicamentos_tratamientos"');
+  if (medTratTables.length === 0) {
+    console.log('La tabla medicamentos_tratamientos no existe, creándola...');
+    await connection.query(`
+      CREATE TABLE medicamentos_tratamientos (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        tratamiento_id INT NOT NULL,
+        medicamento_id INT NOT NULL,
+        dosis VARCHAR(100),
+        frecuencia VARCHAR(100),
+        recordatorio_activo BOOLEAN DEFAULT FALSE,
+        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (tratamiento_id) REFERENCES tratamientos(id) ON DELETE CASCADE,
+        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
+      )
+    `);
+    console.log('Tabla medicamentos_tratamientos creada correctamente');
+  }
+
+  // Verificar si la tabla recordatorios_compra existe
+  const [recordatoriosTables] = await connection.query('SHOW TABLES LIKE "recordatorios_compra"');
+  if (recordatoriosTables.length === 0) {
+    console.log('La tabla recordatorios_compra no existe, creándola...');
+    await connection.query(`
+      CREATE TABLE recordatorios_compra (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        usuario_id INT NOT NULL,
+        medicamento_id INT NOT NULL,
+        fecha_recordatorio DATE NOT NULL,
+        periodicidad INT,
+        notificacion_enviada BOOLEAN DEFAULT FALSE,
+        activo BOOLEAN DEFAULT TRUE,
+        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
+      )
+    `);
+    console.log('Tabla recordatorios_compra creada correctamente');
+  }
 }
 
 testConnection();
@@ -179,19 +241,22 @@ try {
   // Importar rutas existentes
   const usuariosRoutes = require('./api/usuarios');
   const medicamentosRoutes = require('./api/medicamentos');
-  
-  // Importar nueva ruta de stock
   const pharmacyStockRoutes = require('./api/pharmacyStock');
+  
+  // ✅ NUEVA RUTA DE TRATAMIENTOS
+  const tratamientosRoutes = require('./api/tratamientos');
 
   // Registrar rutas
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/medicamentos', medicamentosRoutes);
   app.use('/api/stock', pharmacyStockRoutes);
+  app.use('/api/tratamientos', tratamientosRoutes);  // ✅ NUEVA RUTA
   
   console.log('✅ Rutas API cargadas correctamente:');
   console.log('   - /api/usuarios');
   console.log('   - /api/medicamentos');
   console.log('   - /api/stock');
+  console.log('   - /api/tratamientos');  // ✅ NUEVA RUTA
 } catch (error) {
   console.error('❌ Error al cargar módulos de API:', error);
 }
@@ -206,7 +271,8 @@ app.get('/', (req, res) => {
     available_apis: [
       '/api/usuarios',
       '/api/medicamentos',
-      '/api/stock'
+      '/api/stock',
+      '/api/tratamientos'  // ✅ NUEVA API
     ]
   });
 });
@@ -220,4 +286,5 @@ app.listen(port, () => {
   console.log(`   - Usuarios: /api/usuarios`);
   console.log(`   - Medicamentos: /api/medicamentos`);
   console.log(`   - Stock: /api/stock`);
+  console.log(`   - Tratamientos: /api/tratamientos`);  // ✅ NUEVA API
 });

@@ -1,30 +1,44 @@
 /**
- * API de usuarios
+ * API de usuarios con JWT corregido
  * Contiene todas las rutas relacionadas con la gestión de usuarios
  */
 
 const express = require('express');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken'); // JWT agregado
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// Clave secreta para JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta_muy_segura_aqui';
+// ✅ Clave secreta para JWT - usar la del proceso o una por defecto
+const JWT_SECRET = process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345';
 
-// Middleware para verificar JWT
+console.log('🔐 JWT_SECRET configured:', JWT_SECRET ? 'YES' : 'NO');
+
+// ✅ Middleware mejorado para verificar JWT
 const verificarToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const authHeader = req.header('Authorization');
+  console.log('🔍 Auth header received:', authHeader);
+  
+  if (!authHeader) {
+    console.log('❌ No Authorization header provided');
+    return res.status(401).json({ error: 'No se proporcionó token de acceso' });
+  }
+  
+  const token = authHeader.replace('Bearer ', '');
+  console.log('🎫 Token extracted:', token ? 'YES' : 'NO');
   
   if (!token) {
-    return res.status(401).json({ error: 'No se proporcionó token de acceso' });
+    console.log('❌ No token found in Authorization header');
+    return res.status(401).json({ error: 'Token de acceso inválido' });
   }
   
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('✅ Token verified successfully for user:', decoded.id);
     req.usuario = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Token inválido' });
+    console.error('❌ Token verification failed:', error.message);
+    res.status(401).json({ error: 'Token inválido o expirado' });
   }
 };
 
@@ -82,11 +96,13 @@ router.post('/registro', async (req, res) => {
 
 /**
  * @route   POST /api/usuarios/login
- * @desc    Iniciar sesión y generar JWT
+ * @desc    Iniciar sesión y generar JWT - CORREGIDO
  * @access  Public
  */
 router.post('/login', async (req, res) => {
   const { email, contrasena } = req.body;
+  
+  console.log('🔑 Login attempt for email:', email);
   
   if (!email || !contrasena) {
     return res.status(400).json({ error: 'Se requieren email y contraseña' });
@@ -99,42 +115,56 @@ router.post('/login', async (req, res) => {
     );
     
     if (rows.length === 0) {
+      console.log('❌ User not found for email:', email);
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
     
     const usuario = rows[0];
+    console.log('👤 User found:', usuario.id, usuario.nombre);
     
     // Comparar la contraseña
     const passwordMatch = await bcrypt.compare(contrasena, usuario.contrasena);
     
     if (!passwordMatch) {
+      console.log('❌ Password mismatch for user:', usuario.id);
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
     
-    // Crear el payload del JWT
+    console.log('✅ Password match - generating JWT...');
+    
+    // ✅ Crear el payload del JWT con información esencial
     const payload = {
       id: usuario.id,
       email: usuario.email,
-      nombre: usuario.nombre
+      nombre: usuario.nombre,
+      iat: Math.floor(Date.now() / 1000), // Issued at time
+      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // Expires in 24 hours
     };
     
-    // Generar el JWT
-    const token = jwt.sign(
-      payload, 
-      JWT_SECRET, 
-      { expiresIn: '24h' } // Token expira en 24 horas
-    );
+    console.log('📦 JWT payload:', { id: payload.id, email: payload.email, exp: new Date(payload.exp * 1000) });
     
-    // Eliminar la contraseña del objeto antes de devolverlo
-    delete usuario.contrasena;
-    
-    res.json({
-      ...usuario,
-      token, // Incluir el token en la respuesta
-      message: 'Inicio de sesión exitoso'
+    // ✅ Generar el JWT
+    const token = jwt.sign(payload, JWT_SECRET, { 
+      // No agregar expiresIn aquí ya que está en el payload
+      algorithm: 'HS256'
     });
+    
+    console.log('🎫 JWT generated successfully, length:', token.length);
+    
+    // ✅ Eliminar la contraseña del objeto antes de devolverlo
+    const { contrasena: _, ...usuarioSinPassword } = usuario;
+    
+    const response = {
+      ...usuarioSinPassword,
+      token, // ✅ Incluir el token en la respuesta
+      message: 'Inicio de sesión exitoso'
+    };
+    
+    console.log('✅ Login successful for user:', usuario.id);
+    res.json(response);
+    
   } catch (error) {
-    console.error('Error al iniciar sesión:', error);
+    console.error('❌ Error al iniciar sesión:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });
   }
 });
@@ -185,6 +215,15 @@ router.get('/:id', async (req, res) => {
     console.error('Error al obtener usuario:', error);
     res.status(500).json({ error: 'Error al obtener usuario' });
   }
+});
+
+// ✅ NUEVA RUTA: Verificar token
+router.get('/verificar-token', verificarToken, (req, res) => {
+  res.json({
+    valido: true,
+    usuario: req.usuario,
+    message: 'Token válido'
+  });
 });
 
 module.exports = router;
