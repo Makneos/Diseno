@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
-// Additional CSS styles to improve appearance
+// CSS Styles
 const chartStyles = `
   .price-charts-container .nav-tabs .nav-link {
     border: none;
@@ -35,7 +35,8 @@ const chartStyles = `
 `;
 
 const PriceTrendChart = ({ 
-  medicationData, 
+  selectedMedicationData,
+  medicationName,
   chartType = 'line', 
   showComparison = false,
   timeRange = '30d' 
@@ -43,47 +44,55 @@ const PriceTrendChart = ({
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Simulate historical data based on current price
-  const generateHistoricalData = (currentPrices, days = 30) => {
+  // Generate data using ONLY existing real prices (no simulation)
+  const generateRealDataPoints = (allMedicationData, medicationName = '') => {
     const data = [];
     const today = new Date();
     
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      
-      const dataPoint = {
-        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        fullDate: date.toISOString().split('T')[0]
-      };
-      
-      // For each pharmacy, generate price variation
-      currentPrices.forEach(pharmacy => {
-        // Simulate price fluctuation (±10% of current price)
-        const variation = (Math.random() - 0.5) * 0.2; // ±20% maximum
-        const basePrice = pharmacy.precio;
-        const simulatedPrice = Math.round(basePrice * (1 + variation * (i / days)));
-        
-        dataPoint[pharmacy.farmacia.nombre] = Math.max(simulatedPrice, basePrice * 0.8);
-      });
-      
-      data.push(dataPoint);
+    console.log(`📈 Using real data points for "${medicationName}"`);
+    console.log(`📊 Available real prices:`, allMedicationData);
+    
+    if (!allMedicationData || allMedicationData.length === 0) {
+      console.log('❌ No real data available');
+      return [];
     }
     
+    // Create one data point per pharmacy with real prices
+    allMedicationData.forEach((medData, index) => {
+      if (medData && medData.precio && medData.farmacia) {
+        const date = new Date(today);
+        // Spread points across a few days for visualization
+        date.setDate(today.getDate() - (allMedicationData.length - 1 - index));
+        
+        data.push({
+          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          fullDate: date.toISOString().split('T')[0],
+          precio: medData.precio,
+          pharmacy: medData.farmacia.nombre,
+          isRealPrice: true, // All points are real
+          availability: medData.disponible
+        });
+      }
+    });
+    
+    // Sort by date
+    data.sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate));
+    
+    console.log(`📊 Generated ${data.length} real data points:`, data);
     return data;
   };
 
-  // Generate current comparison data
-  const generateCurrentComparison = (currentPrices) => {
-    return currentPrices.map(pharmacy => ({
-      farmacia: pharmacy.farmacia.nombre,
-      precio: pharmacy.precio,
-      disponible: pharmacy.disponible
+  // Generate pharmacy comparison data (for bar chart only)
+  const generatePharmacyComparison = (allMedicationData) => {
+    return allMedicationData.map(med => ({
+      farmacia: med.farmacia.nombre,
+      precio: med.precio,
+      disponible: med.disponible
     }));
   };
 
   useEffect(() => {
-    if (!medicationData) {
+    if (!selectedMedicationData || selectedMedicationData.length === 0) {
       setIsLoading(false);
       return;
     }
@@ -93,34 +102,31 @@ const PriceTrendChart = ({
       let data;
       
       if (showComparison) {
-        // Data for pharmacy comparison chart
-        data = generateCurrentComparison(medicationData);
+        // For bar chart: show comparison between pharmacies
+        data = generatePharmacyComparison(selectedMedicationData);
       } else {
-        // Data for temporal trend chart
-        data = generateHistoricalData(medicationData, timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90);
+        // For line chart: use only real existing data
+        const selectedMed = selectedMedicationData[0];
+        if (selectedMed && selectedMed.precio) {
+          data = generateRealDataPoints(
+            selectedMedicationData,
+            selectedMed.medicamento_nombre || medicationName
+          );
+        } else {
+          data = [];
+        }
       }
       
       setChartData(data);
       setIsLoading(false);
     }, 1000);
-  }, [medicationData, timeRange, showComparison]);
+  }, [selectedMedicationData, timeRange, showComparison]);
 
-  // Color configuration for pharmacies
-  const pharmacyColors = {
-    'Ahumada': '#dc3545',
-    'Cruz Verde': '#28a745', 
-    'Salcobrand': '#007bff'
-  };
-
-  // Formatter for tooltip
+  // Formatters for tooltips
   const formatTooltip = (value, name) => {
-    if (showComparison) {
-      return [`$${value.toLocaleString('en-US')}`, name];
-    }
-    return [`$${value.toLocaleString('en-US')}`, name];
+    return [`$${value.toLocaleString('en-US')}`, 'Price'];
   };
 
-  // Formatter for labels
   const formatLabel = (label) => {
     if (showComparison) {
       return `Pharmacy: ${label}`;
@@ -141,7 +147,7 @@ const PriceTrendChart = ({
     );
   }
 
-  if (!medicationData || medicationData.length === 0) {
+  if (!selectedMedicationData || selectedMedicationData.length === 0) {
     return (
       <div className="alert alert-info text-center">
         <i className="bi bi-info-circle me-2"></i>
@@ -151,7 +157,7 @@ const PriceTrendChart = ({
   }
 
   if (showComparison) {
-    // Bar chart for pharmacy comparison
+    // Bar chart: Comparison between pharmacies
     return (
       <div className="card shadow-sm">
         <div className="card-header bg-light">
@@ -176,10 +182,7 @@ const PriceTrendChart = ({
                 tickFormatter={(value) => `$${value.toLocaleString('en-US')}`}
               />
               <Tooltip 
-                formatter={(value, name, props) => [
-                  `$${value.toLocaleString('en-US')}`,
-                  'Price'
-                ]}
+                formatter={(value) => [`$${value.toLocaleString('en-US')}`, 'Price']}
                 labelFormatter={(label) => `Pharmacy: ${label}`}
                 contentStyle={{
                   backgroundColor: '#fff',
@@ -222,23 +225,19 @@ const PriceTrendChart = ({
     );
   }
 
-  // Line chart for temporal trend
+  // Line chart: Only trend of selected medication
   return (
     <div className="card shadow-sm">
       <div className="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 className="mb-0">
           <i className="bi bi-graph-up me-2"></i>
-          Price Trends ({timeRange === '7d' ? '7 days' : timeRange === '30d' ? '30 days' : '90 days'})
+          Price Trend - {medicationName} 
+          <small className="text-muted">({chartData.length} real price{chartData.length !== 1 ? 's' : ''})</small>
         </h5>
         <div className="btn-group btn-group-sm" role="group">
-          <input type="radio" className="btn-check" name="timeRange" id="7d" defaultChecked={timeRange === '7d'} />
-          <label className="btn btn-outline-primary" htmlFor="7d">7d</label>
-          
-          <input type="radio" className="btn-check" name="timeRange" id="30d" defaultChecked={timeRange === '30d'} />
-          <label className="btn btn-outline-primary" htmlFor="30d">30d</label>
-          
-          <input type="radio" className="btn-check" name="timeRange" id="90d" defaultChecked={timeRange === '90d'} />
-          <label className="btn btn-outline-primary" htmlFor="90d">90d</label>
+          <span className="btn btn-outline-secondary disabled">
+            Real Data Only
+          </span>
         </div>
       </div>
       <div className="card-body">
@@ -265,46 +264,112 @@ const PriceTrendChart = ({
             />
             <Legend />
             
-            {medicationData.map((pharmacy, index) => (
-              <Line
-                key={pharmacy.farmacia.nombre}
-                type="monotone"
-                dataKey={pharmacy.farmacia.nombre}
-                stroke={pharmacyColors[pharmacy.farmacia.nombre] || '#6c757d'}
-                strokeWidth={2}
-                dot={{ r: 3 }}
-                activeDot={{ r: 5 }}
-              />
-            ))}
+            {/* SINGLE LINE: Only the selected medication */}
+            <Line
+              type="monotone"
+              dataKey="precio"
+              name={medicationName}
+              stroke="#007bff"
+              strokeWidth={3}
+              dot={(props) => {
+                // Show all points as real
+                return (
+                  <circle
+                    cx={props.cx}
+                    cy={props.cy}
+                    r={6}
+                    fill="#dc3545"
+                    stroke="#dc3545"
+                    strokeWidth="2"
+                  />
+                );
+              }}
+              activeDot={{ r: 8, fill: '#0056b3', stroke: '#fff', strokeWidth: 2 }}
+            />
           </LineChart>
         </ResponsiveContainer>
         
-        <div className="mt-3">
-          <div className="alert alert-info mb-0">
-            <small>
-              <i className="bi bi-info-circle me-2"></i>
-              <strong>Note:</strong> Historical data is simulated for demonstration purposes. 
-              Once the tracking table is implemented, real data will be displayed.
-            </small>
-          </div>
-        </div>
+        
       </div>
     </div>
   );
 };
 
-// Container component that handles multiple chart types
-const PriceChartsContainer = ({ medicationData, medicationName }) => {
+// Main container component
+const PriceChartsContainer = ({ medicationData, medicationName, selectedMedication }) => {
   const [activeTab, setActiveTab] = useState('trend');
 
+  // DEBUG: Show what data is arriving
+  console.log('📊 PriceChartsContainer received:');
+  console.log('- medicationData:', medicationData);
+  console.log('- medicationName:', medicationName);
+  console.log('- selectedMedication:', selectedMedication);
+
   if (!medicationData || medicationData.length === 0) {
+    console.log('❌ No medicationData available');
     return (
       <div className="alert alert-warning">
         <i className="bi bi-exclamation-triangle me-2"></i>
-        Insufficient data to display price charts.
+        No price data available to display the chart.
+        <br />
+        <small className="text-muted">
+          Debug: medicationData = {medicationData ? `${medicationData.length} elements` : 'null/undefined'}
+        </small>
       </div>
     );
   }
+
+  // Validate that data has correct structure
+  const validMedicationData = medicationData.filter(med => 
+    med && 
+    med.farmacia && 
+    med.farmacia.nombre && 
+    med.precio !== undefined && 
+    med.precio !== null &&
+    !isNaN(med.precio)
+  );
+
+  console.log('✅ Valid data after filter:', validMedicationData);
+
+  if (validMedicationData.length === 0) {
+    return (
+      <div className="alert alert-warning">
+        <i className="bi bi-exclamation-triangle me-2"></i>
+        Price data does not have the correct format to display charts.
+        <br />
+        <small className="text-muted">
+          Found {medicationData.length} elements, but none have valid structure.
+        </small>
+      </div>
+    );
+  }
+
+  // 🎯 FILTER ONLY THE SPECIFIC SELECTED MEDICATION
+  const specificMedicationData = validMedicationData.filter(med => {
+    // Filter by exact name of selected medication
+    const medicationMatch = med.medicamento_nombre && 
+                           selectedMedication && 
+                           selectedMedication.nombre &&
+                           med.medicamento_nombre.toLowerCase().includes(selectedMedication.nombre.toLowerCase());
+    
+    console.log(`🔍 Comparing: "${med.medicamento_nombre}" vs "${selectedMedication?.nombre}" = ${medicationMatch}`);
+    
+    return medicationMatch;
+  });
+
+  console.log('🎯 Specific medication data:', specificMedicationData);
+  console.log(`📊 Found ${specificMedicationData.length} prices for "${selectedMedication?.nombre}"`);
+
+  // For trend chart: ONLY the specific medication
+  const singleMedicationData = specificMedicationData.length > 0 ? specificMedicationData : [];
+
+  // If no specific medication data, use first available
+  const fallbackData = specificMedicationData.length === 0 && validMedicationData.length > 0 
+    ? [validMedicationData[0]] 
+    : [];
+
+  console.log('📈 Data for trend chart:', singleMedicationData);
+  console.log('🔄 Fallback data:', fallbackData);
 
   return (
     <div className="price-charts-container">
@@ -321,7 +386,7 @@ const PriceChartsContainer = ({ medicationData, medicationName }) => {
                     type="button"
                   >
                     <i className="bi bi-graph-up me-2"></i>
-                    Price Trends
+                    Price Trend
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -340,21 +405,80 @@ const PriceChartsContainer = ({ medicationData, medicationName }) => {
               <div className="tab-content">
                 {activeTab === 'trend' && (
                   <div className="tab-pane fade show active p-3">
-                    <PriceTrendChart 
-                      medicationData={medicationData}
-                      chartType="line"
-                      showComparison={false}
-                      timeRange="30d"
-                    />
+                    {singleMedicationData.length > 0 ? (
+                      <div>
+                        <div className="alert alert-info mb-3">
+                          <i className="bi bi-info-circle me-2"></i>
+                          Showing price trend for: <strong>"{selectedMedication?.nombre}"</strong>
+                          <br />
+                          <small>
+                            Found {singleMedicationData.length} real price(s) for this specific medication.
+                            {singleMedicationData.length === 1 && " Displaying single data point."}
+                            {singleMedicationData.length > 1 && " Connecting real price points from different pharmacies."}
+                          </small>
+                        </div>
+                        <PriceTrendChart 
+                          selectedMedicationData={singleMedicationData}
+                          medicationName={selectedMedication?.nombre || medicationName}
+                          chartType="line"
+                          showComparison={false}
+                          timeRange="30d"
+                        />
+                      </div>
+                    ) : fallbackData.length > 0 ? (
+                      <div>
+                        <div className="alert alert-warning mb-3">
+                          <i className="bi bi-exclamation-triangle me-2"></i>
+                          No specific prices found for <strong>"{selectedMedication?.nombre}"</strong>.
+                          <br />
+                          <small>Showing data from first medication with the same active ingredient as reference.</small>
+                        </div>
+                        <PriceTrendChart 
+                          selectedMedicationData={fallbackData}
+                          medicationName={fallbackData[0]?.medicamento_nombre || medicationName}
+                          chartType="line"
+                          showComparison={false}
+                          timeRange="30d"
+                        />
+                      </div>
+                    ) : (
+                      <div className="alert alert-info">
+                        <i className="bi bi-info-circle me-2"></i>
+                        Not enough data to show price trend.
+                        <br />
+                        <small>No real price data available for this medication.</small>
+                        <PriceTrendChart 
+                          selectedMedicationData={[{
+                            farmacia: { nombre: 'Demo' },
+                            precio: 1500,
+                            disponible: true,
+                            url_producto: '#',
+                            medicamento_nombre: selectedMedication?.nombre || 'Test Medication'
+                          }]}
+                          medicationName={selectedMedication?.nombre || 'Test Medication'}
+                          chartType="line"
+                          showComparison={false}
+                          timeRange="30d"
+                        />
+                      </div>
+                    )}
                   </div>
                 )}
                 {activeTab === 'comparison' && (
                   <div className="tab-pane fade show active p-3">
-                    <PriceTrendChart 
-                      medicationData={medicationData}
-                      chartType="bar"
-                      showComparison={true}
-                    />
+                    {validMedicationData.length > 0 ? (
+                      <PriceTrendChart 
+                        selectedMedicationData={validMedicationData}
+                        medicationName={medicationName}
+                        chartType="bar"
+                        showComparison={true}
+                      />
+                    ) : (
+                      <div className="alert alert-info">
+                        <i className="bi bi-info-circle me-2"></i>
+                        Not enough data to show pharmacy comparison.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

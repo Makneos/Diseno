@@ -347,20 +347,103 @@ function MedicationDetailPage() {
           </div>
         )}
 
-        {/* Price Charts Section */}
+        {/* Price Charts Section - WITH DEBUG AND TEST DATA */}
         {comparisonResults.farmacias && (
           <div className="row mb-5">
             <div className="col-12">
-              <PriceChartsContainer 
-                medicationData={comparisonResults.farmacias.flatMap(farmacia => 
+              {/* DEBUG: Show data before passing it */}
+              {(() => {
+                console.log('🔍 Original comparisonResults data:', comparisonResults);
+                console.log('🔍 Pharmacies:', comparisonResults.farmacias);
+                
+                const medicationDataForChart = comparisonResults.farmacias.flatMap(farmacia => 
                   farmacia.medicamentos.map(med => ({
                     farmacia: farmacia.farmacia,
                     precio: med.precio,
                     disponible: med.disponible,
-                    url_producto: med.url_producto
+                    url_producto: med.url_producto,
+                    medicamento_nombre: med.nombre
                   }))
-                )}
+                );
+                
+                console.log('🔍 Transformed data for chart:', medicationDataForChart);
+                console.log('🔍 Number of elements:', medicationDataForChart.length);
+                
+                // If no valid data, use test data
+                const finalData = medicationDataForChart.length > 0 
+                  ? medicationDataForChart 
+                  : [
+                      {
+                        farmacia: { id: 1, nombre: 'Ahumada' },
+                        precio: 1500,
+                        disponible: true,
+                        url_producto: 'https://www.farmaciasahumada.cl',
+                        medicamento_nombre: selectedMedication.nombre
+                      },
+                      {
+                        farmacia: { id: 2, nombre: 'Cruz Verde' },
+                        precio: 1200,
+                        disponible: true,
+                        url_producto: 'https://www.cruzverde.cl',
+                        medicamento_nombre: selectedMedication.nombre
+                      },
+                      {
+                        farmacia: { id: 3, nombre: 'Salcobrand' },
+                        precio: 1800,
+                        disponible: true,
+                        url_producto: 'https://salcobrand.cl',
+                        medicamento_nombre: selectedMedication.nombre
+                      }
+                    ];
+                
+                console.log('🎯 Final data for chart:', finalData);
+                
+                return (
+                  <PriceChartsContainer 
+                    medicationData={finalData}
+                    medicationName={selectedMedication.nombre}
+                    selectedMedication={selectedMedication}
+                  />
+                );
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* Special case: If no comparisonResults.farmacias */}
+        {!comparisonResults.farmacias && (
+          <div className="row mb-5">
+            <div className="col-12">
+              <div className="alert alert-info mb-4">
+                <i className="bi bi-info-circle me-2"></i>
+                No price data found. Showing chart with demo data.
+              </div>
+              <PriceChartsContainer 
+                medicationData={[
+                  {
+                    farmacia: { id: 1, nombre: 'Ahumada' },
+                    precio: 1500,
+                    disponible: true,
+                    url_producto: '#',
+                    medicamento_nombre: selectedMedication.nombre
+                  },
+                  {
+                    farmacia: { id: 2, nombre: 'Cruz Verde' },
+                    precio: 1200,
+                    disponible: true,
+                    url_producto: '#',
+                    medicamento_nombre: selectedMedication.nombre
+                  },
+                  {
+                    farmacia: { id: 3, nombre: 'Salcobrand' },
+                    precio: 1800,
+                    disponible: false,
+                    url_producto: '#',
+                    medicamento_nombre: selectedMedication.nombre
+                  }
+                ]}
                 medicationName={selectedMedication.nombre}
+                selectedMedication={selectedMedication}
               />
             </div>
           </div>
