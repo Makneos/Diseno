@@ -10,6 +10,7 @@ async function scrapeFarmaciasAhumadaMedicamentos() {
 
   const page = await browser.newPage();
   const outputFile = "ahumada_medicamentos.json";
+  const priceHistoryFile = "price_history.json";
   let totalProducts = 0;
   let loadMoreCount = 0;
   
@@ -18,28 +19,42 @@ async function scrapeFarmaciasAhumadaMedicamentos() {
   
   const MAX_LOAD_MORE = 20; // Load more 20 times
 
-  // Initialize the JSON file with an empty array or read existing data
+  // Check if this is the first run or a price monitoring run
+  const isFirstRun = !fs.existsSync(outputFile);
+  
+  // Initialize files
+  let existingProducts = [];
+  let priceHistory = {};
+  
   try {
-    if (fs.existsSync(outputFile)) {
-      // If file exists, read existing data to check for existing product IDs
-      const existingData = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
+    if (!isFirstRun) {
+      // Read existing products for price monitoring
+      existingProducts = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
       
-      // Add existing product IDs to the set of registered IDs
-      existingData.forEach(product => {
+      // Add existing product IDs to the set
+      existingProducts.forEach(product => {
         if (product.productId && product.productId !== 'No product ID found') {
           registeredProductIds.add(product.productId);
         }
       });
       
-      console.log(`Found ${registeredProductIds.size} existing product IDs in file`);
+      console.log(`🔍 PRICE MONITORING MODE - Found ${registeredProductIds.size} existing products to monitor`);
+      
+      // Load or initialize price history
+      if (fs.existsSync(priceHistoryFile)) {
+        priceHistory = JSON.parse(fs.readFileSync(priceHistoryFile, 'utf8'));
+      }
     } else {
-      // Create new file with empty array
+      console.log(`🆕 FIRST RUN MODE - Starting initial product scraping`);
+      // Create new files with empty data
       fs.writeFileSync(outputFile, JSON.stringify([], null, 2));
+      fs.writeFileSync(priceHistoryFile, JSON.stringify({}, null, 2));
     }
   } catch (error) {
-    console.error("Error handling existing file:", error);
-    // Create new file with empty array if there was an error
+    console.error("Error handling existing files:", error);
+    // Create new files if there was an error
     fs.writeFileSync(outputFile, JSON.stringify([], null, 2));
+    fs.writeFileSync(priceHistoryFile, JSON.stringify({}, null, 2));
   }
 
   try {
@@ -68,62 +83,268 @@ async function scrapeFarmaciasAhumadaMedicamentos() {
     // Give time for all content to load
     await sleep(3000);
     
-    // Initial products extraction
-    console.log("Extracting initial products...");
-    let initialProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
-    console.log(`Found ${initialProducts.length} initial products`);
-    
-    // Filter out products with duplicate IDs
-    const uniqueInitialProducts = filterUniqueProducts(initialProducts, registeredProductIds);
-    console.log(`After filtering, ${uniqueInitialProducts.length} unique products remain`);
-    
-    if (uniqueInitialProducts.length > 0) {
-      await appendProductsToJson(outputFile, uniqueInitialProducts);
-      totalProducts += uniqueInitialProducts.length;
-      console.log(`✅ Initial products scraped and saved. Total: ${totalProducts} products`);
+    if (isFirstRun) {
+      // FIRST RUN: Extract all products normally
+      await performInitialScraping(page, containerSelector, productsContainerSelector, outputFile, registeredProductIds, MAX_LOAD_MORE);
+    } else {
+      // PRICE MONITORING: Only check prices for existing products
+      await performPriceMonitoring(page, containerSelector, productsContainerSelector, existingProducts, outputFile, priceHistoryFile, priceHistory, MAX_LOAD_MORE);
     }
     
-    // Click "Más Resultados" button multiple times
-    while (loadMoreCount < MAX_LOAD_MORE) {
-      const hasMoreResults = await clickLoadMoreButton(page);
-      
-      if (!hasMoreResults) {
-        console.log("No more 'Más Resultados' button found");
-        break;
-      }
-      
-      loadMoreCount++;
-      console.log(`Clicked 'Más Resultados' button ${loadMoreCount} time(s)`);
-      
-      // Wait for new products to load
-      await sleep(5000);
-      
-      // Extract new products
-      const newProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
-      console.log(`Found ${newProducts.length} products after clicking 'Más Resultados' ${loadMoreCount} time(s)`);
-      
-      if (newProducts.length > 0) {
-        // Filter out products with duplicate IDs
-        const uniqueNewProducts = filterUniqueProducts(newProducts, registeredProductIds);
-        console.log(`After filtering, ${uniqueNewProducts.length} unique new products remain`);
-        
-        if (uniqueNewProducts.length > 0) {
-          await appendProductsToJson(outputFile, uniqueNewProducts);
-          totalProducts += uniqueNewProducts.length;
-          console.log(`✅ New unique products scraped and saved. Running total: ${totalProducts} products`);
-        } else {
-          console.log("No new unique products found after 'Más Resultados' click");
-        }
-      }
-    }
   } catch (error) {
     console.error("Error during scraping:", error);
   } finally {
-    console.log(`✅ Scraping completed. Total unique products: ${totalProducts}`);
+    console.log(`✅ Process completed`);
     await browser.close();
   }
 
   return totalProducts;
+}
+
+async function performInitialScraping(page, containerSelector, productsContainerSelector, outputFile, registeredProductIds, MAX_LOAD_MORE) {
+  let totalProducts = 0;
+  let loadMoreCount = 0;
+  
+  console.log("Extracting initial products...");
+  let initialProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
+  console.log(`Found ${initialProducts.length} initial products`);
+  
+  // Filter out products with duplicate IDs
+  const uniqueInitialProducts = filterUniqueProducts(initialProducts, registeredProductIds);
+  console.log(`After filtering, ${uniqueInitialProducts.length} unique products remain`);
+  
+  if (uniqueInitialProducts.length > 0) {
+    await appendProductsToJson(outputFile, uniqueInitialProducts);
+    totalProducts += uniqueInitialProducts.length;
+    console.log(`✅ Initial products scraped and saved. Total: ${totalProducts} products`);
+  }
+  
+  // Click "Más Resultados" button multiple times
+  while (loadMoreCount < MAX_LOAD_MORE) {
+    const hasMoreResults = await clickLoadMoreButton(page);
+    
+    if (!hasMoreResults) {
+      console.log("No more 'Más Resultados' button found");
+      break;
+    }
+    
+    loadMoreCount++;
+    console.log(`Clicked 'Más Resultados' button ${loadMoreCount} time(s)`);
+    
+    // Wait for new products to load
+    await sleep(5000);
+    
+    // Extract new products
+    const newProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
+    console.log(`Found ${newProducts.length} products after clicking 'Más Resultados' ${loadMoreCount} time(s)`);
+    
+    if (newProducts.length > 0) {
+      // Filter out products with duplicate IDs
+      const uniqueNewProducts = filterUniqueProducts(newProducts, registeredProductIds);
+      console.log(`After filtering, ${uniqueNewProducts.length} unique new products remain`);
+      
+      if (uniqueNewProducts.length > 0) {
+        await appendProductsToJson(outputFile, uniqueNewProducts);
+        totalProducts += uniqueNewProducts.length;
+        console.log(`✅ New unique products scraped and saved. Running total: ${totalProducts} products`);
+      } else {
+        console.log("No new unique products found after 'Más Resultados' click");
+      }
+    }
+  }
+  
+  console.log(`✅ Initial scraping completed. Total unique products: ${totalProducts}`);
+}
+
+async function performPriceMonitoring(page, containerSelector, productsContainerSelector, existingProducts, outputFile, priceHistoryFile, priceHistory, MAX_LOAD_MORE) {
+  let loadMoreCount = 0;
+  let priceChanges = [];
+  const currentTimestamp = new Date().toISOString();
+  
+  console.log("Starting price monitoring...");
+  
+  // Extract current products from the page
+  let currentProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
+  
+  // Load more products to get complete current data
+  while (loadMoreCount < MAX_LOAD_MORE) {
+    const hasMoreResults = await clickLoadMoreButton(page);
+    
+    if (!hasMoreResults) {
+      console.log("No more 'Más Resultados' button found");
+      break;
+    }
+    
+    loadMoreCount++;
+    console.log(`Loading more products for monitoring... (${loadMoreCount}/${MAX_LOAD_MORE})`);
+    
+    await sleep(5000);
+    
+    const newProducts = await extractAllProducts(page, containerSelector, productsContainerSelector);
+    currentProducts = [...currentProducts, ...newProducts];
+  }
+  
+  console.log(`Found ${currentProducts.length} current products for price comparison`);
+  
+  // Create a map of current products by ID for quick lookup
+  const currentProductsMap = new Map();
+  currentProducts.forEach(product => {
+    if (product.productId && product.productId !== 'No product ID found') {
+      currentProductsMap.set(product.productId, product);
+    }
+  });
+  
+  // Compare prices with existing products
+  const updatedProducts = existingProducts.map(existingProduct => {
+    const currentProduct = currentProductsMap.get(existingProduct.productId);
+    
+    if (currentProduct) {
+      // Initialize price history for this product if it doesn't exist
+      if (!priceHistory[existingProduct.productId]) {
+        priceHistory[existingProduct.productId] = {
+          title: existingProduct.title,
+          prices: [
+            {
+              price: existingProduct.price,
+              timestamp: existingProduct.lastUpdated || currentTimestamp,
+              isInitial: true
+            }
+          ]
+        };
+      }
+      
+      // Check if price has changed
+      if (currentProduct.price !== existingProduct.price) {
+        console.log(`💰 PRICE CHANGE DETECTED: ${existingProduct.title}`);
+        console.log(`   Old price: ${existingProduct.price} → New price: ${currentProduct.price}`);
+        
+        // Add new price to history
+        priceHistory[existingProduct.productId].prices.push({
+          price: currentProduct.price,
+          timestamp: currentTimestamp,
+          previousPrice: existingProduct.price
+        });
+        
+        // Track this change
+        priceChanges.push({
+          productId: existingProduct.productId,
+          title: existingProduct.title,
+          oldPrice: existingProduct.price,
+          newPrice: currentProduct.price,
+          timestamp: currentTimestamp,
+          trend: getPriceTrend(existingProduct.price, currentProduct.price)
+        });
+        
+        // Update the product with new price and timestamp
+        return {
+          ...existingProduct,
+          price: currentProduct.price,
+          image: currentProduct.image, // Update image in case it changed
+          lastUpdated: currentTimestamp,
+          priceChanged: true
+        };
+      } else {
+        // Price hasn't changed, just update timestamp
+        return {
+          ...existingProduct,
+          lastUpdated: currentTimestamp,
+          priceChanged: false
+        };
+      }
+    } else {
+      // Product not found in current scraping (might be out of stock)
+      console.log(`⚠️  Product not found in current scraping: ${existingProduct.title}`);
+      return {
+        ...existingProduct,
+        lastUpdated: currentTimestamp,
+        status: 'not_found'
+      };
+    }
+  });
+  
+  // Save updated products
+  fs.writeFileSync(outputFile, JSON.stringify(updatedProducts, null, 2));
+  
+  // Save price history
+  fs.writeFileSync(priceHistoryFile, JSON.stringify(priceHistory, null, 2));
+  
+  // Generate and display price change report
+  generatePriceReport(priceChanges, priceHistory);
+  
+  console.log(`✅ Price monitoring completed. ${priceChanges.length} price changes detected.`);
+}
+
+function getPriceTrend(oldPrice, newPrice) {
+  // Extract numeric values from price strings
+  const oldNumeric = parseFloat(oldPrice.replace(/[^0-9.,]/g, '').replace(',', '.'));
+  const newNumeric = parseFloat(newPrice.replace(/[^0-9.,]/g, '').replace(',', '.'));
+  
+  if (isNaN(oldNumeric) || isNaN(newNumeric)) {
+    return 'unknown';
+  }
+  
+  if (newNumeric > oldNumeric) {
+    return 'increased';
+  } else if (newNumeric < oldNumeric) {
+    return 'decreased';
+  } else {
+    return 'unchanged';
+  }
+}
+
+function generatePriceReport(priceChanges, priceHistory) {
+  if (priceChanges.length === 0) {
+    console.log("\n📈 PRICE REPORT: No price changes detected in this monitoring cycle.");
+    return;
+  }
+  
+  console.log("\n📈 PRICE CHANGE REPORT");
+  console.log("=" .repeat(60));
+  
+  const increases = priceChanges.filter(change => change.trend === 'increased');
+  const decreases = priceChanges.filter(change => change.trend === 'decreased');
+  
+  console.log(`Total price changes: ${priceChanges.length}`);
+  console.log(`Price increases: ${increases.length}`);
+  console.log(`Price decreases: ${decreases.length}`);
+  console.log("-".repeat(60));
+  
+  // Show price increases
+  if (increases.length > 0) {
+    console.log("\n📈 PRICE INCREASES:");
+    increases.forEach(change => {
+      console.log(`• ${change.title}`);
+      console.log(`  ${change.oldPrice} → ${change.newPrice}`);
+    });
+  }
+  
+  // Show price decreases
+  if (decreases.length > 0) {
+    console.log("\n📉 PRICE DECREASES:");
+    decreases.forEach(change => {
+      console.log(`• ${change.title}`);
+      console.log(`  ${change.oldPrice} → ${change.newPrice}`);
+    });
+  }
+  
+  // Show products with most price changes
+  console.log("\n🔄 PRODUCTS WITH MOST PRICE CHANGES:");
+  const productsByChanges = Object.entries(priceHistory)
+    .map(([productId, history]) => ({
+      productId,
+      title: history.title,
+      totalChanges: history.prices.length - 1, // -1 because first entry is initial price
+      latestPrice: history.prices[history.prices.length - 1].price
+    }))
+    .filter(product => product.totalChanges > 0)
+    .sort((a, b) => b.totalChanges - a.totalChanges)
+    .slice(0, 5);
+  
+  productsByChanges.forEach(product => {
+    console.log(`• ${product.title} (${product.totalChanges} changes) - Current: ${product.latestPrice}`);
+  });
+  
+  console.log("\n" + "=".repeat(60));
 }
 
 // Function to filter products and update the registeredProductIds set
@@ -235,8 +456,15 @@ async function appendProductsToJson(filePath, newProducts) {
       allProducts = JSON.parse(fileContent);
     }
     
+    // Add timestamp to new products
+    const timestamp = new Date().toISOString();
+    const productsWithTimestamp = newProducts.map(product => ({
+      ...product,
+      lastUpdated: timestamp
+    }));
+    
     // Append the new products
-    allProducts = [...allProducts, ...newProducts];
+    allProducts = [...allProducts, ...productsWithTimestamp];
     
     // Write the updated array back to the file
     fs.writeFileSync(filePath, JSON.stringify(allProducts, null, 2));
@@ -414,6 +642,6 @@ async function clickLoadMoreButton(page) {
 // Execute
 scrapeFarmaciasAhumadaMedicamentos()
   .then((totalProducts) =>
-    console.log(`Process finished with ${totalProducts} unique products saved to JSON.`)
+    console.log(`Process finished.`)
   )
   .catch((error) => console.error("Error in scraping process:", error));
