@@ -36,6 +36,8 @@ function LoginPage() {
     setIsLoading(true);
 
     try {
+      console.log('🔑 Attempting login for:', formData.email);
+      
       const response = await fetch('http://localhost:5000/api/usuarios/login', {
         method: 'POST',
         headers: {
@@ -48,38 +50,51 @@ function LoginPage() {
       });
 
       const data = await response.json();
+      console.log('📥 Login response:', data);
 
       if (!response.ok) {
         throw new Error(data.error || 'Error logging in');
       }
 
-      console.log('Authenticated user:', data);
-      console.log('JWT Token received:', data.token ? 'YES' : 'NO'); // Debug
+      console.log('✅ Login successful for user:', data.nombre);
 
-      // Guardar datos del usuario
-      sessionStorage.setItem('user', JSON.stringify({
-        id: data.id,
-        nombre: data.nombre,
-        email: data.email
-      }));
-
-      // *** NUEVO: Guardar el token JWT ***
-      if (data.token) {
-        sessionStorage.setItem('token', data.token);
-        console.log('Token saved to sessionStorage'); // Debug
-      } else {
-        console.error('No token received from server');
+      // ✅ CRÍTICO: Asegurar que el token se guarde correctamente
+      if (!data.token) {
+        throw new Error('No token received from server');
       }
 
+      const userData = {
+        id: data.id,
+        nombre: data.nombre,
+        email: data.email,
+        token: data.token  // ← Este es el campo crítico
+      };
+
+      console.log('💾 Saving user data to sessionStorage:', userData);
+      
+      // Guardar en sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      
+      // ✅ Verificar que se guardó correctamente
+      const savedData = sessionStorage.getItem('user');
+      console.log('✅ Verification - Data saved in sessionStorage:', savedData ? 'YES' : 'NO');
+      
+      if (savedData) {
+        const parsedData = JSON.parse(savedData);
+        console.log('🔍 Parsed saved data has token:', !!parsedData.token);
+      }
+
+      setLoadingMessage('Login successful! Redirecting...');
+      
+      // ✅ Usar setTimeout para asegurar que el sessionStorage se actualice
       setTimeout(() => {
-        setLoadingMessage('Login successful! Redirecting...');
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
+        console.log('🚀 Redirecting to home page...');
+        // Usar replace: true para evitar problemas de historial
+        navigate('/', { replace: true });
       }, 1000);
 
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('❌ Login error:', error);
       setErrorMessage(error.message);
       setIsLoading(false);
     }

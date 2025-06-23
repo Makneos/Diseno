@@ -28,6 +28,9 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             <div className="flex-grow-1">
               <h5 className="card-title mb-1">{medication.name}</h5>
               <p className="text-muted mb-0">{medication.dosage}</p>
+              {medication.principio_activo && (
+                <small className="text-info">🧬 {medication.principio_activo}</small>
+              )}
             </div>
           </div>
 
@@ -36,7 +39,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
               <span className="fw-bold">Schedule</span>
               <small className="text-muted">{medication.frequency}</small>
             </div>
-            {medication.times.length > 0 && (
+            {medication.times && medication.times.length > 0 && (
               <div className="d-flex flex-wrap gap-1">
                 {medication.times.map((time, index) => (
                   <span key={index} className="badge bg-primary reminder-badge">
@@ -103,7 +106,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             
             <button 
               className="btn btn-outline-danger btn-sm"
-              onClick={() => onDelete(medication.id)}
+              onClick={() => onDelete(medication)}
               title="Delete medication"
             >
               <i className="bi bi-trash"></i>

@@ -4,10 +4,9 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfilePage from './pages/ProfilePage';
-import GoogleMapsComponent from "./pages/GoogleMapsComponent";
-import PriceComparisonPage from "./pages/PriceComparisonPage";
-import MedicationDetailPage from "./pages/MedicationDetailPage";
 import MyMedicationsPage from './pages/MyMedicationsPage';
+import GoogleMapsComponent from "./pages/GoogleMapsComponent";
+import AuthGuard from './components/AuthGuard'; // ← Importar AuthGuard
 import './App.css';
 
 function App() {
@@ -25,19 +24,33 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/* 🌐 Rutas públicas (no requieren autenticación) */}
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
+          
+          {/* 🔒 Rutas protegidas (requieren autenticación con AuthGuard) */}
+          <Route path="/profile" element={
+            <AuthGuard>
+              <ProfilePage />
+            </AuthGuard>
+          } />
+          
+          <Route path="/my-meds" element={
+            <AuthGuard>
+              <MyMedicationsPage />
+            </AuthGuard>
+          } />
+          
+          {/* 🗺️ Ruta del mapa (puede ser pública o protegida según tu decisión) */}
           <Route path="/GoogleMapsComponent" element={
             <GoogleMapsComponent 
               selectedPharmacies={defaultProps.selectedPharmacies} 
               distance={defaultProps.distance} 
             />
           } />
-          <Route path="/price-comparison" element={<PriceComparisonPage />} />
-          <Route path="/medication/:medicationId" element={<MedicationDetailPage />} />
-          <Route path="/my-meds" element={<MyMedicationsPage />} />
+          
+          {/* 🚫 Ruta de fallback */}
           <Route path="*" element={<div>Página no encontrada</div>} />
         </Routes>
       </div>
