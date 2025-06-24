@@ -5,9 +5,6 @@
   "dependencies": {
     "@react-google-maps/api": "^2.20.6",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.2.0",
-    "@testing-library/user-event": "^13.5.0",
     "@vis.gl/react-google-maps": "^1.5.2",
     "bootstrap": "^5.3.5",
     "cors": "^2.8.5",
@@ -46,6 +43,9 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "nodemon": "^3.1.9"
   },
   "engines": {
