@@ -8,13 +8,15 @@ const fs = require('fs');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 console.log('Directorio actual:', process.cwd());
 
-// CONFIGURACIÓN TEMPORAL DIRECTA - IGNORAR .env
+// CONFIGURACIÓN ADAPTATIVA - Azure o Local
 const DB_CONFIG = {
-  host: 'localhost',
-  user: 'root',  // ← FORZAR root
-  password: 'Farmacia?#2027',  // ← CAMBIAR si root tiene contraseña
-  database: 'farmacia',
-  jwt_secret: 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || 'Farmacia?#2027',
+  database: process.env.DB_NAME || 'farmacia',
+  port: process.env.DB_PORT || 3306,
+  ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : false, // SSL solo para Azure
+  jwt_secret: process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345'
 };
 
 // Verificar que las variables estén disponibles
@@ -23,7 +25,10 @@ console.log('- DB_HOST:', DB_CONFIG.host);
 console.log('- DB_USER:', DB_CONFIG.user);
 console.log('- DB_PASSWORD:', DB_CONFIG.password ? 'SÍ' : 'NO');
 console.log('- DB_NAME:', DB_CONFIG.database);
+console.log('- DB_PORT:', DB_CONFIG.port);
+console.log('- SSL:', DB_CONFIG.ssl ? 'HABILITADO' : 'DESHABILITADO');
 console.log('- JWT_SECRET:', DB_CONFIG.jwt_secret ? 'SÍ' : 'NO');
+console.log('- ENTORNO:', process.env.DB_HOST ? 'AZURE' : 'LOCAL');
 
 // Exportar JWT_SECRET para que lo usen las rutas
 process.env.JWT_SECRET = DB_CONFIG.jwt_secret;
@@ -41,9 +46,13 @@ const pool = mysql.createPool({
   user: DB_CONFIG.user,
   password: DB_CONFIG.password,
   database: DB_CONFIG.database,
+  port: DB_CONFIG.port,
+  ssl: DB_CONFIG.ssl,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  acquireTimeout: 60000,
+  timeout: 60000
 }).promise();
 
 // Middleware para pasar la conexión a las rutas
@@ -85,14 +94,20 @@ const testConnection = async () => {
     connection.release();
   } catch (error) {
     console.error('❌ Error al conectar a MySQL:', error.message);
-    console.error('Verifica que:');
-    console.error('1. MySQL esté ejecutándose');
-    console.error('2. El usuario "farmacia_app" exista');
-    console.error('3. La contraseña sea correcta');
-    console.error('\nPara crear el usuario ejecuta en MySQL:');
-    console.error("CREATE USER 'farmacia_app'@'localhost' IDENTIFIED BY 'Farmacia?#2027';");
-    console.error("GRANT ALL PRIVILEGES ON farmacia.* TO 'farmacia_app'@'localhost';");
-    console.error("FLUSH PRIVILEGES;");
+    
+    if (process.env.DB_HOST) {
+      // Estamos en Azure
+      console.error('Verifica que:');
+      console.error('1. El servidor MySQL de Azure esté ejecutándose');
+      console.error('2. Las variables de entorno estén configuradas correctamente');
+      console.error('3. El firewall permita conexiones desde Azure');
+    } else {
+      // Estamos en local
+      console.error('Verifica que:');
+      console.error('1. MySQL esté ejecutándose');
+      console.error('2. El usuario "root" exista');
+      console.error('3. La contraseña sea correcta');
+    }
   }
 };
 
@@ -164,7 +179,6 @@ async function checkAndCreateTables(connection) {
     console.log('Tabla precios_medicamentos creada correctamente');
   }
 
-  // ✅ NUEVAS TABLAS PARA TRATAMIENTOS
   // Verificar si la tabla tratamientos existe
   const [tratamientosTables] = await connection.query('SHOW TABLES LIKE "tratamientos"');
   if (tratamientosTables.length === 0) {
@@ -242,21 +256,19 @@ try {
   const usuariosRoutes = require('./api/usuarios');
   const medicamentosRoutes = require('./api/medicamentos');
   const pharmacyStockRoutes = require('./api/pharmacyStock');
-  
-  // ✅ NUEVA RUTA DE TRATAMIENTOS
   const tratamientosRoutes = require('./api/tratamientos');
 
   // Registrar rutas
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/medicamentos', medicamentosRoutes);
   app.use('/api/stock', pharmacyStockRoutes);
-  app.use('/api/tratamientos', tratamientosRoutes);  // ✅ NUEVA RUTA
+  app.use('/api/tratamientos', tratamientosRoutes);
   
   console.log('✅ Rutas API cargadas correctamente:');
   console.log('   - /api/usuarios');
   console.log('   - /api/medicamentos');
   console.log('   - /api/stock');
-  console.log('   - /api/tratamientos');  // ✅ NUEVA RUTA
+  console.log('   - /api/tratamientos');
 } catch (error) {
   console.error('❌ Error al cargar módulos de API:', error);
 }
@@ -266,13 +278,14 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'API de Farmacia funcionando correctamente',
     database: DB_CONFIG.database,
-    environment: process.env.NODE_ENV || 'development',
+    host: DB_CONFIG.host,
+    environment: process.env.DB_HOST ? 'Azure' : 'Local',
     jwt_configured: DB_CONFIG.jwt_secret ? true : false,
     available_apis: [
       '/api/usuarios',
       '/api/medicamentos',
       '/api/stock',
-      '/api/tratamientos'  // ✅ NUEVA API
+      '/api/tratamientos'
     ]
   });
 });
@@ -281,10 +294,11 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Servidor ejecutándose en http://localhost:${port}`);
   console.log(`📊 Usando base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
+  console.log(`🌐 Entorno: ${process.env.DB_HOST ? 'AZURE' : 'LOCAL'}`);
   console.log(`🔐 JWT configurado: ${DB_CONFIG.jwt_secret ? 'SÍ' : 'NO'}`);
   console.log(`📦 APIs disponibles:`);
   console.log(`   - Usuarios: /api/usuarios`);
   console.log(`   - Medicamentos: /api/medicamentos`);
   console.log(`   - Stock: /api/stock`);
-  console.log(`   - Tratamientos: /api/tratamientos`);  // ✅ NUEVA API
+  console.log(`   - Tratamientos: /api/tratamientos`);
 });
