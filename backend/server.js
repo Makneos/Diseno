@@ -6,54 +6,51 @@ const fs = require('fs');
 
 // Cargar variables de entorno
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-console.log('Directorio actual:', process.cwd());
 
-// CONFIGURACIÓN ADAPTATIVA - Azure o Local
+const app = express();
+const port = process.env.PORT || 5000;
+
+// ✅ CONFIGURACIÓN PARA RAILWAY (usando variables de entorno)
 const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'Farmacia?#2027',
   database: process.env.DB_NAME || 'farmacia',
   port: process.env.DB_PORT || 3306,
-  ssl: process.env.DB_HOST ? { rejectUnauthorized: false } : false, // SSL solo para Azure
-  jwt_secret: process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345'
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 };
 
+// JWT Secret desde variables de entorno
+const JWT_SECRET = process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345';
+process.env.JWT_SECRET = JWT_SECRET;
+
 // Verificar que las variables estén disponibles
-console.log('Configuración cargada:');
+console.log('🔧 Configuración cargada:');
 console.log('- DB_HOST:', DB_CONFIG.host);
 console.log('- DB_USER:', DB_CONFIG.user);
 console.log('- DB_PASSWORD:', DB_CONFIG.password ? 'SÍ' : 'NO');
 console.log('- DB_NAME:', DB_CONFIG.database);
 console.log('- DB_PORT:', DB_CONFIG.port);
-console.log('- SSL:', DB_CONFIG.ssl ? 'HABILITADO' : 'DESHABILITADO');
-console.log('- JWT_SECRET:', DB_CONFIG.jwt_secret ? 'SÍ' : 'NO');
-console.log('- ENTORNO:', process.env.DB_HOST ? 'AZURE' : 'LOCAL');
-
-// Exportar JWT_SECRET para que lo usen las rutas
-process.env.JWT_SECRET = DB_CONFIG.jwt_secret;
-
-const app = express();
-const port = process.env.PORT || 5000;
+console.log('- JWT_SECRET:', JWT_SECRET ? 'SÍ' : 'NO');
+console.log('- NODE_ENV:', process.env.NODE_ENV || 'development');
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' 
+    ? [
+        'https://tu-app.azurewebsites.net',  // 🔄 CAMBIAR POR TU URL DE AZURE
+        'https://www.tu-dominio.com'          // 🔄 CAMBIAR SI TIENES DOMINIO
+      ]
+    : ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
+
 app.use(express.json());
 
-// Crear pool de conexiones a MySQL usando la configuración
-const pool = mysql.createPool({
-  host: DB_CONFIG.host,
-  user: DB_CONFIG.user,
-  password: DB_CONFIG.password,
-  database: DB_CONFIG.database,
-  port: DB_CONFIG.port,
-  ssl: DB_CONFIG.ssl,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  acquireTimeout: 60000,
-  timeout: 60000
-}).promise();
+// Crear pool de conexiones a MySQL usando las variables de entorno
+const pool = mysql.createPool(DB_CONFIG).promise();
 
 // Middleware para pasar la conexión a las rutas
 app.use((req, res, next) => {
@@ -64,61 +61,66 @@ app.use((req, res, next) => {
 // Verificar conexión y estructura de la base de datos
 const testConnection = async () => {
   try {
+    console.log('🔄 Verificando conexión a base de datos...');
     const connection = await pool.getConnection();
     console.log('✅ Conexión a MySQL establecida correctamente');
-    console.log(`✅ Conectado a la base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
+    console.log(`✅ Conectado a la base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
     
     // Verificar si la tabla usuarios existe
     try {
       const [tables] = await connection.query('SHOW TABLES LIKE "usuarios"');
       if (tables.length === 0) {
-        console.log('La tabla usuarios no existe, creándola...');
-        await connection.query(`
-          CREATE TABLE usuarios (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            nombre VARCHAR(100) NOT NULL,
-            email VARCHAR(100) NOT NULL UNIQUE,
-            contrasena VARCHAR(255) NOT NULL,
-            fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-          )
-        `);
-        console.log('Tabla usuarios creada correctamente');
+        console.log('⚠️  La tabla usuarios no existe');
+        // En producción, no crear tablas automáticamente
+        if (process.env.NODE_ENV !== 'production') {
+          console.log('Creando tabla usuarios...');
+          await connection.query(`
+            CREATE TABLE usuarios (
+              id INT AUTO_INCREMENT PRIMARY KEY,
+              nombre VARCHAR(100) NOT NULL,
+              email VARCHAR(100) NOT NULL UNIQUE,
+              contrasena VARCHAR(255) NOT NULL,
+              fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+          `);
+          console.log('Tabla usuarios creada correctamente');
+        }
+      } else {
+        console.log('✅ Tabla usuarios encontrada');
       }
       
       // Verificar otras tablas necesarias
-      await checkAndCreateTables(connection);
+      if (process.env.NODE_ENV !== 'production') {
+        await checkAndCreateTables(connection);
+      }
     } catch (err) {
-      console.error('Error al verificar/crear tabla:', err);
+      console.error('⚠️  Error al verificar tablas:', err.message);
     }
     
     connection.release();
   } catch (error) {
     console.error('❌ Error al conectar a MySQL:', error.message);
     
-    if (process.env.DB_HOST) {
-      // Estamos en Azure
-      console.error('Verifica que:');
-      console.error('1. El servidor MySQL de Azure esté ejecutándose');
-      console.error('2. Las variables de entorno estén configuradas correctamente');
-      console.error('3. El firewall permita conexiones desde Azure');
+    if (process.env.NODE_ENV === 'production') {
+      console.error('🚂 Verifica la configuración de Railway:');
+      console.error('1. Variables de entorno configuradas correctamente');
+      console.error('2. Base de datos MySQL activa en Railway');
+      console.error('3. Credenciales correctas');
     } else {
-      // Estamos en local
-      console.error('Verifica que:');
+      console.error('💻 Verifica la configuración local:');
       console.error('1. MySQL esté ejecutándose');
-      console.error('2. El usuario "root" exista');
-      console.error('3. La contraseña sea correcta');
+      console.error('2. Usuario y contraseña correctos');
+      console.error('3. Base de datos existe');
     }
   }
 };
 
-// Función para verificar y crear todas las tablas necesarias
+// Función para verificar y crear todas las tablas necesarias (solo en desarrollo)
 async function checkAndCreateTables(connection) {
-  // Verificar si la tabla medicamentos existe
-  const [medicamentosTables] = await connection.query('SHOW TABLES LIKE "medicamentos"');
-  if (medicamentosTables.length === 0) {
-    console.log('La tabla medicamentos no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE medicamentos (
+  const tables = [
+    {
+      name: 'medicamentos',
+      sql: `CREATE TABLE medicamentos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(255) NOT NULL,
         principio_activo VARCHAR(255) NOT NULL,
@@ -126,17 +128,11 @@ async function checkAndCreateTables(connection) {
         imagen_url VARCHAR(255),
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY unique_nombre (nombre)
-      )
-    `);
-    console.log('Tabla medicamentos creada correctamente');
-  }
-
-  // Verificar si la tabla farmacias existe
-  const [farmaciasTables] = await connection.query('SHOW TABLES LIKE "farmacias"');
-  if (farmaciasTables.length === 0) {
-    console.log('La tabla farmacias no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE farmacias (
+      )`
+    },
+    {
+      name: 'farmacias',
+      sql: `CREATE TABLE farmacias (
         id INT AUTO_INCREMENT PRIMARY KEY,
         nombre VARCHAR(100) NOT NULL,
         sitio_web VARCHAR(255),
@@ -144,26 +140,11 @@ async function checkAndCreateTables(connection) {
         activo BOOLEAN DEFAULT TRUE,
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY unique_nombre (nombre)
-      )
-    `);
-    console.log('Tabla farmacias creada correctamente');
-    
-    // Insertar farmacias predeterminadas
-    await connection.query(`
-      INSERT INTO farmacias (nombre, sitio_web, logo_url) VALUES 
-      ('Ahumada', 'https://www.farmaciasahumada.cl', 'https://www.farmaciasahumada.cl/logo.png'),
-      ('Cruz Verde', 'https://www.cruzverde.cl', 'https://www.cruzverde.cl/logo.png'),
-      ('Salcobrand', 'https://salcobrand.cl', 'https://salcobrand.cl/logo.png')
-    `);
-    console.log('Datos predeterminados de farmacias insertados');
-  }
-
-  // Verificar si la tabla precios_medicamentos existe
-  const [preciosTables] = await connection.query('SHOW TABLES LIKE "precios_medicamentos"');
-  if (preciosTables.length === 0) {
-    console.log('La tabla precios_medicamentos no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE precios_medicamentos (
+      )`
+    },
+    {
+      name: 'precios_medicamentos',
+      sql: `CREATE TABLE precios_medicamentos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         medicamento_id INT NOT NULL,
         farmacia_id INT NOT NULL,
@@ -174,17 +155,11 @@ async function checkAndCreateTables(connection) {
         FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE,
         FOREIGN KEY (farmacia_id) REFERENCES farmacias(id) ON DELETE CASCADE,
         UNIQUE KEY unique_med_farm (medicamento_id, farmacia_id)
-      )
-    `);
-    console.log('Tabla precios_medicamentos creada correctamente');
-  }
-
-  // Verificar si la tabla tratamientos existe
-  const [tratamientosTables] = await connection.query('SHOW TABLES LIKE "tratamientos"');
-  if (tratamientosTables.length === 0) {
-    console.log('La tabla tratamientos no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE tratamientos (
+      )`
+    },
+    {
+      name: 'tratamientos',
+      sql: `CREATE TABLE tratamientos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         usuario_id INT NOT NULL,
         nombre VARCHAR(100) NOT NULL,
@@ -194,17 +169,11 @@ async function checkAndCreateTables(connection) {
         activo BOOLEAN DEFAULT TRUE,
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-      )
-    `);
-    console.log('Tabla tratamientos creada correctamente');
-  }
-
-  // Verificar si la tabla medicamentos_tratamientos existe
-  const [medTratTables] = await connection.query('SHOW TABLES LIKE "medicamentos_tratamientos"');
-  if (medTratTables.length === 0) {
-    console.log('La tabla medicamentos_tratamientos no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE medicamentos_tratamientos (
+      )`
+    },
+    {
+      name: 'medicamentos_tratamientos',
+      sql: `CREATE TABLE medicamentos_tratamientos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         tratamiento_id INT NOT NULL,
         medicamento_id INT NOT NULL,
@@ -214,17 +183,11 @@ async function checkAndCreateTables(connection) {
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (tratamiento_id) REFERENCES tratamientos(id) ON DELETE CASCADE,
         FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
-      )
-    `);
-    console.log('Tabla medicamentos_tratamientos creada correctamente');
-  }
-
-  // Verificar si la tabla recordatorios_compra existe
-  const [recordatoriosTables] = await connection.query('SHOW TABLES LIKE "recordatorios_compra"');
-  if (recordatoriosTables.length === 0) {
-    console.log('La tabla recordatorios_compra no existe, creándola...');
-    await connection.query(`
-      CREATE TABLE recordatorios_compra (
+      )`
+    },
+    {
+      name: 'recordatorios_compra',
+      sql: `CREATE TABLE recordatorios_compra (
         id INT AUTO_INCREMENT PRIMARY KEY,
         usuario_id INT NOT NULL,
         medicamento_id INT NOT NULL,
@@ -235,52 +198,80 @@ async function checkAndCreateTables(connection) {
         fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
         FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
-      )
-    `);
-    console.log('Tabla recordatorios_compra creada correctamente');
+      )`
+    }
+  ];
+
+  for (const table of tables) {
+    try {
+      const [existingTables] = await connection.query('SHOW TABLES LIKE ?', [table.name]);
+      if (existingTables.length === 0) {
+        console.log(`⚠️  La tabla ${table.name} no existe, creándola...`);
+        await connection.query(table.sql);
+        console.log(`✅ Tabla ${table.name} creada correctamente`);
+      } else {
+        console.log(`✅ Tabla ${table.name} encontrada`);
+      }
+    } catch (err) {
+      console.error(`❌ Error con tabla ${table.name}:`, err.message);
+    }
+  }
+
+  // Insertar datos predeterminados de farmacias si no existen
+  try {
+    const [farmacias] = await connection.query('SELECT COUNT(*) as count FROM farmacias');
+    if (farmacias[0].count === 0) {
+      console.log('📝 Insertando farmacias predeterminadas...');
+      await connection.query(`
+        INSERT INTO farmacias (nombre, sitio_web, logo_url) VALUES 
+        ('Ahumada', 'https://www.farmaciasahumada.cl', 'https://www.farmaciasahumada.cl/logo.png'),
+        ('Cruz Verde', 'https://www.cruzverde.cl', 'https://www.cruzverde.cl/logo.png'),
+        ('Salcobrand', 'https://salcobrand.cl', 'https://salcobrand.cl/logo.png')
+      `);
+      console.log('✅ Farmacias predeterminadas insertadas');
+    }
+  } catch (err) {
+    console.error('⚠️  Error insertando farmacias:', err.message);
   }
 }
 
-testConnection();
-
-// Creación del directorio api si no existe
-const apiDir = path.join(__dirname, 'api');
-if (!fs.existsSync(apiDir)) {
-  fs.mkdirSync(apiDir, { recursive: true });
-  console.log('Directorio api creado correctamente');
-}
-
 // Cargar módulos de API
-try {
-  // Importar rutas existentes
-  const usuariosRoutes = require('./api/usuarios');
-  const medicamentosRoutes = require('./api/medicamentos');
-  const pharmacyStockRoutes = require('./api/pharmacyStock');
-  const tratamientosRoutes = require('./api/tratamientos');
+const loadAPIRoutes = () => {
+  try {
+    const usuariosRoutes = require('./api/usuarios');
+    const medicamentosRoutes = require('./api/medicamentos');
+    const pharmacyStockRoutes = require('./api/pharmacyStock');
+    const tratamientosRoutes = require('./api/tratamientos');
 
-  // Registrar rutas
-  app.use('/api/usuarios', usuariosRoutes);
-  app.use('/api/medicamentos', medicamentosRoutes);
-  app.use('/api/stock', pharmacyStockRoutes);
-  app.use('/api/tratamientos', tratamientosRoutes);
-  
-  console.log('✅ Rutas API cargadas correctamente:');
-  console.log('   - /api/usuarios');
-  console.log('   - /api/medicamentos');
-  console.log('   - /api/stock');
-  console.log('   - /api/tratamientos');
-} catch (error) {
-  console.error('❌ Error al cargar módulos de API:', error);
-}
+    app.use('/api/usuarios', usuariosRoutes);
+    app.use('/api/medicamentos', medicamentosRoutes);
+    app.use('/api/stock', pharmacyStockRoutes);
+    app.use('/api/tratamientos', tratamientosRoutes);
+    
+    console.log('✅ Rutas API cargadas correctamente:');
+    console.log('   - /api/usuarios');
+    console.log('   - /api/medicamentos');
+    console.log('   - /api/stock');
+    console.log('   - /api/tratamientos');
+    
+    return true;
+  } catch (error) {
+    console.error('❌ Error al cargar módulos de API:', error.message);
+    return false;
+  }
+};
 
 // Ruta de prueba simple
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'API de Farmacia funcionando correctamente',
+    message: 'Farmafia API funcionando correctamente',
+    version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
     database: DB_CONFIG.database,
     host: DB_CONFIG.host,
-    environment: process.env.DB_HOST ? 'Azure' : 'Local',
-    jwt_configured: DB_CONFIG.jwt_secret ? true : false,
+    port: DB_CONFIG.port,
+    jwt_configured: JWT_SECRET ? true : false,
+    timestamp: new Date().toISOString(),
     available_apis: [
       '/api/usuarios',
       '/api/medicamentos',
@@ -290,15 +281,88 @@ app.get('/', (req, res) => {
   });
 });
 
-// Iniciar servidor
-app.listen(port, () => {
-  console.log(`🚀 Servidor ejecutándose en http://localhost:${port}`);
-  console.log(`📊 Usando base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}`);
-  console.log(`🌐 Entorno: ${process.env.DB_HOST ? 'AZURE' : 'LOCAL'}`);
-  console.log(`🔐 JWT configurado: ${DB_CONFIG.jwt_secret ? 'SÍ' : 'NO'}`);
-  console.log(`📦 APIs disponibles:`);
-  console.log(`   - Usuarios: /api/usuarios`);
-  console.log(`   - Medicamentos: /api/medicamentos`);
-  console.log(`   - Stock: /api/stock`);
-  console.log(`   - Tratamientos: /api/tratamientos`);
+// Health check endpoint
+app.get('/health', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.query('SELECT 1');
+    connection.release();
+    
+    res.json({
+      status: 'healthy',
+      database: 'connected',
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(503).json({
+      status: 'unhealthy',
+      database: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
+
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+  console.error('❌ Error no manejado:', err);
+  res.status(500).json({
+    error: 'Error interno del servidor',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Endpoint no encontrado',
+    path: req.path,
+    method: req.method
+  });
+});
+
+// Inicializar aplicación
+const startServer = async () => {
+  try {
+    // Verificar conexión a BD
+    await testConnection();
+    
+    // Cargar rutas API
+    const routesLoaded = loadAPIRoutes();
+    if (!routesLoaded && process.env.NODE_ENV === 'production') {
+      console.error('❌ Error crítico: No se pudieron cargar las rutas API');
+      process.exit(1);
+    }
+    
+    // Iniciar servidor
+    app.listen(port, '0.0.0.0', () => {
+      console.log('🚀 Servidor iniciado exitosamente!');
+      console.log(`📡 Escuchando en puerto ${port}`);
+      console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`🏥 Base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
+      console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
+      console.log('✅ API lista para recibir solicitudes');
+    });
+    
+  } catch (error) {
+    console.error('💥 Error fatal al iniciar servidor:', error);
+    process.exit(1);
+  }
+};
+
+// Manejo graceful de cierre
+process.on('SIGTERM', async () => {
+  console.log('🔄 Cerrando servidor gracefully...');
+  try {
+    await pool.end();
+    console.log('✅ Conexiones de BD cerradas');
+    process.exit(0);
+  } catch (error) {
+    console.error('❌ Error al cerrar:', error);
+    process.exit(1);
+  }
+});
+
+// Iniciar servidor
+startServer();
