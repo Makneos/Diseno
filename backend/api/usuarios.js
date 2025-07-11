@@ -1,6 +1,5 @@
 /**
- * API de usuarios con JWT corregido
- * Contiene todas las rutas relacionadas con la gestión de usuarios
+ * API de usuarios con JWT corregido - CON RUTA GET AGREGADA
  */
 
 const express = require('express');
@@ -43,17 +42,30 @@ const verificarToken = (req, res, next) => {
 };
 
 /**
+ * ✅ RUTA FALTANTE AGREGADA
  * @route   GET /api/usuarios
- * @desc    Obtener todos los usuarios
+ * @desc    Obtener todos los usuarios (para verificar que funciona)
  * @access  Public
  */
 router.get('/', async (req, res) => {
   try {
+    console.log('📋 GET /api/usuarios - Getting user list');
     const [rows] = await req.db.query('SELECT id, nombre, email, fecha_creacion FROM usuarios');
-    res.json(rows);
+    
+    res.json({
+      success: true,
+      data: rows,
+      total: rows.length,
+      message: `Found ${rows.length} users`,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ error: 'Error al obtener usuarios' });
+    console.error('❌ Error al obtener usuarios:', error);
+    res.status(500).json({ 
+      success: false,
+      error: 'Error al obtener usuarios',
+      details: error.message 
+    });
   }
 });
 
@@ -64,6 +76,8 @@ router.get('/', async (req, res) => {
  */
 router.post('/registro', async (req, res) => {
   const { nombre, email, contrasena } = req.body;
+  
+  console.log('📝 Registration attempt for:', email);
   
   if (!nombre || !email || !contrasena) {
     return res.status(400).json({ error: 'Se requieren nombre, email y contraseña' });
@@ -79,18 +93,27 @@ router.post('/registro', async (req, res) => {
       [nombre, email, hashedPassword]
     );
     
+    console.log('✅ User registered successfully:', result.insertId);
+    
     res.status(201).json({
+      success: true,
       id: result.insertId,
       nombre,
       email,
       message: 'Usuario registrado correctamente'
     });
   } catch (error) {
-    console.error('Error al registrar usuario:', error);
+    console.error('❌ Error al registrar usuario:', error);
     if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ error: 'El email ya está registrado' });
+      return res.status(400).json({ 
+        success: false,
+        error: 'El email ya está registrado' 
+      });
     }
-    res.status(500).json({ error: 'Error al registrar usuario' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Error al registrar usuario' 
+    });
   }
 });
 
@@ -105,7 +128,10 @@ router.post('/login', async (req, res) => {
   console.log('🔑 Login attempt for email:', email);
   
   if (!email || !contrasena) {
-    return res.status(400).json({ error: 'Se requieren email y contraseña' });
+    return res.status(400).json({ 
+      success: false,
+      error: 'Se requieren email y contraseña' 
+    });
   }
   
   try {
@@ -116,7 +142,10 @@ router.post('/login', async (req, res) => {
     
     if (rows.length === 0) {
       console.log('❌ User not found for email:', email);
-      return res.status(401).json({ error: 'Credenciales incorrectas' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Credenciales incorrectas' 
+      });
     }
     
     const usuario = rows[0];
@@ -127,7 +156,10 @@ router.post('/login', async (req, res) => {
     
     if (!passwordMatch) {
       console.log('❌ Password mismatch for user:', usuario.id);
-      return res.status(401).json({ error: 'Credenciales incorrectas' });
+      return res.status(401).json({ 
+        success: false,
+        error: 'Credenciales incorrectas' 
+      });
     }
     
     console.log('✅ Password match - generating JWT...');
@@ -145,7 +177,6 @@ router.post('/login', async (req, res) => {
     
     // ✅ Generar el JWT
     const token = jwt.sign(payload, JWT_SECRET, { 
-      // No agregar expiresIn aquí ya que está en el payload
       algorithm: 'HS256'
     });
     
@@ -155,6 +186,7 @@ router.post('/login', async (req, res) => {
     const { contrasena: _, ...usuarioSinPassword } = usuario;
     
     const response = {
+      success: true,
       ...usuarioSinPassword,
       token, // ✅ Incluir el token en la respuesta
       message: 'Inicio de sesión exitoso'
@@ -165,7 +197,10 @@ router.post('/login', async (req, res) => {
     
   } catch (error) {
     console.error('❌ Error al iniciar sesión:', error);
-    res.status(500).json({ error: 'Error al iniciar sesión' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Error al iniciar sesión' 
+    });
   }
 });
 
@@ -185,7 +220,10 @@ router.get('/perfil', verificarToken, async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
     
-    res.json(rows[0]);
+    res.json({
+      success: true,
+      data: rows[0]
+    });
   } catch (error) {
     console.error('Error al obtener perfil:', error);
     res.status(500).json({ error: 'Error al obtener perfil' });
@@ -210,7 +248,10 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
     
-    res.json(rows[0]);
+    res.json({
+      success: true,
+      data: rows[0]
+    });
   } catch (error) {
     console.error('Error al obtener usuario:', error);
     res.status(500).json({ error: 'Error al obtener usuario' });
@@ -220,6 +261,7 @@ router.get('/:id', async (req, res) => {
 // ✅ NUEVA RUTA: Verificar token
 router.get('/verificar-token', verificarToken, (req, res) => {
   res.json({
+    success: true,
     valido: true,
     usuario: req.usuario,
     message: 'Token válido'
