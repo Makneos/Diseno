@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+// ✅ SOLO UNA IMPORTACIÓN DE AuthGuard
 import AuthGuard, { useAuth } from '../components/AuthGuard';
 import MedicationStats from '../components/MedicationStats';
 import MedicationTabs from '../components/MedicationTabs';
 import MedicationCard from '../components/MedicationCard';
 import AddMedicationCard from '../components/AddMedicationCard';
 import AddMedicationModal from '../components/AddMedicationModal';
-import AuthGuard, { useAuth } from '../components/AuthGuard'
 import { 
   fetchMedicamentos, 
   addMedicamento, 
@@ -28,6 +28,7 @@ function MyMedicationsPageContent() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
+  // ✅ El resto del código permanece igual...
   // Load medications on mount
   useEffect(() => {
     const loadData = async () => {
@@ -89,7 +90,6 @@ function MyMedicationsPageContent() {
 
   const handleEditMedication = (medication) => {
     console.log('✏️ Edit medication:', medication);
-    // TODO: Implement edit functionality
     alert('Edit functionality will be implemented soon!');
   };
 
@@ -383,7 +383,7 @@ function MyMedicationsPageContent() {
   );
 }
 
-// Main component wrapped with AuthGuard
+// ✅ Componente principal envuelto con AuthGuard
 function MyMedicationsPage() {
   return (
     <AuthGuard>
