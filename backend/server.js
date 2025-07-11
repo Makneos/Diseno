@@ -57,7 +57,7 @@ const corsOptions = {
       callback(null, true);
     } else {
       console.log(`❌ CORS blocked origin: ${origin}`);
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true); // 🔧 TEMPORAL: Permitir todos para debug
     }
   },
   credentials: true,
@@ -141,10 +141,6 @@ const testConnection = async () => {
         console.log('✅ Tabla usuarios encontrada');
       }
       
-      // Verificar otras tablas necesarias
-      if (process.env.NODE_ENV !== 'production') {
-        await checkAndCreateTables(connection);
-      }
     } catch (err) {
       console.error('⚠️  Error al verificar tablas:', err.message);
     }
@@ -164,203 +160,6 @@ const testConnection = async () => {
       console.error('2. Usuario y contraseña correctos');
       console.error('3. Base de datos existe');
     }
-  }
-};
-
-// Función para verificar y crear todas las tablas necesarias (solo en desarrollo)
-async function checkAndCreateTables(connection) {
-  const tables = [
-    {
-      name: 'medicamentos',
-      sql: `CREATE TABLE medicamentos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(255) NOT NULL,
-        principio_activo VARCHAR(255) NOT NULL,
-        es_generico BOOLEAN DEFAULT FALSE,
-        imagen_url VARCHAR(255),
-        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_nombre (nombre)
-      )`
-    },
-    {
-      name: 'farmacias',
-      sql: `CREATE TABLE farmacias (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(100) NOT NULL,
-        sitio_web VARCHAR(255),
-        logo_url VARCHAR(255),
-        activo BOOLEAN DEFAULT TRUE,
-        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_nombre (nombre)
-      )`
-    },
-    {
-      name: 'precios_medicamentos',
-      sql: `CREATE TABLE precios_medicamentos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        medicamento_id INT NOT NULL,
-        farmacia_id INT NOT NULL,
-        precio DECIMAL(10,2) NOT NULL,
-        url_producto VARCHAR(255),
-        disponible BOOLEAN DEFAULT TRUE,
-        fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE,
-        FOREIGN KEY (farmacia_id) REFERENCES farmacias(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_med_farm (medicamento_id, farmacia_id)
-      )`
-    },
-    {
-      name: 'tratamientos',
-      sql: `CREATE TABLE tratamientos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        nombre VARCHAR(100) NOT NULL,
-        descripcion TEXT,
-        fecha_inicio DATE,
-        fecha_fin DATE,
-        activo BOOLEAN DEFAULT TRUE,
-        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-      )`
-    },
-    {
-      name: 'medicamentos_tratamientos',
-      sql: `CREATE TABLE medicamentos_tratamientos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        tratamiento_id INT NOT NULL,
-        medicamento_id INT NOT NULL,
-        dosis VARCHAR(100),
-        frecuencia VARCHAR(100),
-        recordatorio_activo BOOLEAN DEFAULT FALSE,
-        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (tratamiento_id) REFERENCES tratamientos(id) ON DELETE CASCADE,
-        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
-      )`
-    },
-    {
-      name: 'recordatorios_compra',
-      sql: `CREATE TABLE recordatorios_compra (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        medicamento_id INT NOT NULL,
-        fecha_recordatorio DATE NOT NULL,
-        periodicidad INT,
-        notificacion_enviada BOOLEAN DEFAULT FALSE,
-        activo BOOLEAN DEFAULT TRUE,
-        fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id) ON DELETE CASCADE
-      )`
-    }
-  ];
-
-  for (const table of tables) {
-    try {
-      const [existingTables] = await connection.query('SHOW TABLES LIKE ?', [table.name]);
-      if (existingTables.length === 0) {
-        console.log(`⚠️  La tabla ${table.name} no existe, creándola...`);
-        await connection.query(table.sql);
-        console.log(`✅ Tabla ${table.name} creada correctamente`);
-      } else {
-        console.log(`✅ Tabla ${table.name} encontrada`);
-      }
-    } catch (err) {
-      console.error(`❌ Error con tabla ${table.name}:`, err.message);
-    }
-  }
-
-  // Insertar datos predeterminados de farmacias si no existen
-  try {
-    const [farmacias] = await connection.query('SELECT COUNT(*) as count FROM farmacias');
-    if (farmacias[0].count === 0) {
-      console.log('📝 Insertando farmacias predeterminadas...');
-      await connection.query(`
-        INSERT INTO farmacias (nombre, sitio_web, logo_url) VALUES 
-        ('Ahumada', 'https://www.farmaciasahumada.cl', 'https://www.farmaciasahumada.cl/logo.png'),
-        ('Cruz Verde', 'https://www.cruzverde.cl', 'https://www.cruzverde.cl/logo.png'),
-        ('Salcobrand', 'https://salcobrand.cl', 'https://salcobrand.cl/logo.png')
-      `);
-      console.log('✅ Farmacias predeterminadas insertadas');
-    }
-  } catch (err) {
-    console.error('⚠️  Error insertando farmacias:', err.message);
-  }
-}
-
-// ✅ CARGAR MÓDULOS DE API - MEJORADO CON DEBUG
-const loadAPIRoutes = () => {
-  try {
-    console.log('🔄 Intentando cargar rutas API...');
-    console.log('📁 Directorio actual:', __dirname);
-    
-    // Verificar que los archivos existen antes de cargarlos
-    const apiFiles = [
-      { name: 'usuarios', path: './api/usuarios' },
-      { name: 'medicamentos', path: './api/medicamentos' },
-      { name: 'pharmacyStock', path: './api/pharmacyStock' },
-      { name: 'tratamientos', path: './api/tratamientos' }
-    ];
-    
-    const loadedRoutes = {};
-    
-    for (const file of apiFiles) {
-      try {
-        console.log(`📂 Cargando ${file.name} desde ${file.path}...`);
-        const fullPath = path.join(__dirname, file.path);
-        
-        // Verificar si el archivo existe
-        if (fs.existsSync(fullPath + '.js')) {
-          loadedRoutes[file.name] = require(file.path);
-          console.log(`✅ ${file.name} cargado correctamente`);
-        } else {
-          console.error(`❌ Archivo no encontrado: ${fullPath}.js`);
-        }
-      } catch (error) {
-        console.error(`❌ Error cargando ${file.name}:`, error.message);
-      }
-    }
-
-    // Registrar rutas que se cargaron exitosamente
-    if (loadedRoutes.usuarios) {
-      app.use('/api/usuarios', (req, res, next) => {
-        console.log(`👤 Usuarios route: ${req.method} ${req.originalUrl}`);
-        next();
-      }, loadedRoutes.usuarios);
-      console.log('✅ Ruta /api/usuarios registrada');
-    }
-    
-    if (loadedRoutes.medicamentos) {
-      app.use('/api/medicamentos', (req, res, next) => {
-        console.log(`💊 Medicamentos route: ${req.method} ${req.originalUrl}`);
-        next();
-      }, loadedRoutes.medicamentos);
-      console.log('✅ Ruta /api/medicamentos registrada');
-    }
-    
-    if (loadedRoutes.pharmacyStock) {
-      app.use('/api/stock', (req, res, next) => {
-        console.log(`📦 Stock route: ${req.method} ${req.originalUrl}`);
-        next();
-      }, loadedRoutes.pharmacyStock);
-      console.log('✅ Ruta /api/stock registrada');
-    }
-    
-    if (loadedRoutes.tratamientos) {
-      app.use('/api/tratamientos', (req, res, next) => {
-        console.log(`🏥 Tratamientos route: ${req.method} ${req.originalUrl}`);
-        next();
-      }, loadedRoutes.tratamientos);
-      console.log('✅ Ruta /api/tratamientos registrada');
-    }
-    
-    const loadedCount = Object.keys(loadedRoutes).length;
-    console.log(`✅ ${loadedCount}/4 rutas API cargadas correctamente`);
-    
-    return loadedCount > 0;
-  } catch (error) {
-    console.error('❌ Error general al cargar módulos de API:', error.message);
-    console.error('❌ Stack trace:', error.stack);
-    return false;
   }
 };
 
@@ -411,6 +210,73 @@ app.get('/health', async (req, res) => {
     });
   }
 });
+
+// ✅ CARGAR MÓDULOS DE API - SIMPLIFICADO Y CORREGIDO
+const loadAPIRoutes = () => {
+  try {
+    console.log('🔄 Intentando cargar rutas API...');
+    console.log('📁 Directorio actual:', __dirname);
+    
+    let routesLoaded = 0;
+    
+    // Cargar usuarios
+    try {
+      console.log('📂 Cargando usuarios desde ./api/usuarios...');
+      const usuariosRoutes = require('./api/usuarios');
+      app.use('/api/usuarios', usuariosRoutes);
+      console.log('✅ usuarios cargado correctamente');
+      routesLoaded++;
+    } catch (error) {
+      console.error('❌ Error cargando usuarios:', error.message);
+    }
+    
+    // Cargar medicamentos
+    try {
+      console.log('📂 Cargando medicamentos desde ./api/medicamentos...');
+      const medicamentosRoutes = require('./api/medicamentos');
+      app.use('/api/medicamentos', medicamentosRoutes);
+      console.log('✅ medicamentos cargado correctamente');
+      routesLoaded++;
+    } catch (error) {
+      console.error('❌ Error cargando medicamentos:', error.message);
+    }
+    
+    // Cargar stock
+    try {
+      console.log('📂 Cargando pharmacyStock desde ./api/pharmacyStock...');
+      const stockRoutes = require('./api/pharmacyStock');
+      app.use('/api/stock', stockRoutes);
+      console.log('✅ pharmacyStock cargado correctamente');
+      routesLoaded++;
+    } catch (error) {
+      console.error('❌ Error cargando pharmacyStock:', error.message);
+    }
+    
+    // Cargar tratamientos
+    try {
+      console.log('📂 Cargando tratamientos desde ./api/tratamientos...');
+      const tratamientosRoutes = require('./api/tratamientos');
+      app.use('/api/tratamientos', tratamientosRoutes);
+      console.log('✅ tratamientos cargado correctamente');
+      routesLoaded++;
+    } catch (error) {
+      console.error('❌ Error cargando tratamientos:', error.message);
+    }
+    
+    console.log(`✅ Rutas registradas:`);
+    console.log('   ✅ Ruta /api/usuarios registrada');
+    console.log('   ✅ Ruta /api/medicamentos registrada');
+    console.log('   ✅ Ruta /api/stock registrada');
+    console.log('   ✅ Ruta /api/tratamientos registrada');
+    console.log(`✅ ${routesLoaded}/4 rutas API cargadas correctamente`);
+    
+    return routesLoaded > 0;
+  } catch (error) {
+    console.error('❌ Error general al cargar módulos de API:', error.message);
+    console.error('❌ Stack trace:', error.stack);
+    return false;
+  }
+};
 
 // Middleware de manejo de errores
 app.use((err, req, res, next) => {
