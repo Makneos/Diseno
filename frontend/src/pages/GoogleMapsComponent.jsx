@@ -401,4 +401,5 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   );
 };
 
+
 export default GoogleMapsComponent;
