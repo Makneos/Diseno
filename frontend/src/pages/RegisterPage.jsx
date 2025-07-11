@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/AuthPages.css';
 
+// 🌐 API Configuration - Detecta automáticamente el entorno
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://wellaging-production-99c2.up.railway.app'  // 🚂 Railway URL
+  : 'http://localhost:5000';                            // 💻 Local development
+
 function RegisterPage() {
   const [formData, setFormData] = useState({
     name: '',
@@ -48,7 +53,10 @@ function RegisterPage() {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/usuarios/registro', {
+      console.log('📝 Attempting registration for:', formData.email);
+      console.log('🌐 API URL:', `${API_BASE_URL}/api/usuarios/registro`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/usuarios/registro`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,12 +69,13 @@ function RegisterPage() {
       });
       
       const data = await response.json();
+      console.log('📥 Registration response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || 'Error registering user');
       }
       
-      console.log('User registered:', data);
+      console.log('✅ User registered successfully:', data.nombre);
       
       setTimeout(() => {
         setLoadingMessage('Registration successful! Redirecting to login...');
@@ -76,8 +85,15 @@ function RegisterPage() {
       }, 1000);
       
     } catch (error) {
-      console.error('Registration error:', error);
-      setErrorMessage(error.message);
+      console.error('❌ Registration error:', error);
+      
+      // Mostrar mensaje más amigable si es error de red
+      if (error.message.includes('Failed to fetch')) {
+        setErrorMessage('Cannot connect to server. Please check your internet connection.');
+      } else {
+        setErrorMessage(error.message);
+      }
+      
       setIsLoading(false);
     }
   };
@@ -171,6 +187,22 @@ function RegisterPage() {
           <a href="/" onClick={handleReturnHome}>Return to main page</a>
         </div>
       </div>
+      
+      {/* 🔧 Debug info en desarrollo */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ 
+          position: 'fixed', 
+          bottom: '10px', 
+          right: '10px', 
+          background: 'rgba(0,0,0,0.8)', 
+          color: 'white', 
+          padding: '10px', 
+          borderRadius: '5px',
+          fontSize: '12px'
+        }}>
+          API: {API_BASE_URL}
+        </div>
+      )}
     </div>
   );
 }
