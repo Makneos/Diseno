@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { searchMedicamentos } from '../utils/medicationAPI';
+// ✅ IMPORT CORREGIDO - cambiar de 'searchMedicamentos' a 'searchMedications'
+import { searchMedications } from '../utils/medicationAPI';
 
 // Counter component inline
 const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
@@ -57,8 +58,8 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
         console.log('🔍 Searching medications for:', formData.name);
         
         try {
-          // Usar la función de búsqueda que conecta con Railway
-          const results = await searchMedicamentos(formData.name);
+          // ✅ FUNCIÓN CORREGIDA - usar 'searchMedications' en lugar de 'searchMedicamentos'
+          const results = await searchMedications(formData.name);
           console.log('📋 Search results:', results);
           
           setSearchResults(results || []);
