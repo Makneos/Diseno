@@ -28,8 +28,8 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   console.log('🗺️ GoogleMapsComponent props:', { selectedPharmacies, distance });
 
   // 🔧 Use API key from environment variables
-  const apiKey = "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg";
-  
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg";
+
   // 🔧 DEBUG: Check if API key is loaded
   console.log('🔑 Google Maps API Key:', apiKey ? 'Found' : 'Missing');
   
@@ -67,62 +67,32 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     return hasSelected;
   }, [selectedPharmacies]);
 
-  // Get user location with better error handling
+  // Get user location
   useEffect(() => {
     console.log('📍 Requesting user location...');
-    
-    if (!navigator.geolocation) {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const location = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          console.log('✅ User location obtained:', location);
+          setUserLocation(location);
+        },
+        (err) => {
+          console.error("❌ Error getting location:", err);
+          setError("Unable to retrieve your location. Using default location.");
+          // Use default location (Santiago, Chile)
+          setUserLocation(defaultCenter);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      );
+    } else {
       console.error("❌ Geolocation not supported");
       setError("Your browser does not support geolocation. Using default location.");
       setUserLocation(defaultCenter);
-      return;
     }
-
-    // Show loading state
-    console.log('⏳ Requesting geolocation permission...');
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const location = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        console.log('✅ User location obtained:', location);
-        console.log(`📍 Coordinates: ${location.lat}, ${location.lng}`);
-        console.log(`🎯 Accuracy: ${position.coords.accuracy} meters`);
-        setUserLocation(location);
-        setError(null); // Clear any previous errors
-      },
-      (err) => {
-        console.error("❌ Geolocation error:", err);
-        console.error("❌ Error code:", err.code);
-        console.error("❌ Error message:", err.message);
-        
-        let errorMessage = "Unable to retrieve your location. ";
-        switch(err.code) {
-          case err.PERMISSION_DENIED:
-            errorMessage += "Location access was denied. Please enable location permissions.";
-            break;
-          case err.POSITION_UNAVAILABLE:
-            errorMessage += "Location information is unavailable.";
-            break;
-          case err.TIMEOUT:
-            errorMessage += "Location request timed out.";
-            break;
-          default:
-            errorMessage += "An unknown error occurred.";
-            break;
-        }
-        
-        setError(errorMessage + " Using Santiago, Chile as default location.");
-        setUserLocation(defaultCenter);
-      },
-      { 
-        enableHighAccuracy: true, 
-        timeout: 15000, // Increased timeout
-        maximumAge: 300000 // 5 minutes cache
-      }
-    );
   }, []);
 
   // Load pharmacies from GeoJSON file
@@ -358,31 +328,13 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
           // Optional: You can save map reference here if needed
         }}
       >
-        {/* User location marker - Enhanced */}
+        {/* User location marker */}
         {userLocation && (
           <Marker 
             position={userLocation} 
-            title="Your current location"
+            label="YOU"
             icon={{
-              url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-              scaledSize: new window.google.maps.Size(40, 40), // Make it bigger
-              anchor: new window.google.maps.Point(20, 20) // Center the icon
-            }}
-            label={{
-              text: "YOU",
-              color: "white",
-              fontWeight: "bold",
-              fontSize: "12px"
-            }}
-            zIndex={1000} // Make sure it's on top
-            onClick={() => {
-              console.log('🖱️ User marker clicked');
-              setSelectedPharmacy({
-                id: 'user',
-                name: 'Your Location',
-                position: userLocation
-              });
-              setDistanceKm('0.00');
+              url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
             }}
           />
         )}
@@ -420,100 +372,34 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         )}
       </GoogleMap>
       
-      {/* Status messages and controls */}
-      <div className="position-relative">
-        {!hasSelectedPharmacies && (
-          <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%", zIndex: 1000 }}>
-            <i className="bi bi-info-circle me-2"></i>
-            Please select at least one pharmacy to display results on the map
-          </div>
-        )}
-        
-        {error && (
-          <div className="alert alert-warning mt-3 position-absolute top-0 start-0 m-3" style={{ maxWidth: "90%", zIndex: 1000 }}>
-            <i className="bi bi-exclamation-triangle me-2"></i>
-            {error}
-            <button 
-              className="btn btn-sm btn-outline-primary ms-2"
-              onClick={() => {
-                console.log('🔄 Retrying geolocation...');
-                setError(null);
-                setUserLocation(null);
-                // Trigger geolocation again
-                if (navigator.geolocation) {
-                  navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                      const location = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                      };
-                      console.log('✅ User location obtained on retry:', location);
-                      setUserLocation(location);
-                      setError(null);
-                    },
-                    (err) => {
-                      console.error("❌ Retry geolocation failed:", err);
-                      setError("Still unable to get your location. Using default.");
-                      setUserLocation(defaultCenter);
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-                  );
-                }
-              }}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
-
-        {/* Location button */}
-        <div className="position-absolute top-0 end-0 m-3" style={{ zIndex: 1000 }}>
-          <button 
-            className="btn btn-primary btn-sm"
-            onClick={() => {
-              console.log('🎯 Centering map on user location...');
-              if (userLocation) {
-                // This will be handled by the map center prop
-                console.log('📍 User location:', userLocation);
-              } else {
-                console.log('🔄 No user location, requesting again...');
-                // Request location again
-                navigator.geolocation?.getCurrentPosition(
-                  (position) => {
-                    const location = {
-                      lat: position.coords.latitude,
-                      lng: position.coords.longitude,
-                    };
-                    setUserLocation(location);
-                  },
-                  (err) => console.error("❌ Location request failed:", err),
-                  { enableHighAccuracy: true, timeout: 10000 }
-                );
-              }
-            }}
-            title="Center on my location"
-          >
-            <i className="bi bi-geo-alt"></i>
-          </button>
+      {/* Status messages */}
+      {!hasSelectedPharmacies && (
+        <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%" }}>
+          <i className="bi bi-info-circle me-2"></i>
+          Please select at least one pharmacy to display results on the map
         </div>
-      </div>
+      )}
+      
+      {error && (
+        <div className="alert alert-warning mt-3 position-absolute top-0 start-0 m-3" style={{ maxWidth: "90%" }}>
+          <i className="bi bi-exclamation-triangle me-2"></i>
+          {error}
+        </div>
+      )}
 
       {/* Debug info (only in development) */}
       {process.env.NODE_ENV === 'development' && (
-        <div className="position-absolute bottom-0 end-0 m-2 p-2 bg-dark text-white small" style={{ fontSize: '10px', maxWidth: '200px', zIndex: 1000 }}>
+        <div className="position-absolute top-0 end-0 m-2 p-2 bg-dark text-white small" style={{ fontSize: '10px', maxWidth: '200px' }}>
           <div>API Loaded: {isLoaded ? '✅' : '❌'}</div>
           <div>User Location: {userLocation ? '✅' : '❌'}</div>
-          {userLocation && (
-            <div>Coords: {userLocation.lat.toFixed(4)}, {userLocation.lng.toFixed(4)}</div>
-          )}
           <div>Pharmacies: {pharmacies.length}</div>
           <div>Filtered: {filteredPharmacies.length}</div>
           <div>Selected: {hasSelectedPharmacies ? '✅' : '❌'}</div>
-          <div>Geolocation: {navigator.geolocation ? '✅' : '❌'}</div>
         </div>
       )}
     </div>
   );
 };
+
 
 export default GoogleMapsComponent;
