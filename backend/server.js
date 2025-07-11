@@ -81,7 +81,7 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   
   // Log de todas las requests para debug
-  console.log(`📥 ${req.method} ${req.path} from ${origin || 'unknown origin'}`);
+  console.log(`📥 ${req.method} ${req.originalUrl} from ${origin || 'unknown origin'}`);
   
   // Headers adicionales para compatibilidad
   if (origin && origin.includes('azurestaticapps.net')) {
@@ -287,28 +287,79 @@ async function checkAndCreateTables(connection) {
   }
 }
 
-// Cargar módulos de API
+// ✅ CARGAR MÓDULOS DE API - MEJORADO CON DEBUG
 const loadAPIRoutes = () => {
   try {
-    const usuariosRoutes = require('./api/usuarios');
-    const medicamentosRoutes = require('./api/medicamentos');
-    const pharmacyStockRoutes = require('./api/pharmacyStock');
-    const tratamientosRoutes = require('./api/tratamientos');
+    console.log('🔄 Intentando cargar rutas API...');
+    console.log('📁 Directorio actual:', __dirname);
+    
+    // Verificar que los archivos existen antes de cargarlos
+    const apiFiles = [
+      { name: 'usuarios', path: './api/usuarios' },
+      { name: 'medicamentos', path: './api/medicamentos' },
+      { name: 'pharmacyStock', path: './api/pharmacyStock' },
+      { name: 'tratamientos', path: './api/tratamientos' }
+    ];
+    
+    const loadedRoutes = {};
+    
+    for (const file of apiFiles) {
+      try {
+        console.log(`📂 Cargando ${file.name} desde ${file.path}...`);
+        const fullPath = path.join(__dirname, file.path);
+        
+        // Verificar si el archivo existe
+        if (fs.existsSync(fullPath + '.js')) {
+          loadedRoutes[file.name] = require(file.path);
+          console.log(`✅ ${file.name} cargado correctamente`);
+        } else {
+          console.error(`❌ Archivo no encontrado: ${fullPath}.js`);
+        }
+      } catch (error) {
+        console.error(`❌ Error cargando ${file.name}:`, error.message);
+      }
+    }
 
-    app.use('/api/usuarios', usuariosRoutes);
-    app.use('/api/medicamentos', medicamentosRoutes);
-    app.use('/api/stock', pharmacyStockRoutes);
-    app.use('/api/tratamientos', tratamientosRoutes);
+    // Registrar rutas que se cargaron exitosamente
+    if (loadedRoutes.usuarios) {
+      app.use('/api/usuarios', (req, res, next) => {
+        console.log(`👤 Usuarios route: ${req.method} ${req.originalUrl}`);
+        next();
+      }, loadedRoutes.usuarios);
+      console.log('✅ Ruta /api/usuarios registrada');
+    }
     
-    console.log('✅ Rutas API cargadas correctamente:');
-    console.log('   - /api/usuarios');
-    console.log('   - /api/medicamentos');
-    console.log('   - /api/stock');
-    console.log('   - /api/tratamientos');
+    if (loadedRoutes.medicamentos) {
+      app.use('/api/medicamentos', (req, res, next) => {
+        console.log(`💊 Medicamentos route: ${req.method} ${req.originalUrl}`);
+        next();
+      }, loadedRoutes.medicamentos);
+      console.log('✅ Ruta /api/medicamentos registrada');
+    }
     
-    return true;
+    if (loadedRoutes.pharmacyStock) {
+      app.use('/api/stock', (req, res, next) => {
+        console.log(`📦 Stock route: ${req.method} ${req.originalUrl}`);
+        next();
+      }, loadedRoutes.pharmacyStock);
+      console.log('✅ Ruta /api/stock registrada');
+    }
+    
+    if (loadedRoutes.tratamientos) {
+      app.use('/api/tratamientos', (req, res, next) => {
+        console.log(`🏥 Tratamientos route: ${req.method} ${req.originalUrl}`);
+        next();
+      }, loadedRoutes.tratamientos);
+      console.log('✅ Ruta /api/tratamientos registrada');
+    }
+    
+    const loadedCount = Object.keys(loadedRoutes).length;
+    console.log(`✅ ${loadedCount}/4 rutas API cargadas correctamente`);
+    
+    return loadedCount > 0;
   } catch (error) {
-    console.error('❌ Error al cargar módulos de API:', error.message);
+    console.error('❌ Error general al cargar módulos de API:', error.message);
+    console.error('❌ Stack trace:', error.stack);
     return false;
   }
 };
@@ -370,33 +421,59 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
+// ✅ 404 handler CORREGIDO - AL FINAL
 app.use('*', (req, res) => {
+  console.log(`❌ Ruta no encontrada: ${req.method} ${req.originalUrl}`);
+  console.log(`📍 Path: ${req.path}`);
+  console.log(`🔍 Original URL: ${req.originalUrl}`);
+  
   res.status(404).json({
     error: 'Endpoint no encontrado',
-    path: req.path,
+    path: req.originalUrl,
     method: req.method,
+    message: `No se encontró la ruta ${req.method} ${req.originalUrl}`,
     available_endpoints: [
       'GET /',
       'GET /health',
+      'GET /api/usuarios',                     // ✅ AGREGADO
       'POST /api/usuarios/login',
       'POST /api/usuarios/registro',
-      'GET /api/medicamentos/buscar'
-    ]
+      'GET /api/usuarios/perfil',              // ✅ AGREGADO
+      'GET /api/usuarios/verificar-token',     // ✅ AGREGADO
+      'GET /api/medicamentos/buscar',
+      'GET /api/medicamentos/test-data',       // ✅ AGREGADO
+      'GET /api/medicamentos/precios-por-principio/:principio',
+      'GET /api/stock/medications',
+      'GET /api/stock/search',
+      'GET /api/tratamientos/mis-medicamentos',
+      'POST /api/tratamientos/agregar-medicamento',
+      'GET /api/tratamientos/test-auth'        // ✅ AGREGADO
+    ],
+    timestamp: new Date().toISOString(),
+    tip: 'Verifica que la URL esté correcta y que uses el método HTTP correcto',
+    debug_info: {
+      file_check: 'Verifica que api/usuarios.js existe en el servidor',
+      route_loading: 'Revisa los logs para ver si las rutas se cargaron correctamente'
+    }
   });
 });
 
 // Inicializar aplicación
 const startServer = async () => {
   try {
+    console.log('🚀 Iniciando servidor Farmafia...');
+    
     // Verificar conexión a BD
     await testConnection();
     
     // Cargar rutas API
     const routesLoaded = loadAPIRoutes();
-    if (!routesLoaded && process.env.NODE_ENV === 'production') {
-      console.error('❌ Error crítico: No se pudieron cargar las rutas API');
-      process.exit(1);
+    if (!routesLoaded) {
+      console.error('❌ ADVERTENCIA: No se pudieron cargar todas las rutas API');
+      if (process.env.NODE_ENV === 'production') {
+        console.error('❌ Error crítico en producción');
+        // No terminar el proceso, pero alertar
+      }
     }
     
     // Iniciar servidor
@@ -408,6 +485,13 @@ const startServer = async () => {
       console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
       console.log(`🌍 CORS configurado para Azure Static Apps`);
       console.log('✅ API lista para recibir solicitudes');
+      
+      // URL del servidor
+      if (process.env.NODE_ENV === 'production') {
+        console.log('🌍 Servidor público: https://wellaging-production-99c2.up.railway.app');
+      } else {
+        console.log(`🏠 Servidor local: http://localhost:${port}`);
+      }
     });
     
   } catch (error) {
@@ -427,6 +511,16 @@ process.on('SIGTERM', async () => {
     console.error('❌ Error al cerrar:', error);
     process.exit(1);
   }
+});
+
+// Manejo de errores no capturados
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  process.exit(1);
 });
 
 // Iniciar servidor
