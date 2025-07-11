@@ -23,12 +23,23 @@ const PHARMACY_NAME_VARIANTS = {
   ahumada: ["ahumada"]
 };
 
-// Enhanced component with medication search and stock functionality
-const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication, onMedicationSelect }) => {
+const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
+  // 🔧 DEBUG: Log props received
+  console.log('🗺️ GoogleMapsComponent props:', { selectedPharmacies, distance });
+
+  // 🔧 Use API key from environment variables
+  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  
+  // 🔧 DEBUG: Check if API key is loaded
+  console.log('🔑 Google Maps API Key:', apiKey ? 'Found' : 'Missing');
+  
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg",
+    googleMapsApiKey: apiKey,
     libraries,
   });
+
+  // 🔧 DEBUG: Log API loading status
+  console.log('🔄 Google Maps API status:', { isLoaded, loadError });
 
   const [userLocation, setUserLocation] = useState(null);
   const [pharmacies, setPharmacies] = useState([]);
@@ -36,10 +47,6 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
   const [selectedPharmacy, setSelectedPharmacy] = useState(null);
   const [distanceKm, setDistanceKm] = useState(null);
   const [error, setError] = useState(null);
-  
-  // New states for stock functionality
-  const [stockData, setStockData] = useState({});
-  const [isLoadingStock, setIsLoadingStock] = useState(false);
 
   // Normalize selected pharmacies names
   const normalizedSelectedPharmacies = useMemo(() => {
@@ -49,37 +56,48 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
     for (const name in selectedPharmacies) {
       normalized[name.toLowerCase()] = selectedPharmacies[name];
     }
+    console.log('🏥 Normalized pharmacies:', normalized);
     return normalized;
   }, [selectedPharmacies]);
 
   // Check if any pharmacy is selected
   const hasSelectedPharmacies = useMemo(() => {
-    return selectedPharmacies && Object.values(selectedPharmacies).some(value => value);
+    const hasSelected = selectedPharmacies && Object.values(selectedPharmacies).some(value => value);
+    console.log('✅ Has selected pharmacies:', hasSelected);
+    return hasSelected;
   }, [selectedPharmacies]);
 
   // Get user location
   useEffect(() => {
+    console.log('📍 Requesting user location...');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({
+          const location = {
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          };
+          console.log('✅ User location obtained:', location);
+          setUserLocation(location);
         },
         (err) => {
-          console.error("Error getting location:", err);
-          setError("Unable to retrieve your location.");
+          console.error("❌ Error getting location:", err);
+          setError("Unable to retrieve your location. Using default location.");
+          // Use default location (Santiago, Chile)
+          setUserLocation(defaultCenter);
         },
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
       );
     } else {
-      setError("Your browser does not support geolocation.");
+      console.error("❌ Geolocation not supported");
+      setError("Your browser does not support geolocation. Using default location.");
+      setUserLocation(defaultCenter);
     }
   }, []);
 
   // Load pharmacies from GeoJSON file
   useEffect(() => {
+    console.log('📦 Loading pharmacies from GeoJSON...');
     const fetchGeoJSON = async () => {
       try {
         const response = await fetch("/export.geojson");
@@ -96,14 +114,13 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
           if (!feature.geometry || !feature.geometry.coordinates || 
               !Array.isArray(feature.geometry.coordinates) || 
               feature.geometry.coordinates.length < 2) {
-            console.warn("Invalid feature geometry", feature);
+            console.warn("⚠️ Invalid feature geometry", feature);
             return null;
           }
           
           return {
             id: index,
             name: (feature.properties?.name || "unnamed pharmacy").toLowerCase(),
-            displayName: feature.properties?.name || "unnamed pharmacy",
             position: {
               lat: feature.geometry.coordinates[1],
               lng: feature.geometry.coordinates[0],
@@ -111,94 +128,55 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
           };
         }).filter(Boolean); // Remove null entries
         
+        console.log(`✅ Loaded ${parsedPharmacies.length} pharmacies from GeoJSON`);
         setPharmacies(parsedPharmacies);
       } catch (err) {
-        console.error("Error loading pharmacies:", err);
-        setError("Unable to load pharmacies.");
+        console.error("❌ Error loading pharmacies:", err);
+        setError("Unable to load pharmacies. Using sample data.");
+        
+        // 🔧 FALLBACK: Use sample pharmacy data
+        const samplePharmacies = [
+          {
+            id: 1,
+            name: "cruz verde sample",
+            position: { lat: -33.4569, lng: -70.6483 }
+          },
+          {
+            id: 2,
+            name: "ahumada sample",
+            position: { lat: -33.4500, lng: -70.6600 }
+          },
+          {
+            id: 3,
+            name: "salcobrand sample",
+            position: { lat: -33.4600, lng: -70.6400 }
+          }
+        ];
+        console.log('🔧 Using sample pharmacies:', samplePharmacies);
+        setPharmacies(samplePharmacies);
       }
     };
     
     fetchGeoJSON();
   }, []);
 
-  // Load stock data when medication is selected
-  useEffect(() => {
-    if (selectedMedication && pharmacies.length > 0) {
-      loadStockData(selectedMedication);
-    } else {
-      setStockData({});
-    }
-  }, [selectedMedication, pharmacies]);
-
-  // Load stock data from API
-  const loadStockData = async (medicationName) => {
-    setIsLoadingStock(true);
-    try {
-      const response = await fetch(`http://localhost:5000/api/stock/medication/${encodeURIComponent(medicationName)}`);
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Convert pharmacy array to object for easier lookup
-          const stockMap = {};
-          data.data.pharmacies.forEach(pharmacy => {
-            stockMap[pharmacy.pharmacy.toLowerCase()] = pharmacy.stockInfo;
-          });
-          setStockData(stockMap);
-        }
-      } else {
-        // Fallback to mock data if API not available
-        setStockData(generateMockStockData(medicationName));
-      }
-    } catch (error) {
-      console.error('Error loading stock data:', error);
-      // Fallback to mock data
-      setStockData(generateMockStockData(medicationName));
-    } finally {
-      setIsLoadingStock(false);
-    }
-  };
-
-  // Generate mock stock data as fallback
-  const generateMockStockData = (medicationName) => {
-    const stockLevels = ['high', 'medium', 'low', 'out'];
-    const colors = {
-      'high': '#28a745',
-      'medium': '#ffc107', 
-      'low': '#fd7e14',
-      'out': '#dc3545'
-    };
-    
-    return {
-      'ahumada': {
-        level: stockLevels[Math.floor(Math.random() * stockLevels.length)],
-        quantity: Math.floor(Math.random() * 50),
-        price: 2000 + Math.floor(Math.random() * 3000),
-        stockColor: colors[stockLevels[Math.floor(Math.random() * stockLevels.length)]]
-      },
-      'cruz verde': {
-        level: stockLevels[Math.floor(Math.random() * stockLevels.length)],
-        quantity: Math.floor(Math.random() * 50),
-        price: 2000 + Math.floor(Math.random() * 3000),
-        stockColor: colors[stockLevels[Math.floor(Math.random() * stockLevels.length)]]
-      },
-      'salcobrand': {
-        level: stockLevels[Math.floor(Math.random() * stockLevels.length)],
-        quantity: Math.floor(Math.random() * 50),
-        price: 2000 + Math.floor(Math.random() * 3000),
-        stockColor: colors[stockLevels[Math.floor(Math.random() * stockLevels.length)]]
-      }
-    };
-  };
-
   // Filter pharmacies by name and distance
   useEffect(() => {
+    console.log('🔍 Filtering pharmacies...');
+    console.log('- User location:', userLocation);
+    console.log('- Pharmacies count:', pharmacies.length);
+    console.log('- Has selected pharmacies:', hasSelectedPharmacies);
+    console.log('- Distance:', distance);
+
     if (!userLocation || !pharmacies || pharmacies.length === 0) {
+      console.log('❌ Missing requirements for filtering');
       setFilteredPharmacies([]);
       return;
     }
 
     // If no pharmacy is selected, show none
     if (!hasSelectedPharmacies) {
+      console.log('❌ No pharmacies selected');
       setFilteredPharmacies([]);
       return;
     }
@@ -239,43 +217,33 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
       if (!pharmacy || !pharmacy.position) return false;
       
       const dist = calculateDistance(userLocation, pharmacy.position);
-      if (dist > Number(distance)) return false;
-      
-      // If medication is selected, only show pharmacies with stock
-      if (selectedMedication && stockData[pharmacy.name]) {
-        const stock = stockData[pharmacy.name];
-        if (stock.level === 'out') return false;
+      if (dist > Number(distance)) {
+        console.log(`❌ Pharmacy ${pharmacy.name} too far: ${dist.toFixed(2)}km > ${distance}km`);
+        return false;
       }
       
-      return matchesSelectedChain(pharmacy.name);
+      const matches = matchesSelectedChain(pharmacy.name);
+      if (!matches) {
+        console.log(`❌ Pharmacy ${pharmacy.name} doesn't match selected chains`);
+        return false;
+      }
+
+      console.log(`✅ Pharmacy ${pharmacy.name} included: ${dist.toFixed(2)}km`);
+      return true;
     });
 
-    console.log(`Filter applied: ${filtered.length} pharmacies found out of ${pharmacies.length}`);
+    console.log(`🎯 Filtered result: ${filtered.length} pharmacies found out of ${pharmacies.length}`);
     setFilteredPharmacies(filtered);
-  }, [userLocation, pharmacies, normalizedSelectedPharmacies, distance, hasSelectedPharmacies, selectedMedication, stockData]);
+  }, [userLocation, pharmacies, normalizedSelectedPharmacies, distance, hasSelectedPharmacies]);
 
-  const getIconColor = (pharmacy) => {
-    // If medication is selected and we have stock data, use stock-based colors
-    if (selectedMedication && stockData[pharmacy.name]) {
-      const stock = stockData[pharmacy.name];
-      switch (stock.level) {
-        case 'high': return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
-        case 'medium': return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
-        case 'low': return "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
-        case 'out': return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-        default: return "http://maps.google.com/mapfiles/ms/icons/grey-dot.png";
-      }
-    }
-    
-    // Default pharmacy colors
-    const name = pharmacy.name;
+  const getIconColor = (name) => {
     if (!name) return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
     
     if (name.includes("cruz")) {
       return "http://maps.google.com/mapfiles/ms/icons/green-dot.png";
     } else if (name.includes("ahumada")) {
       return "http://maps.google.com/mapfiles/ms/icons/red-dot.png";
-    } else if (name.includes("salcobrand")) {
+    } else if (name.includes("salco")) {
       return "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
     }
     return "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png";
@@ -284,198 +252,151 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance, selectedMedication,
   const handlePharmacyClick = (pharmacy) => {
     if (!pharmacy) return;
     
+    console.log('🖱️ Pharmacy clicked:', pharmacy.name);
     setSelectedPharmacy(pharmacy);
+    
     if (userLocation && isLoaded && window.google?.maps?.geometry) {
       try {
         const distance = window.google.maps.geometry.spherical.computeDistanceBetween(
           new window.google.maps.LatLng(userLocation.lat, userLocation.lng),
           new window.google.maps.LatLng(pharmacy.position.lat, pharmacy.position.lng)
         );
-        setDistanceKm((distance / 1000).toFixed(2));
+        const distanceKm = (distance / 1000).toFixed(2);
+        console.log(`📏 Distance calculated: ${distanceKm}km`);
+        setDistanceKm(distanceKm);
       } catch (err) {
-        console.error("Error calculating distance:", err);
+        console.error("❌ Error calculating distance:", err);
       }
     }
   };
 
-  const renderInfoWindow = () => {
-    if (!selectedPharmacy) return null;
-
-    const stock = selectedMedication && stockData[selectedPharmacy.name];
-    
+  // 🔧 DEBUG: Early returns with detailed logging
+  if (!apiKey) {
+    console.error('❌ Google Maps API key not found in environment variables');
     return (
-      <InfoWindow
-        position={selectedPharmacy.position}
-        onCloseClick={() => {
-          setSelectedPharmacy(null);
-          setDistanceKm(null);
-        }}
-      >
-        <div style={{ maxWidth: '300px' }}>
-          <div style={{ 
-            background: 'linear-gradient(135deg, #0d6efd 0%, #0056b3 100%)',
-            color: 'white',
-            padding: '12px 16px',
-            margin: '-8px -8px 8px -8px',
-            borderRadius: '4px 4px 0 0'
-          }}>
-            <strong>{selectedPharmacy.displayName}</strong>
-          </div>
-          
-          <div style={{ padding: '0 8px 8px 8px' }}>
-            {distanceKm && (
-              <p style={{ margin: '8px 0', color: '#666' }}>
-                <i className="bi bi-geo-alt me-1"></i>
-                Distance: {distanceKm} km
-              </p>
-            )}
-            
-            {selectedMedication && stock && (
-              <div style={{ 
-                borderTop: '1px solid #eee',
-                paddingTop: '8px',
-                marginTop: '8px'
-              }}>
-                <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '8px',
-                  marginBottom: '8px'
-                }}>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: stock.stockColor || '#666',
-                    flexShrink: 0
-                  }}></div>
-                  <strong style={{ color: stock.stockColor || '#666' }}>
-                    {selectedMedication.charAt(0).toUpperCase() + selectedMedication.slice(1)}
-                  </strong>
-                </div>
-                
-                <div style={{ fontSize: '14px', color: '#666' }}>
-                  <div>Status: <span style={{ color: stock.stockColor }}>{stock.level === 'high' ? 'In Stock' : stock.level === 'medium' ? 'Limited Stock' : stock.level === 'low' ? 'Low Stock' : 'Out of Stock'}</span></div>
-                  {stock.quantity > 0 && (
-                    <div>Quantity: {stock.quantity} units</div>
-                  )}
-                  {stock.price && (
-                    <div style={{ fontWeight: 'bold', color: '#0d6efd' }}>
-                      Price: ${stock.price.toLocaleString('es-CL')}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </InfoWindow>
+      <div className="alert alert-danger m-3">
+        <h5>Google Maps API Key Missing</h5>
+        <p>The Google Maps API key is not configured properly.</p>
+        <small>Check that REACT_APP_GOOGLE_MAPS_API_KEY is set in your .env file</small>
+      </div>
     );
-  };
+  }
 
   if (loadError) {
-    return <div className="alert alert-danger m-3">Error loading Google Maps: {loadError.message}</div>;
+    console.error('❌ Google Maps load error:', loadError);
+    return (
+      <div className="alert alert-danger m-3">
+        <h5>Error loading Google Maps</h5>
+        <p>{loadError.message}</p>
+        <small>Check your API key and network connection</small>
+      </div>
+    );
   }
 
   if (!isLoaded) {
-    return <div className="d-flex justify-content-center p-5"><div className="spinner-border" role="status"></div></div>;
+    console.log('⏳ Google Maps API still loading...');
+    return (
+      <div className="d-flex justify-content-center align-items-center p-5" style={{ height: "500px" }}>
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Loading Google Maps...</p>
+        </div>
+      </div>
+    );
   }
 
+  console.log('🗺️ Rendering map with:', {
+    userLocation,
+    filteredPharmaciesCount: filteredPharmacies.length,
+    hasSelectedPharmacies
+  });
+
   return (
-    <div style={{ position: 'relative' }}>
-      <div style={containerStyle}>
-        <GoogleMap
-          mapContainerStyle={{ width: "100%", height: "100%" }}
-          center={userLocation || defaultCenter}
-          zoom={13}
-          options={{
-            fullscreenControl: false,
-            streetViewControl: false,
-          }}
-        >
-          {userLocation && <Marker position={userLocation} label="YOU" />}
-
-          {Array.isArray(filteredPharmacies) && filteredPharmacies.map((pharmacy) => (
-            pharmacy && pharmacy.position && (
-              <Marker
-                key={pharmacy.id}
-                position={pharmacy.position}
-                onClick={() => handlePharmacyClick(pharmacy)}
-                icon={{ url: getIconColor(pharmacy) }}
-              />
-            )
-          ))}
-
-          {renderInfoWindow()}
-        </GoogleMap>
-        
-        {/* Loading overlay for stock data */}
-        {isLoadingStock && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'rgba(255,255,255,0.8)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2000,
-            borderRadius: '15px'
-          }}>
-            <div style={{ textAlign: 'center', color: '#666' }}>
-              <div className="spinner-border mb-2" role="status"></div>
-              <div>Loading stock information...</div>
-            </div>
-          </div>
+    <div style={containerStyle}>
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "100%" }}
+        center={userLocation || defaultCenter}
+        zoom={13}
+        options={{
+          fullscreenControl: false,
+          streetViewControl: false,
+        }}
+        onLoad={(map) => {
+          console.log('✅ Google Map loaded successfully');
+          // Optional: You can save map reference here if needed
+        }}
+      >
+        {/* User location marker */}
+        {userLocation && (
+          <Marker 
+            position={userLocation} 
+            label="YOU"
+            icon={{
+              url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            }}
+          />
         )}
-        
-        {/* Stock Legend */}
-        {selectedMedication && Object.keys(stockData).length > 0 && (
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '20px',
-            background: 'rgba(255,255,255,0.95)',
-            borderRadius: '8px',
-            padding: '12px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            zIndex: 1000,
-            minWidth: '180px'
-          }}>
-            <h6 style={{ margin: '0 0 8px 0', fontSize: '14px', fontWeight: '600' }}>
-              Stock for {selectedMedication}
-            </h6>
-            <div style={{ fontSize: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#28a745' }}></div>
-                <span>In Stock</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ffc107' }}></div>
-                <span>Limited Stock</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#fd7e14' }}></div>
-                <span>Low Stock</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#dc3545' }}></div>
-                <span>Out of Stock</span>
-              </div>
+
+        {/* Pharmacy markers */}
+        {Array.isArray(filteredPharmacies) && filteredPharmacies.map((pharmacy) => (
+          pharmacy && pharmacy.position && (
+            <Marker
+              key={pharmacy.id}
+              position={pharmacy.position}
+              onClick={() => handlePharmacyClick(pharmacy)}
+              icon={{ url: getIconColor(pharmacy.name) }}
+              title={pharmacy.name}
+            />
+          )
+        ))}
+
+        {/* Info window for selected pharmacy */}
+        {selectedPharmacy && (
+          <InfoWindow
+            position={selectedPharmacy.position}
+            onCloseClick={() => {
+              console.log('❌ InfoWindow closed');
+              setSelectedPharmacy(null);
+              setDistanceKm(null);
+            }}
+          >
+            <div>
+              <strong style={{ textTransform: 'capitalize' }}>
+                {selectedPharmacy.name}
+              </strong>
+              {distanceKm && <p>Distance: {distanceKm} km</p>}
             </div>
-          </div>
+          </InfoWindow>
         )}
-      </div>
+      </GoogleMap>
       
+      {/* Status messages */}
       {!hasSelectedPharmacies && (
         <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%" }}>
+          <i className="bi bi-info-circle me-2"></i>
           Please select at least one pharmacy to display results on the map
         </div>
       )}
       
-      {error && <p style={{ color: "red", marginTop: "10px" }}>{error}</p>}
+      {error && (
+        <div className="alert alert-warning mt-3 position-absolute top-0 start-0 m-3" style={{ maxWidth: "90%" }}>
+          <i className="bi bi-exclamation-triangle me-2"></i>
+          {error}
+        </div>
+      )}
+
+      {/* Debug info (only in development) */}
+      {process.env.NODE_ENV === 'development' && (
+        <div className="position-absolute top-0 end-0 m-2 p-2 bg-dark text-white small" style={{ fontSize: '10px', maxWidth: '200px' }}>
+          <div>API Loaded: {isLoaded ? '✅' : '❌'}</div>
+          <div>User Location: {userLocation ? '✅' : '❌'}</div>
+          <div>Pharmacies: {pharmacies.length}</div>
+          <div>Filtered: {filteredPharmacies.length}</div>
+          <div>Selected: {hasSelectedPharmacies ? '✅' : '❌'}</div>
+        </div>
+      )}
     </div>
   );
 };
