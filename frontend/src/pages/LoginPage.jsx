@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/AuthPages.css';
-
-// 🌐 API Configuration - Detecta automáticamente el entorno
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://wellaging-production-99c2.up.railway.app'  // 🚂 Railway URL
-  : 'http://localhost:5000';                            // 💻 Local development
+import { authAPI } from '../config/api';
 
 function LoginPage() {
   const [formData, setFormData] = useState({
@@ -42,29 +38,14 @@ function LoginPage() {
 
     try {
       console.log('🔑 Attempting login for:', formData.email);
-      console.log('🌐 API URL:', `${API_BASE_URL}/api/usuarios/login`);
       
-      const response = await fetch(`${API_BASE_URL}/api/usuarios/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          contrasena: formData.password
-        }),
-      });
-
-      const data = await response.json();
+      // ✅ Usar authAPI centralizada en lugar de fetch manual
+      const data = await authAPI.login(formData);
+      
       console.log('📥 Login response:', data);
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error logging in');
-      }
-
       console.log('✅ Login successful for user:', data.nombre);
 
-      // ✅ CRÍTICO: Asegurar que el token se guarde correctamente
+      // Verificar que el token existe
       if (!data.token) {
         throw new Error('No token received from server');
       }
@@ -73,7 +54,7 @@ function LoginPage() {
         id: data.id,
         nombre: data.nombre,
         email: data.email,
-        token: data.token  // ← Este es el campo crítico
+        token: data.token
       };
 
       console.log('💾 Saving user data to sessionStorage:', userData);
@@ -81,7 +62,7 @@ function LoginPage() {
       // Guardar en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
       
-      // ✅ Verificar que se guardó correctamente
+      // Verificar que se guardó correctamente
       const savedData = sessionStorage.getItem('user');
       console.log('✅ Verification - Data saved in sessionStorage:', savedData ? 'YES' : 'NO');
       
@@ -92,23 +73,14 @@ function LoginPage() {
 
       setLoadingMessage('Login successful! Redirecting...');
       
-      // ✅ Usar setTimeout para asegurar que el sessionStorage se actualice
       setTimeout(() => {
         console.log('🚀 Redirecting to home page...');
-        // Usar replace: true para evitar problemas de historial
         navigate('/', { replace: true });
       }, 1000);
 
     } catch (error) {
       console.error('❌ Login error:', error);
-      
-      // Mostrar mensaje más amigable si es error de red
-      if (error.message.includes('Failed to fetch')) {
-        setErrorMessage('Cannot connect to server. Please check your internet connection.');
-      } else {
-        setErrorMessage(error.message);
-      }
-      
+      setErrorMessage(error.message);
       setIsLoading(false);
     }
   };
@@ -177,21 +149,21 @@ function LoginPage() {
         </div>
       </div>
       
-      {/* 🔧 Debug info en desarrollo */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{ 
-          position: 'fixed', 
-          bottom: '10px', 
-          right: '10px', 
-          background: 'rgba(0,0,0,0.8)', 
-          color: 'white', 
-          padding: '10px', 
-          borderRadius: '5px',
-          fontSize: '12px'
-        }}>
-          API: {API_BASE_URL}
-        </div>
-      )}
+      {/* 🔧 Debug info siempre visible */}
+      <div style={{ 
+        position: 'fixed', 
+        bottom: '10px', 
+        right: '10px', 
+        background: 'rgba(0,0,0,0.8)', 
+        color: 'white', 
+        padding: '10px', 
+        borderRadius: '5px',
+        fontSize: '12px'
+      }}>
+        Environment: {process.env.NODE_ENV || 'development'}
+        <br />
+        Using: Centralized API Config
+      </div>
     </div>
   );
 }
