@@ -36,16 +36,68 @@ console.log('- DB_PORT:', DB_CONFIG.port);
 console.log('- JWT_SECRET:', JWT_SECRET ? 'SÍ' : 'NO');
 console.log('- NODE_ENV:', process.env.NODE_ENV || 'development');
 
-// Middleware
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [
-        'https://tu-app.azurewebsites.net',  // 🔄 CAMBIAR POR TU URL DE AZURE
-        'https://www.tu-dominio.com'          // 🔄 CAMBIAR SI TIENES DOMINIO
-      ]
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-}));
+// 🚨 CORS CONFIGURADO CORRECTAMENTE PARA AZURE + RAILWAY
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Lista de orígenes permitidos
+    const allowedOrigins = [
+      'https://red-cliff-05a52f31e.2.azurestaticapps.net', // ✅ Tu Azure Static App
+      'http://localhost:3000',  // Desarrollo local React
+      'http://localhost:3001',  // Desarrollo local alternativo
+      'http://127.0.0.1:3000',  // Desarrollo local IP
+    ];
+    
+    // Permitir requests sin origin (Postman, servidores, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
+    
+    // Verificar si el origin está permitido
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`❌ CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin'
+  ],
+  preflightContinue: false,
+  optionsSuccessStatus: 200
+};
+
+// Aplicar CORS
+app.use(cors(corsOptions));
+
+// Middleware adicional para manejar preflight requests
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Log de todas las requests para debug
+  console.log(`📥 ${req.method} ${req.path} from ${origin || 'unknown origin'}`);
+  
+  // Headers adicionales para compatibilidad
+  if (origin && origin.includes('azurestaticapps.net')) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  
+  // Responder a preflight requests
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,PATCH,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
+    return res.sendStatus(200);
+  }
+  
+  next();
+});
 
 app.use(express.json());
 
@@ -272,6 +324,11 @@ app.get('/', (req, res) => {
     port: DB_CONFIG.port,
     jwt_configured: JWT_SECRET ? true : false,
     timestamp: new Date().toISOString(),
+    cors_enabled: true,
+    allowed_origins: [
+      'https://red-cliff-05a52f31e.2.azurestaticapps.net',
+      'http://localhost:3000'
+    ],
     available_apis: [
       '/api/usuarios',
       '/api/medicamentos',
@@ -318,7 +375,14 @@ app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Endpoint no encontrado',
     path: req.path,
-    method: req.method
+    method: req.method,
+    available_endpoints: [
+      'GET /',
+      'GET /health',
+      'POST /api/usuarios/login',
+      'POST /api/usuarios/registro',
+      'GET /api/medicamentos/buscar'
+    ]
   });
 });
 
@@ -342,6 +406,7 @@ const startServer = async () => {
       console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🏥 Base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
       console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
+      console.log(`🌍 CORS configurado para Azure Static Apps`);
       console.log('✅ API lista para recibir solicitudes');
     });
     
