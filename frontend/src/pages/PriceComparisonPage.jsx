@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/PriceComparison.css';
 
+// 🌐 API Configuration - Detecta automáticamente el entorno
+const API_BASE_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://wellaging-production-99c2.up.railway.app'  // 🚂 Railway URL
+  : 'http://localhost:5000';                            // 💻 Local development
+
 function PriceComparisonPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
@@ -39,22 +44,32 @@ function PriceComparisonPage() {
     setErrorMessage('');
     
     try {
-      const response = await fetch(`http://localhost:5000/api/medicamentos/buscar?q=${encodeURIComponent(searchTerm)}`);
+      console.log('🔍 Searching medications for:', searchTerm);
+      console.log('🌐 API URL:', `${API_BASE_URL}/api/medicamentos/buscar`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/medicamentos/buscar?q=${encodeURIComponent(searchTerm)}`);
       
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
       
       const data = await response.json();
-      console.log('Resultados de búsqueda:', data);
+      console.log('📥 Search results:', data);
       setSearchResults(data);
-    } catch (error) {
-      console.error('Error searching medications:', error);
       
+      if (data.length === 0) {
+        setErrorMessage('No medications found. Try a different search term.');
+      }
+    } catch (error) {
+      console.error('❌ Error searching medications:', error);
+      
+      // Usar datos de muestra como fallback
       const sampleResults = generateSampleResults(searchTerm);
       setSearchResults(sampleResults);
       
-      if (!sampleResults.length) {
+      if (error.message.includes('Failed to fetch')) {
+        setErrorMessage('Cannot connect to server. Showing sample data for demonstration.');
+      } else if (!sampleResults.length) {
         setErrorMessage('No matching medications were found');
       }
     } finally {
@@ -68,9 +83,9 @@ function PriceComparisonPage() {
   };
 
   const handleSelectMedication = (medication) => {
-    console.log('Navegando a detalles del medicamento:', medication);
+    console.log('🔍 Navigating to medication details:', medication);
     
-    // Guardar el medicamento seleccionado en sessionStorage para pasarlo a la siguiente página
+    // Guardar el medicamento seleccionado en sessionStorage
     sessionStorage.setItem('selectedMedication', JSON.stringify(medication));
     
     // Navegar a la página de detalles
@@ -277,6 +292,7 @@ function PriceComparisonPage() {
         {/* Error Message */}
         {errorMessage && (
           <div className="alert alert-warning my-4" role="alert">
+            <i className="bi bi-exclamation-triangle me-2"></i>
             {errorMessage}
           </div>
         )}
@@ -410,6 +426,22 @@ function PriceComparisonPage() {
           </div>
         </div>
       </footer>
+      
+      {/* 🔧 Debug info en desarrollo */}
+      {process.env.NODE_ENV === 'development' && (
+        <div style={{ 
+          position: 'fixed', 
+          bottom: '10px', 
+          left: '10px', 
+          background: 'rgba(0,0,0,0.8)', 
+          color: 'white', 
+          padding: '10px', 
+          borderRadius: '5px',
+          fontSize: '12px'
+        }}>
+          API: {API_BASE_URL}
+        </div>
+      )}
     </div>
   );
 }
