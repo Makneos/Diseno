@@ -1,5 +1,5 @@
 /**
- * API de usuarios con JWT corregido - CON RUTA GET AGREGADA
+ * API de usuarios con JWT corregido - CON RUTA GET AGREGADA AL INICIO
  */
 
 const express = require('express');
@@ -10,7 +10,7 @@ const router = express.Router();
 // ✅ Clave secreta para JWT - usar la del proceso o una por defecto
 const JWT_SECRET = process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345';
 
-console.log('🔐 JWT_SECRET configured:', JWT_SECRET ? 'YES' : 'NO');
+console.log('🔐 Usuarios - JWT_SECRET configured:', JWT_SECRET ? 'YES' : 'NO');
 
 // ✅ Middleware mejorado para verificar JWT
 const verificarToken = (req, res, next) => {
@@ -42,7 +42,7 @@ const verificarToken = (req, res, next) => {
 };
 
 /**
- * ✅ RUTA FALTANTE AGREGADA
+ * ✅ ESTA RUTA DEBE ESTAR PRIMERA - GET /api/usuarios
  * @route   GET /api/usuarios
  * @desc    Obtener todos los usuarios (para verificar que funciona)
  * @access  Public
@@ -50,14 +50,16 @@ const verificarToken = (req, res, next) => {
 router.get('/', async (req, res) => {
   try {
     console.log('📋 GET /api/usuarios - Getting user list');
-    const [rows] = await req.db.query('SELECT id, nombre, email, fecha_creacion FROM usuarios');
+    const [rows] = await req.db.query('SELECT id, nombre, email, fecha_creacion FROM usuarios ORDER BY fecha_creacion DESC');
     
     res.json({
       success: true,
       data: rows,
       total: rows.length,
       message: `Found ${rows.length} users`,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      endpoint: 'GET /api/usuarios',
+      method: 'Working correctly!'
     });
   } catch (error) {
     console.error('❌ Error al obtener usuarios:', error);
@@ -80,7 +82,10 @@ router.post('/registro', async (req, res) => {
   console.log('📝 Registration attempt for:', email);
   
   if (!nombre || !email || !contrasena) {
-    return res.status(400).json({ error: 'Se requieren nombre, email y contraseña' });
+    return res.status(400).json({ 
+      success: false,
+      error: 'Se requieren nombre, email y contraseña' 
+    });
   }
   
   try {
@@ -231,6 +236,20 @@ router.get('/perfil', verificarToken, async (req, res) => {
 });
 
 /**
+ * @route   GET /api/usuarios/verificar-token
+ * @desc    Verificar si un token es válido
+ * @access  Private (requiere token)
+ */
+router.get('/verificar-token', verificarToken, (req, res) => {
+  res.json({
+    success: true,
+    valido: true,
+    usuario: req.usuario,
+    message: 'Token válido'
+  });
+});
+
+/**
  * @route   GET /api/usuarios/:id
  * @desc    Obtener un usuario por su ID
  * @access  Public
@@ -258,14 +277,13 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// ✅ NUEVA RUTA: Verificar token
-router.get('/verificar-token', verificarToken, (req, res) => {
-  res.json({
-    success: true,
-    valido: true,
-    usuario: req.usuario,
-    message: 'Token válido'
-  });
-});
+// ✅ Log final para confirmar que el módulo se cargó correctamente
+console.log('✅ Usuarios module loaded with routes:');
+console.log('   - GET / (list users)');
+console.log('   - POST /registro');
+console.log('   - POST /login');
+console.log('   - GET /perfil (protected)');
+console.log('   - GET /verificar-token (protected)');
+console.log('   - GET /:id');
 
 module.exports = router;
