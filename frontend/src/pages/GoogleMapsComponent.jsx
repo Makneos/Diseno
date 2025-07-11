@@ -28,7 +28,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
   console.log('🗺️ GoogleMapsComponent props:', { selectedPharmacies, distance });
 
   // 🔧 Use API key from environment variables
-  const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+  const apiKey = "AIzaSyCwCSTcCexOHfJSIHgu2MQedMmX8jAkMQg";
   
   // 🔧 DEBUG: Check if API key is loaded
   console.log('🔑 Google Maps API Key:', apiKey ? 'Found' : 'Missing');
