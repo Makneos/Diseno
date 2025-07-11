@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { searchMedicamentos } from '../utils/medicationAPI';
 
 // Counter component inline
 const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
@@ -43,22 +44,6 @@ const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
   );
 };
 
-// Función para buscar medicamentos
-const searchMedicamentos = async (query) => {
-  if (!query || query.length < 2) return [];
-  
-  try {
-    const response = await fetch(`http://localhost:5000/api/medicamentos/buscar?q=${encodeURIComponent(query)}`);
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch (error) {
-    console.error('Error searching medications:', error);
-  }
-  return [];
-};
-
 const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLoading }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -69,12 +54,17 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
     const searchTimer = setTimeout(async () => {
       if (formData.name.length >= 2) {
         setIsSearching(true);
+        console.log('🔍 Searching medications for:', formData.name);
+        
         try {
+          // Usar la función de búsqueda que conecta con Railway
           const results = await searchMedicamentos(formData.name);
-          setSearchResults(results);
-          setShowDropdown(results.length > 0);
+          console.log('📋 Search results:', results);
+          
+          setSearchResults(results || []);
+          setShowDropdown((results || []).length > 0);
         } catch (error) {
-          console.error('Search error:', error);
+          console.error('❌ Search error:', error);
           setSearchResults([]);
           setShowDropdown(false);
         } finally {
@@ -83,23 +73,15 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
       } else {
         setSearchResults([]);
         setShowDropdown(false);
-        setIsSearching(false);
       }
     }, 300);
 
     return () => clearTimeout(searchTimer);
   }, [formData.name]);
 
-  // Reset search when modal closes
-  useEffect(() => {
-    if (!show) {
-      setSearchResults([]);
-      setShowDropdown(false);
-      setIsSearching(false);
-    }
-  }, [show]);
-
   const selectMedication = (medication) => {
+    console.log('✅ Selected medication:', medication);
+    
     setFormData({
       ...formData,
       name: medication.nombre,
@@ -108,7 +90,6 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
     });
     setShowDropdown(false);
     setSearchResults([]);
-    setIsSearching(false);
   };
 
   const addTimeSlot = () => {
@@ -133,30 +114,6 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
       ...formData,
       times: newTimes
     });
-  };
-
-  const handleInputChange = (value) => {
-    setFormData({ ...formData, name: value });
-    
-    // Si el input se vacía, limpiar todo inmediatamente
-    if (!value) {
-      setSearchResults([]);
-      setShowDropdown(false);
-      setIsSearching(false);
-    }
-  };
-
-  const handleInputFocus = () => {
-    if (searchResults.length > 0 && !isSearching) {
-      setShowDropdown(true);
-    }
-  };
-
-  const handleInputBlur = () => {
-    // Delay para permitir clicks en el dropdown
-    setTimeout(() => {
-      setShowDropdown(false);
-    }, 150);
   };
 
   if (!show) return null;
@@ -189,9 +146,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                       type="text"
                       className="form-control"
                       value={formData.name}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      onFocus={handleInputFocus}
-                      onBlur={handleInputBlur}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
                       placeholder="Start typing to search medications..."
                       disabled={isLoading}
                       required
@@ -208,7 +163,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                     )}
 
                     {/* Search results dropdown */}
-                    {showDropdown && searchResults.length > 0 && !isSearching && (
+                    {showDropdown && searchResults.length > 0 && (
                       <div className="position-absolute w-100 mt-1 bg-white border rounded shadow-lg" style={{ zIndex: 1000 }}>
                         <div className="list-group list-group-flush" style={{ maxHeight: '200px', overflowY: 'auto' }}>
                           {searchResults.slice(0, 5).map((medication) => (
@@ -216,7 +171,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                               key={medication.id}
                               type="button"
                               className="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                              onMouseDown={() => selectMedication(medication)}
+                              onClick={() => selectMedication(medication)}
                             >
                               <div className="d-flex align-items-center">
                                 <i className="bi bi-capsule me-2 text-primary"></i>

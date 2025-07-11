@@ -6,6 +6,7 @@ import MedicationTabs from '../components/MedicationTabs';
 import MedicationCard from '../components/MedicationCard';
 import AddMedicationCard from '../components/AddMedicationCard';
 import AddMedicationModal from '../components/AddMedicationModal';
+import AuthGuard, { useAuth } from '../components/AuthGuard'
 import { 
   fetchMedicamentos, 
   addMedicamento, 
