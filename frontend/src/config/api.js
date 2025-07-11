@@ -1,25 +1,30 @@
-// src/config/api.js
-// 🌐 Configuración centralizada de la API
+// src/config/api.js - CONFIGURACIÓN CORREGIDA PARA AZURE + RAILWAY
 
-// ⚠️ IMPORTANTE: Cambia esta URL por la de tu backend en Railway
 const getApiBaseUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // 🚂 AQUÍ PON TU URL DE RAILWAY BACKEND
+  // Detectar si estamos en Azure Static Apps
+  if (window.location.hostname.includes('azurestaticapps.net')) {
+    // 🚂 BACKEND EN RAILWAY (correcto)
     return 'https://wellaging-production-99c2.up.railway.app';
-    // Ejemplo: return 'https://farmafia-backend-production-1234.up.railway.app';
   }
   
-  // Desarrollo local
-  return 'http://localhost:5000';
+  // Si estamos en desarrollo local
+  if (process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost') {
+    return 'http://localhost:5000';
+  }
+  
+  // Fallback para otros entornos
+  return 'https://wellaging-production-99c2.up.railway.app';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
 
-// 🔧 Función helper para hacer requests
+// 🔧 Función helper mejorada para Azure + Railway
 export const apiRequest = async (endpoint, options = {}) => {
   const url = `${API_BASE_URL}${endpoint}`;
   
-  console.log(`🌐 API Request: ${options.method || 'GET'} ${url}`);
+  console.log(`🌐 Azure Frontend → Railway Backend`);
+  console.log(`📍 Frontend: ${window.location.origin}`);
+  console.log(`🎯 API Request: ${options.method || 'GET'} ${url}`);
   
   const defaultOptions = {
     headers: {
@@ -30,9 +35,13 @@ export const apiRequest = async (endpoint, options = {}) => {
   // Agregar token si existe
   const user = sessionStorage.getItem('user');
   if (user) {
-    const userData = JSON.parse(user);
-    if (userData.token) {
-      defaultOptions.headers['Authorization'] = `Bearer ${userData.token}`;
+    try {
+      const userData = JSON.parse(user);
+      if (userData.token) {
+        defaultOptions.headers['Authorization'] = `Bearer ${userData.token}`;
+      }
+    } catch (e) {
+      console.warn('⚠️ Invalid user data in sessionStorage');
     }
   }
   
@@ -51,23 +60,37 @@ export const apiRequest = async (endpoint, options = {}) => {
     console.log(`📥 Response: ${response.status} ${response.statusText}`);
     
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch {
+        errorData = { error: `HTTP ${response.status}: ${response.statusText}` };
+      }
+      
+      console.error('❌ API Error:', errorData);
       throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
     }
     
-    return await response.json();
-  } catch (error) {
-    console.error(`❌ API Error for ${url}:`, error);
+    const data = await response.json();
+    console.log('✅ API Success:', data);
+    return data;
     
+  } catch (error) {
+    console.error(`💥 Request failed for ${url}:`, error);
+    
+    // Errores específicos de CORS entre Azure y Railway
     if (error.message.includes('Failed to fetch')) {
-      throw new Error('Cannot connect to server. Please check your internet connection.');
+      throw new Error(`Cannot connect to Railway backend. Please check:
+1. Railway backend is running
+2. CORS is configured for Azure Static Apps
+3. Network connection is stable`);
     }
     
     throw error;
   }
 };
 
-// 🚀 API específicas
+// 🚀 API específicas (sin cambios)
 export const authAPI = {
   login: (credentials) => apiRequest('/api/usuarios/login', {
     method: 'POST',
@@ -98,7 +121,28 @@ export const medicationAPI = {
   getById: (id) => apiRequest(`/api/medicamentos/${id}`),
 };
 
-// 🔍 Debug en desarrollo
-if (process.env.NODE_ENV === 'development') {
-  console.log('🔧 API Configuration loaded:', API_BASE_URL);
+// 🔍 Debug específico para Azure + Railway
+console.log('🔧 API Configuration loaded:');
+console.log('📍 Frontend URL:', window.location.origin);
+console.log('🎯 Backend URL:', API_BASE_URL);
+console.log('🌍 Environment:', process.env.NODE_ENV);
+
+// Test de conectividad automático
+setTimeout(() => {
+  testBackendConnection();
+}, 2000);
+
+async function testBackendConnection() {
+  try {
+    console.log('🧪 Testing Railway backend connection...');
+    const response = await fetch(API_BASE_URL);
+    const data = await response.json();
+    console.log('✅ Backend connection test successful:', data);
+  } catch (error) {
+    console.error('❌ Backend connection test failed:', error);
+    console.log('💡 Possible issues:');
+    console.log('  - Railway backend is down');
+    console.log('  - CORS not configured for Azure Static Apps');
+    console.log('  - Network connectivity issues');
+  }
 }
