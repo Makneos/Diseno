@@ -8,7 +8,7 @@ require('dotenv').config();
 const dbConfig = {
   host: 'localhost',
   user: 'farmacia_app',
-  password: 'Farmacia?#2027',
+  password: '',
   database: 'farmacia',
   waitForConnections: true,
   connectionLimit: 10,
