@@ -1,0 +1,119 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "search": "Buscar",
+    "close": "Cerrar"
+  },
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "signUp": "Crear cuenta",
+    "signIn": "Ingresar"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "myMedications": "Mis Medicamentos",
+    "priceComparison": "Comparar Precios",
+    "profile": "Perfil",
+    "map": "Mapa de Farmacias"
+  },
+  "medications": {
+    "title": "Mis Medicamentos",
+    "addMedication": "Agregar Medicamento",
+    "editMedication": "Editar Medicamento",
+    "deleteMedication": "Eliminar Medicamento",
+    "medicationName": "Nombre del Medicamento",
+    "dosage": "Dosis",
+    "frequency": "Frecuencia",
+    "startDate": "Fecha de Inicio",
+    "endDate": "Fecha de Fin",
+    "notes": "Notas",
+    "reminder": "Recordatorio",
+    "upcomingDoses": "Próximas Dosis",
+    "noDoses": "No hay dosis programadas",
+    "takeDose": "Tomar Dosis",
+    "skipDose": "Omitir Dosis"
+  },
+  "pharmacy": {
+    "comparePrice": "Comparar Precios",
+    "searchMedication": "Buscar Medicamento",
+    "pharmacy": "Farmacia",
+    "price": "Precio",
+    "stock": "Stock",
+    "inStock": "En Stock",
+    "outOfStock": "Sin Stock",
+    "limitedStock": "Stock Limitado",
+    "findNearby": "Encontrar Farmacias Cercanas",
+    "distance": "Distancia",
+    "ahumada": "Farmacias Ahumada",
+    "cruzVerde": "Cruz Verde",
+    "salcobrand": "Salcobrand"
+  },
+  "priceComparison": {
+    "title": "Comparación de Precios",
+    "selectMedication": "Selecciona un medicamento",
+    "bestPrice": "Mejor Precio",
+    "averagePrice": "Precio Promedio",
+    "priceRange": "Rango de Precio",
+    "savingsUpTo": "Ahorra hasta",
+    "viewDetails": "Ver Detalles",
+    "priceHistory": "Historial de Precios",
+    "lastUpdated": "Última actualización"
+  },
+  "stats": {
+    "totalMedications": "Total de Medicamentos",
+    "activeMedications": "Medicamentos Activos",
+    "upcomingReminders": "Recordatorios Próximos",
+    "adherenceRate": "Tasa de Adherencia",
+    "thisWeek": "Esta Semana",
+    "thisMonth": "Este Mes"
+  },
+  "profile": {
+    "title": "Mi Perfil",
+    "personalInfo": "Información Personal",
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "address": "Dirección",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "notifications": "Notificaciones",
+    "enableReminders": "Activar Recordatorios",
+    "changePassword": "Cambiar Contraseña",
+    "deleteAccount": "Eliminar Cuenta"
+  },
+  "messages": {
+    "medicationAdded": "Medicamento agregado exitosamente",
+    "medicationUpdated": "Medicamento actualizado exitosamente",
+    "medicationDeleted": "Medicamento eliminado exitosamente",
+    "loginSuccess": "Inicio de sesión exitoso",
+    "loginError": "Error al iniciar sesión",
+    "registerSuccess": "Registro exitoso",
+    "registerError": "Error al registrarse",
+    "dataLoadError": "Error al cargar datos",
+    "saveError": "Error al guardar",
+    "deleteConfirm": "¿Estás seguro de que deseas eliminar esto?"
+  },
+  "validation": {
+    "required": "{{field}} es requerido",
+    "email": "Correo electrónico inválido",
+    "minLength": "{{field}} debe tener al menos {{min}} caracteres",
+    "maxLength": "{{field}} no puede tener más de {{max}} caracteres"
+  },
+  "welcome": "Bienvenido, {{name}}!",
+  "medicationCount": "Tienes {{count}} medicamento",
+  "medicationCount_plural": "Tienes {{count}} medicamentos",
+  "termsAccept": "Acepto los <1>términos y condiciones</1> y la <3>política de privacidad</3>"
+}
