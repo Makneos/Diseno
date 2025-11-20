@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const SimpleMedicationSearch = ({ 
   onMedicationSelect, 
@@ -10,6 +11,8 @@ const SimpleMedicationSearch = ({
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  
+  const { t } = useTranslation();
 
   // Available medications for search
   const availableMedications = [
@@ -112,7 +115,7 @@ const SimpleMedicationSearch = ({
           <input
             type="text"
             className="form-control border-start-0"
-            placeholder="Search medications to see stock on map..."
+            placeholder={t('home.searchPlaceholder')}
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
@@ -123,7 +126,7 @@ const SimpleMedicationSearch = ({
               className="btn btn-outline-secondary" 
               type="button"
               onClick={handleClearSearch}
-              title="Clear search"
+              title={t('common.close')}
             >
               <i className="bi bi-x"></i>
             </button>
@@ -146,7 +149,7 @@ const SimpleMedicationSearch = ({
                   </div>
                   <small className="text-muted">
                     <i className="bi bi-geo-alt me-1"></i>
-                    Check availability
+                    {t('priceComparison.available')}
                   </small>
                 </button>
               ))}
@@ -158,9 +161,9 @@ const SimpleMedicationSearch = ({
         {isSearching && (
           <div className="search-loading position-absolute w-100 mt-1 bg-white border rounded shadow-sm p-3 text-center">
             <div className="spinner-border spinner-border-sm me-2" role="status">
-              <span className="visually-hidden">Searching...</span>
+              <span className="visually-hidden">{t('priceComparison.searching')}</span>
             </div>
-            Searching medications...
+            {t('priceComparison.searching')}
           </div>
         )}
       </div>
@@ -168,7 +171,7 @@ const SimpleMedicationSearch = ({
       {/* Popular Medications (when no search) */}
       {!searchTerm && !selectedMedication && (
         <div className="popular-medications mt-3">
-          <h6 className="text-muted mb-2">Popular medications:</h6>
+          <h6 className="text-muted mb-2">{t('home.popularMedications')}</h6>
           <div className="d-flex flex-wrap gap-2">
             {['Paracetamol', 'Ibuprofeno', 'Omeprazol', 'Loratadina'].map(med => (
               <button
@@ -192,13 +195,13 @@ const SimpleMedicationSearch = ({
           <div className="alert alert-info d-flex justify-content-between align-items-center">
             <div>
               <i className="bi bi-info-circle me-2"></i>
-              Showing availability for <strong>{selectedMedication}</strong>
+              {t('map.showingAvailability')} <strong>{selectedMedication}</strong>
             </div>
             <button 
               className="btn btn-sm btn-outline-secondary"
               onClick={handleClearSearch}
             >
-              Clear
+              {t('common.close')}
             </button>
           </div>
         </div>
@@ -209,7 +212,7 @@ const SimpleMedicationSearch = ({
         <div className="no-results mt-3">
           <div className="alert alert-warning">
             <i className="bi bi-exclamation-triangle me-2"></i>
-            No medications found matching "<strong>{searchTerm}</strong>"
+            {t('priceComparison.notAvailable')} "<strong>{searchTerm}</strong>"
           </div>
         </div>
       )}

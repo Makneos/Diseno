@@ -1,0 +1,143 @@
+{
+  "nav": {
+    "brand": "Farmafia",
+    "home": "Inicio",
+    "nearby": "Cercanas",
+    "myMeds": "Mis Medicamentos",
+    "comparePrice": "Comparar Precios",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "signup": "Registrarse"
+  },
+  "home": {
+    "welcome": "Bienvenido a Farmafia",
+    "subtitle": "Tu Plataforma Confiable para Servicios Farmacéuticos",
+    "welcomeBack": "Bienvenido de vuelta",
+    "manageHealth": "Gestiona tu salud y medicamentos con facilidad",
+    "filterPharmacies": "Filtrar Farmacias",
+    "distance": "Distancia (km):",
+    "searchMedication": "Buscar Disponibilidad de Medicamentos",
+    "searchPlaceholder": "Buscar medicamentos para ver stock en el mapa...",
+    "popularMedications": "Medicamentos populares:",
+    "nearbyPharmacies": "Farmacias Cercanas",
+    "whyChoose": "¿Por Qué Elegir Farmafia?",
+    "yourCompanion": "Tu compañero farmacéutico completo"
+  },
+  "auth": {
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "name": "Nombre",
+    "login": "Iniciar Sesión",
+    "register": "Crear Cuenta",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "returnHome": "Volver a la página principal",
+    "loggingIn": "Iniciando sesión...",
+    "registering": "Registrando usuario...",
+    "loginSuccess": "¡Inicio de sesión exitoso! Redirigiendo...",
+    "registerSuccess": "¡Registro exitoso! Redirigiendo al inicio de sesión..."
+  },
+  "profile": {
+    "title": "Perfil de Usuario",
+    "userId": "ID de Usuario",
+    "logout": "Cerrar Sesión",
+    "loggingOut": "Cerrando sesión...",
+    "loggedOut": "Sesión cerrada exitosamente. Redirigiendo..."
+  },
+  "medications": {
+    "myMedications": "Mis Medicamentos",
+    "addMedication": "Agregar Medicamento",
+    "loading": "Cargando tus medicamentos...",
+    "manage": "Gestiona tus tratamientos y horario de medicamentos",
+    "noMedications": "No hay medicamentos en esta categoría",
+    "addFirst": "Agrega Tu Primer Medicamento"
+  },
+  "priceComparison": {
+    "title": "Comparador de Precios de Medicamentos",
+    "subtitle": "Ahorra en Medicamentos: Encuentra los Mejores Precios en Chile",
+    "searchPlaceholder": "Buscar por nombre o principio activo...",
+    "search": "Buscar",
+    "searching": "Buscando...",
+    "searchResults": "Resultados de búsqueda",
+    "found": "encontrados",
+    "viewDetails": "Ver Detalles y Comparar",
+    "comparePrice": "Comparar precios",
+    "backToResults": "Volver a resultados",
+    "backToSearch": "Volver a búsqueda",
+    "priceComparison": "Comparación de precios para medicamentos con",
+    "available": "Disponible",
+    "notAvailable": "No disponible",
+    "generic": "Genérico",
+    "brand": "Marca"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar"
+  },
+  "tools": {
+    "pharmacyTools": "Herramientas Farmacéuticas",
+    "priceComparison": {
+      "title": "Comparación de Precios",
+      "description": "Compara precios de medicamentos entre farmacias"
+    },
+    "medicationReminder": {
+      "title": "Recordatorio de Medicamentos",
+      "description": "Establece recordatorios para tus medicamentos",
+      "loginRequired": "Inicio de Sesión Requerido"
+    },
+    "medicationInfo": {
+      "title": "Información de Medicamentos",
+      "description": "Información detallada sobre medicamentos",
+      "comingSoon": "Próximamente"
+    },
+    "pharmacyChat": {
+      "title": "Chat Farmacéutico",
+      "description": "Chatea con profesionales farmacéuticos",
+      "comingSoon": "Próximamente"
+    }
+  },
+  "features": {
+    "realTime": {
+      "title": "Disponibilidad en Tiempo Real",
+      "description": "Verifica el stock de medicamentos en farmacias cercanas en tiempo real"
+    },
+    "priceComparison": {
+      "title": "Comparación de Precios",
+      "description": "Compara precios y encuentra las mejores ofertas en tus medicamentos"
+    },
+    "healthManagement": {
+      "title": "Gestión de Salud",
+      "description": "Rastrea tus tratamientos y horarios de medicamentos"
+    }
+  },
+  "footer": {
+    "about": "Acerca de Farmafia",
+    "description": "Te conectamos con farmacias cercanas y te ayudamos a gestionar tus medicamentos de manera eficiente y segura.",
+    "quickLinks": "Enlaces Rápidos",
+    "contact": "Contacto",
+    "followUs": "Síguenos",
+    "rights": "Todos los derechos reservados."
+  },
+  "loading": {
+    "refreshing": "Actualizando página de inicio...",
+    "loadingProfile": "Cargando perfil...",
+    "findingPharmacies": "Buscando farmacias cercanas...",
+    "loadingMedications": "Cargando tus medicamentos...",
+    "loadingComparison": "Cargando comparación de precios...",
+    "loadingRegistration": "Cargando página de registro...",
+    "loadingLogin": "Cargando página de inicio de sesión...",
+    "loadingTool": "Cargando herramienta de comparación de precios..."
+  },
+  "map": {
+    "showingAvailability": "Mostrando disponibilidad de",
+    "availability": ""
+  }
+}
