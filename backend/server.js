@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || 'Farmacia?#2027',
+  password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'farmacia',
   port: process.env.DB_PORT || 3306,
   waitForConnections: true,
