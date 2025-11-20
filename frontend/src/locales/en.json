@@ -1,0 +1,142 @@
+{
+  "nav": {
+    "brand": "Farmafia",
+    "home": "Home",
+    "nearby": "Nearby",
+    "myMeds": "My My Meds",
+    "comparePrice": "Compare Prices",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "home": {
+    "welcome": "Welcome to Farmafia",
+    "subtitle": "Your Trusted Platform for Pharmaceutical Services",
+    "welcomeBack": "Welcome back",
+    "manageHealth": "Manage your health and medications with ease",
+    "filterPharmacies": "Filter Pharmacies",
+    "distance": "Distance (km):",
+    "searchMedication": "Search Medication Availability",
+    "searchPlaceholder": "Search by name or active ingredient...",
+    "nearbyPharmacies": "Nearby Pharmacies",
+    "whyChoose": "Why Choose Farmafia?",
+    "yourCompanion": "Your complete pharmaceutical companion"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Name",
+    "login": "Login",
+    "register": "Create Account",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?",
+    "returnHome": "Return to main page",
+    "loggingIn": "Logging in...",
+    "registering": "Registering user...",
+    "loginSuccess": "Login successful! Redirecting...",
+    "registerSuccess": "Registration successful! Redirecting to login..."
+  },
+  "profile": {
+    "title": "User Profile",
+    "userId": "User ID",
+    "logout": "Log Out",
+    "loggingOut": "Logging out...",
+    "loggedOut": "Logged out successfully. Redirecting..."
+  },
+  "medications": {
+    "myMedications": "My Medications",
+    "addMedication": "Add Medication",
+    "loading": "Loading your medications...",
+    "manage": "Manage your treatments and medication schedule",
+    "noMedications": "No medications in this category",
+    "addFirst": "Add Your First Medication"
+  },
+  "priceComparison": {
+    "title": "Medication Price Comparator",
+    "subtitle": "Save on Medications: Find the Best Prices in Chile",
+    "searchPlaceholder": "Search by name or active ingredient...",
+    "search": "Search",
+    "searching": "Searching...",
+    "searchResults": "Search results",
+    "found": "found",
+    "viewDetails": "View Details & Compare",
+    "comparePrice": "Compare prices",
+    "backToResults": "Back to results",
+    "backToSearch": "Back to search",
+    "priceComparison": "Price comparison for medications with",
+    "available": "Available",
+    "notAvailable": "Not available",
+    "generic": "Generic",
+    "brand": "Brand"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  },
+  "tools": {
+    "pharmacyTools": "Pharmacy Tools",
+    "priceComparison": {
+      "title": "Price Comparison",
+      "description": "Compare medication prices across pharmacies"
+    },
+    "medicationReminder": {
+      "title": "Medication Reminder",
+      "description": "Set reminders for your medications",
+      "loginRequired": "Login Required"
+    },
+    "medicationInfo": {
+      "title": "Medication Info",
+      "description": "Detailed information about medications",
+      "comingSoon": "Coming Soon"
+    },
+    "pharmacyChat": {
+      "title": "Pharmacy Chat",
+      "description": "Chat with pharmacy professionals",
+      "comingSoon": "Coming Soon"
+    }
+  },
+  "features": {
+    "realTime": {
+      "title": "Real-time Availability",
+      "description": "Check medication stock across nearby pharmacies in real-time"
+    },
+    "priceComparison": {
+      "title": "Price Comparison",
+      "description": "Compare prices and find the best deals on your medications"
+    },
+    "healthManagement": {
+      "title": "Health Management",
+      "description": "Track your treatments and medication schedules"
+    }
+  },
+  "footer": {
+    "about": "About Farmafia",
+    "description": "We connect you with nearby pharmacies and help you manage your medications efficiently and safely.",
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved."
+  },
+  "loading": {
+    "refreshing": "Refreshing home page...",
+    "loadingProfile": "Loading profile...",
+    "findingPharmacies": "Finding nearby pharmacies...",
+    "loadingMedications": "Loading your medications...",
+    "loadingComparison": "Loading price comparison...",
+    "loadingRegistration": "Loading registration page...",
+    "loadingLogin": "Loading login page...",
+    "loadingTool": "Loading price comparison tool..."
+  },
+  "map": {
+    "showingAvailability": "Showing",
+    "availability": "availability"
+  }
+}
