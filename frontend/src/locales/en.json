@@ -3,47 +3,54 @@
     "brand": "Farmafia",
     "home": "Home",
     "nearby": "Nearby",
-    "myMeds": "My My Meds",
+    "myMeds": "My Medications",
     "comparePrice": "Compare Prices",
     "profile": "Profile",
-    "logout": "Logout",
-    "login": "Login",
+    "logout": "Log Out",
+    "login": "Log In",
     "signup": "Sign Up"
   },
   "home": {
     "welcome": "Welcome to Farmafia",
-    "subtitle": "Your Trusted Platform for Pharmaceutical Services",
-    "welcomeBack": "Welcome back",
+    "subtitle": "Your Trusted Platform for Pharmacy Services",
+    "welcomeBack": "Welcome Back",
     "manageHealth": "Manage your health and medications with ease",
     "filterPharmacies": "Filter Pharmacies",
     "distance": "Distance (km):",
     "searchMedication": "Search Medication Availability",
-    "searchPlaceholder": "Search by name or active ingredient...",
+    "searchPlaceholder": "Search medications to view stock on the map...",
+    "popularMedications": "Popular Medications:",
     "nearbyPharmacies": "Nearby Pharmacies",
     "whyChoose": "Why Choose Farmafia?",
-    "yourCompanion": "Your complete pharmaceutical companion"
+    "yourCompanion": "Your complete pharmacy companion"
   },
   "auth": {
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "name": "Name",
-    "login": "Login",
+    "login": "Log In",
     "register": "Create Account",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
-    "returnHome": "Return to main page",
+    "returnHome": "Return to Home Page",
     "loggingIn": "Logging in...",
     "registering": "Registering user...",
     "loginSuccess": "Login successful! Redirecting...",
-    "registerSuccess": "Registration successful! Redirecting to login..."
+    "registerSuccess": "Registration successful! Redirecting to login...",
+    "fillAllFields": "Please fill in all fields",
+    "noTokenReceived": "No token received from server",
+    "registrationError": "Error registering user",
+    "connectionError": "Cannot connect to server. Please check your internet connection.",
+    "passwordsNotMatch": "Passwords do not match",
+    "passwordMinLength": "Password must be at least 6 characters long"
   },
   "profile": {
     "title": "User Profile",
     "userId": "User ID",
     "logout": "Log Out",
     "loggingOut": "Logging out...",
-    "loggedOut": "Logged out successfully. Redirecting..."
+    "loggedOut": "You have been logged out. Redirecting..."
   },
   "medications": {
     "myMedications": "My Medications",
@@ -51,25 +58,69 @@
     "loading": "Loading your medications...",
     "manage": "Manage your treatments and medication schedule",
     "noMedications": "No medications in this category",
-    "addFirst": "Add Your First Medication"
+    "addFirst": "Add Your First Medication",
+    "errorLoading": "Failed to load medications. Please refresh the page.",
+    "errorAdding": "Failed to add medication. Please try again.",
+    "errorDeleting": "Failed to delete medication. Please try again.",
+    "errorOccurred": "An error occurred while processing your request.",
+    "editComingSoon": "Edit functionality will be implemented soon!",
+    "confirmDelete": "Are you sure you want to delete \"{name}\"?",
+    "confirmLogout": "Are you sure you want to log out?",
+    "addToStartTracking": "Add some medications to start tracking your treatments",
+    "tipsTitle": "Tips for Managing Your Medications",
+    "tipRegularTitle": "Set Regular Times",
+    "tipRegularDesc": "Take medications at the same time each day to maintain consistent levels.",
+    "tipRemindersTitle": "Enable Reminders",
+    "tipRemindersDesc": "Use our reminder system to never miss a dose of your important medications.",
+    "tipTrackTitle": "Track Progress",
+    "tipTrackDesc": "Monitor your treatment progress and note any side effects or improvements.",
+    "disclaimer": "Always consult with healthcare professionals before making changes to your medication regimen."
   },
   "priceComparison": {
-    "title": "Medication Price Comparator",
+    "title": "Medication Price Comparison",
     "subtitle": "Save on Medications: Find the Best Prices in Chile",
     "searchPlaceholder": "Search by name or active ingredient...",
     "search": "Search",
     "searching": "Searching...",
-    "searchResults": "Search results",
+    "searchResults": "Search Results",
     "found": "found",
     "viewDetails": "View Details & Compare",
-    "comparePrice": "Compare prices",
-    "backToResults": "Back to results",
-    "backToSearch": "Back to search",
+    "comparePrice": "Compare Prices",
+    "backToResults": "Back to Results",
+    "backToSearch": "Back to Search",
     "priceComparison": "Price comparison for medications with",
     "available": "Available",
-    "notAvailable": "Not available",
+    "notAvailable": "Not Available",
     "generic": "Generic",
-    "brand": "Brand"
+    "brand": "Brand",
+    "noMedicationsFound": "No medications found. Try a different search term.",
+    "noMatchingMedications": "No matching medications were found",
+    "minCharacters": "Enter at least 3 characters to search",
+    "image": "Image",
+    "name": "Name",
+    "activeIngredient": "Active Ingredient",
+    "type": "Type",
+    "action": "Action",
+    "searchTips": "Search Tips",
+    "tipSearchTitle": "Search by name or ingredient",
+    "tipSearchDesc": "Try \"Paracetamol\", \"Tapsin\", or \"Gesidol\"",
+    "tipDetailsTitle": "View detailed comparison",
+    "tipDetailsDesc": "Click \"View Details\" to see prices across all pharmacies",
+    "tipPriceTitle": "Find best prices",
+    "tipPriceDesc": "Compare medications with the same active ingredient",
+    "connectionError": "Connection error. Could not connect to the server."
+  },
+  "medicationDetail": {
+    "couldNotLoadDetails": "Could not load medication details",
+    "unknownMedication": "Unknown Medication",
+    "noPriceData": "No price data available for medications with this active ingredient",
+    "apiError": "API Error. Showing sample data.",
+    "notFound": "Medication not found."
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "message": "Sorry, the page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to Home"
   },
   "common": {
     "loading": "Loading...",
@@ -79,7 +130,8 @@
     "save": "Save",
     "delete": "Delete",
     "edit": "Edit",
-    "close": "Close"
+    "close": "Close",
+    "unknown": "Unknown"
   },
   "tools": {
     "pharmacyTools": "Pharmacy Tools",
@@ -93,7 +145,7 @@
       "loginRequired": "Login Required"
     },
     "medicationInfo": {
-      "title": "Medication Info",
+      "title": "Medication Information",
       "description": "Detailed information about medications",
       "comingSoon": "Coming Soon"
     },
@@ -105,8 +157,8 @@
   },
   "features": {
     "realTime": {
-      "title": "Real-time Availability",
-      "description": "Check medication stock across nearby pharmacies in real-time"
+      "title": "Real-Time Availability",
+      "description": "Check real-time medication stock in nearby pharmacies"
     },
     "priceComparison": {
       "title": "Price Comparison",
@@ -136,7 +188,19 @@
     "loadingTool": "Loading price comparison tool..."
   },
   "map": {
-    "showingAvailability": "Showing",
-    "availability": "availability"
+    "showingAvailability": "Showing availability for",
+    "availability": "",
+    "you": "YOU",
+    "distance": "Distance",
+    "selectPharmacy": "Please select at least one pharmacy to display results on the map",
+    "errorLocation": "Could not get your location. Using default location.",
+    "errorGeolocation": "Your browser does not support geolocation. Using default location.",
+    "errorLoadingPharmacies": "Unable to load pharmacies. Using sample data.",
+    "apiKeyMissing": "Google Maps API Key Missing",
+    "apiKeyError": "Google Maps API Key is not configured correctly.",
+    "checkEnvFile": "Make sure REACT_APP_GOOGLE_MAPS_API_KEY is set in your .env file",
+    "loadError": "Error loading Google Maps",
+    "checkConnection": "Check your API key and internet connection",
+    "loadingMap": "Loading Google Maps..."
   }
 }

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 import AuthGuard, { useAuth } from '../components/AuthGuard';
 import '../styles/AuthPages.css';
 
 function ProfilePageContent() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const navigate = useNavigate();
@@ -11,13 +13,13 @@ function ProfilePageContent() {
 
   const handleLogout = () => {
     setIsLoading(true);
-    setLoadingMessage('Logging out...');
+    setLoadingMessage(t('profile.loggingOut'));
     
     setTimeout(() => {
-      setLoadingMessage('Logged out successfully. Redirecting...');
+      setLoadingMessage(t('profile.loggedOut'));
       
       setTimeout(() => {
-        logout(); // Esto redirigirá automáticamente
+        logout();
       }, 1000);
     }, 1000);
   };
@@ -40,7 +42,7 @@ function ProfilePageContent() {
     return (
       <div className="fullscreen-loader-container">
         <div className="loader"></div>
-        <p className="loading-text">Loading user data...</p>
+        <p className="loading-text">{t('loading.loadingProfile')}</p>
       </div>
     );
   }
@@ -48,7 +50,7 @@ function ProfilePageContent() {
   return (
     <div className="auth-container">
       <div className="auth-card profile-card">
-        <h2>User Profile</h2>
+        <h2>{t('profile.title')}</h2>
         
         <div className="profile-avatar">
           <div className="avatar-circle">
@@ -58,17 +60,17 @@ function ProfilePageContent() {
         
         <div className="profile-info">
           <div className="info-item">
-            <label>Name:</label>
+            <label>{t('auth.name')}:</label>
             <p>{user.nombre}</p>
           </div>
           
           <div className="info-item">
-            <label>Email:</label>
+            <label>{t('auth.email')}:</label>
             <p>{user.email}</p>
           </div>
           
           <div className="info-item">
-            <label>User ID:</label>
+            <label>{t('profile.userId')}:</label>
             <p>#{user.id}</p>
           </div>
         </div>
@@ -77,18 +79,17 @@ function ProfilePageContent() {
           className="auth-submit-button logout-button"
           onClick={handleLogout}
         >
-          Log Out
+          {t('profile.logout')}
         </button>
         
         <div className="auth-footer">
-          <a href="/" onClick={handleReturnHome}>Return to main page</a>
+          <a href="/" onClick={handleReturnHome}>{t('auth.returnHome')}</a>
         </div>
       </div>
     </div>
   );
 }
 
-// Main component wrapped with AuthGuard
 function ProfilePage() {
   return (
     <AuthGuard>
