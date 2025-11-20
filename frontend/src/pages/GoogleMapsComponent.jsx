@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
+import { useTranslation } from '../hooks/useTranslation';
 
 const containerStyle = {
   width: "100%",
@@ -24,6 +25,8 @@ const PHARMACY_NAME_VARIANTS = {
 };
 
 const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
+  const { t } = useTranslation();
+  
   // 🔧 DEBUG: Log props received
   console.log('🗺️ GoogleMapsComponent props:', { selectedPharmacies, distance });
 
@@ -82,7 +85,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         },
         (err) => {
           console.error("❌ Error getting location:", err);
-          setError("Unable to retrieve your location. Using default location.");
+          setError(t('map.errorLocation'));
           // Use default location (Santiago, Chile)
           setUserLocation(defaultCenter);
         },
@@ -90,10 +93,10 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       );
     } else {
       console.error("❌ Geolocation not supported");
-      setError("Your browser does not support geolocation. Using default location.");
+      setError(t('map.errorGeolocation'));
       setUserLocation(defaultCenter);
     }
-  }, []);
+  }, [t]);
 
   // Load pharmacies from GeoJSON file
   useEffect(() => {
@@ -132,7 +135,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         setPharmacies(parsedPharmacies);
       } catch (err) {
         console.error("❌ Error loading pharmacies:", err);
-        setError("Unable to load pharmacies. Using sample data.");
+        setError(t('map.errorLoadingPharmacies'));
         
         // 🔧 FALLBACK: Use sample pharmacy data
         const samplePharmacies = [
@@ -158,7 +161,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     };
     
     fetchGeoJSON();
-  }, []);
+  }, [t]);
 
   // Filter pharmacies by name and distance
   useEffect(() => {
@@ -275,9 +278,9 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     console.error('❌ Google Maps API key not found in environment variables');
     return (
       <div className="alert alert-danger m-3">
-        <h5>Google Maps API Key Missing</h5>
-        <p>The Google Maps API key is not configured properly.</p>
-        <small>Check that REACT_APP_GOOGLE_MAPS_API_KEY is set in your .env file</small>
+        <h5>{t('map.apiKeyMissing')}</h5>
+        <p>{t('map.apiKeyError')}</p>
+        <small>{t('map.checkEnvFile')}</small>
       </div>
     );
   }
@@ -286,9 +289,9 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     console.error('❌ Google Maps load error:', loadError);
     return (
       <div className="alert alert-danger m-3">
-        <h5>Error loading Google Maps</h5>
+        <h5>{t('map.loadError')}</h5>
         <p>{loadError.message}</p>
-        <small>Check your API key and network connection</small>
+        <small>{t('map.checkConnection')}</small>
       </div>
     );
   }
@@ -299,9 +302,9 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       <div className="d-flex justify-content-center align-items-center p-5" style={{ height: "500px" }}>
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('common.loading')}</span>
           </div>
-          <p className="mt-2">Loading Google Maps...</p>
+          <p className="mt-2">{t('map.loadingMap')}</p>
         </div>
       </div>
     );
@@ -332,7 +335,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
         {userLocation && (
           <Marker 
             position={userLocation} 
-            label="YOU"
+            label={t('map.you')}
             icon={{
               url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
             }}
@@ -366,7 +369,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
               <strong style={{ textTransform: 'capitalize' }}>
                 {selectedPharmacy.name}
               </strong>
-              {distanceKm && <p>Distance: {distanceKm} km</p>}
+              {distanceKm && <p>{t('map.distance')}: {distanceKm} km</p>}
             </div>
           </InfoWindow>
         )}
@@ -376,7 +379,7 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
       {!hasSelectedPharmacies && (
         <div className="alert alert-info mt-3 position-absolute bottom-0 start-50 translate-middle-x" style={{ maxWidth: "90%" }}>
           <i className="bi bi-info-circle me-2"></i>
-          Please select at least one pharmacy to display results on the map
+          {t('map.selectPharmacy')}
         </div>
       )}
       
@@ -400,6 +403,5 @@ const GoogleMapsComponent = ({ selectedPharmacies, distance }) => {
     </div>
   );
 };
-
 
 export default GoogleMapsComponent;

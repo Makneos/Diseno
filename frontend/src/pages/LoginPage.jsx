@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 import '../styles/AuthPages.css';
 import { authAPI } from '../config/api';
 
 function LoginPage() {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -29,25 +31,23 @@ function LoginPage() {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      setErrorMessage('Please fill in all fields');
+      setErrorMessage(t('auth.fillAllFields'));
       return;
     }
 
-    setLoadingMessage('Logging in...');
+    setLoadingMessage(t('auth.loggingIn'));
     setIsLoading(true);
 
     try {
       console.log('🔑 Attempting login for:', formData.email);
       
-      // ✅ Usar authAPI centralizada en lugar de fetch manual
       const data = await authAPI.login(formData);
       
       console.log('📥 Login response:', data);
       console.log('✅ Login successful for user:', data.nombre);
 
-      // Verificar que el token existe
       if (!data.token) {
-        throw new Error('No token received from server');
+        throw new Error(t('auth.noTokenReceived'));
       }
 
       const userData = {
@@ -59,10 +59,8 @@ function LoginPage() {
 
       console.log('💾 Saving user data to sessionStorage:', userData);
       
-      // Guardar en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
       
-      // Verificar que se guardó correctamente
       const savedData = sessionStorage.getItem('user');
       console.log('✅ Verification - Data saved in sessionStorage:', savedData ? 'YES' : 'NO');
       
@@ -71,7 +69,7 @@ function LoginPage() {
         console.log('🔍 Parsed saved data has token:', !!parsedData.token);
       }
 
-      setLoadingMessage('Login successful! Redirecting...');
+      setLoadingMessage(t('auth.loginSuccess'));
       
       setTimeout(() => {
         console.log('🚀 Redirecting to home page...');
@@ -87,7 +85,7 @@ function LoginPage() {
 
   const handleReturnHome = (e) => {
     e.preventDefault();
-    setLoadingMessage('Returning to homepage...');
+    setLoadingMessage(t('loading.refreshing'));
     setIsLoading(true);
 
     setTimeout(() => {
@@ -107,7 +105,7 @@ function LoginPage() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h2>Login</h2>
+        <h2>{t('nav.login')}</h2>
         {errorMessage && (
           <div className="alert alert-danger" role="alert">
             {errorMessage}
@@ -115,41 +113,42 @@ function LoginPage() {
         )}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">{t('auth.email')}</label>
             <input
               type="email"
               id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              placeholder={t('auth.email')}
               required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">{t('auth.password')}</label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
+              placeholder={t('auth.password')}
               required
             />
           </div>
 
           <button type="submit" className="auth-submit-button">
-            Login
+            {t('auth.login')}
           </button>
         </form>
 
         <div className="auth-footer">
-          <p>Don't have an account? <Link to="/register">Register</Link></p>
-          <a href="/" onClick={handleReturnHome}>Return to main page</a>
+          <p>{t('auth.dontHaveAccount')} <Link to="/register">{t('nav.signup')}</Link></p>
+          <a href="/" onClick={handleReturnHome}>{t('auth.returnHome')}</a>
         </div>
       </div>
       
-      {/* 🔧 Debug info siempre visible */}
       <div style={{ 
         position: 'fixed', 
         bottom: '10px', 

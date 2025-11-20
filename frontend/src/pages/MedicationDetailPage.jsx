@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 import PriceChartsContainer from '../components/PriceChartsContainer';
 import MedicationHeader from '../components/MedicationHeader';
 import PriceComparisonResults from '../components/PriceComparisonResults';
@@ -7,6 +8,7 @@ import PriceSummary from '../components/PriceSummary';
 import '../styles/PriceComparison.css';
 
 function MedicationDetailPage() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [selectedMedication, setSelectedMedication] = useState(null);
@@ -23,7 +25,6 @@ function MedicationDetailPage() {
       setUser(JSON.parse(loggedInUser));
     }
 
-    // Get selected medication from sessionStorage or fetch by ID
     const savedMedication = sessionStorage.getItem('selectedMedication');
     if (savedMedication) {
       const medication = JSON.parse(savedMedication);
@@ -31,14 +32,13 @@ function MedicationDetailPage() {
       setSelectedMedication(medication);
       loadPriceComparison(medication);
     } else {
-      // If no medication in sessionStorage, try to get it by ID
       fetchMedicationById(medicationId);
     }
   }, [medicationId]);
 
   const fetchMedicationById = async (id) => {
     setIsLoading(true);
-    setLoadingMessage('Loading medication details...');
+    setLoadingMessage(t('loading.loadingMedications'));
     
     try {
       const response = await fetch(`http://localhost:5000/api/medicamentos/${id}`);
@@ -53,13 +53,12 @@ function MedicationDetailPage() {
       loadPriceComparison(medication);
     } catch (error) {
       console.error('Error fetching medication by ID:', error);
-      setErrorMessage('Could not load medication details');
+      setErrorMessage(t('medicationDetail.couldNotLoadDetails'));
       
-      // Fallback with sample data
       const fallbackMedication = {
         id: parseInt(id),
-        nombre: 'Unknown Medication',
-        principio_activo: 'Unknown',
+        nombre: t('medicationDetail.unknownMedication'),
+        principio_activo: t('common.unknown'),
         es_generico: false,
         imagen_url: null
       };
@@ -74,7 +73,7 @@ function MedicationDetailPage() {
     if (!medication) return;
 
     setIsLoading(true);
-    setLoadingMessage('Loading price comparison...');
+    setLoadingMessage(t('loading.loadingComparison'));
     
     try {
       const principioActivoEncoded = encodeURIComponent(medication.principio_activo);
@@ -93,9 +92,8 @@ function MedicationDetailPage() {
       
       if (!data.farmacias || data.farmacias.length === 0) {
         console.log("❌ No pharmacies found in API response");
-        setErrorMessage('No price data available for medications with this active ingredient');
+        setErrorMessage(t('medicationDetail.noPriceData'));
         
-        // Fallback with sample data
         console.log("🔄 Using sample data");
         const sampleComparison = generateSampleComparison(medication);
         setComparisonResults(sampleComparison);
@@ -106,12 +104,11 @@ function MedicationDetailPage() {
     } catch (error) {
       console.error('💥 Comparison error:', error);
       
-      // Fallback with sample data
       console.log("🔄 Using sample data as fallback due to error");
       const sampleComparison = generateSampleComparison(medication);
       setComparisonResults(sampleComparison);
       
-      setErrorMessage(`API Error: ${error.message}. Showing sample data.`);
+      setErrorMessage(t('medicationDetail.apiError'));
     } finally {
       setIsLoading(false);
     }
@@ -126,7 +123,6 @@ function MedicationDetailPage() {
     navigate('/');
   };
 
-  // Function to get default image based on active ingredient
   const getDefaultImageForActiveIngredient = (principioActivo, tipo = 'brand') => {
     const activo = principioActivo?.toLowerCase() || '';
     
@@ -134,14 +130,6 @@ function MedicationDetailPage() {
       return tipo === 'generic' 
         ? 'https://via.placeholder.com/150x150/28a745/ffffff?text=Paracetamol+Gen'
         : 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw5a7de0d6/images/large/186508-paracetamol-mk-500-mg-20-comprimidos.jpg';
-    }
-    
-    if (activo.includes('gesidol')) {
-      return 'https://via.placeholder.com/150x150/ff6b6b/ffffff?text=Gesidol';
-    }
-    
-    if (activo.includes('día') || activo.includes('noche')) {
-      return 'https://via.placeholder.com/150x150/4ecdc4/ffffff?text=Tapsin';
     }
     
     if (activo.includes('ibuprofeno')) {
@@ -155,11 +143,9 @@ function MedicationDetailPage() {
       : 'https://via.placeholder.com/150x150/007bff/ffffff?text=Medication';
   };
 
-  // Function to generate sample data
   const generateSampleComparison = (medication) => {
     console.log('🔄 Generating sample data for:', medication);
     
-    // Use selected medication image if available
     const baseImageUrl = medication.imagen_url || getDefaultImageForActiveIngredient(medication.principio_activo);
     
     const sampleData = {
@@ -175,16 +161,6 @@ function MedicationDetailPage() {
               es_generico: medication.es_generico,
               imagen_url: baseImageUrl,
               precio: 1500 + Math.floor(Math.random() * 500),
-              disponible: true,
-              url_producto: 'https://www.farmaciasahumada.cl'
-            },
-            {
-              id: 11,
-              medicamento_id: medication.id + 100,
-              nombre: `${medication.principio_activo} Generic`,
-              es_generico: true,
-              imagen_url: getDefaultImageForActiveIngredient(medication.principio_activo, 'generic'),
-              precio: 800 + Math.floor(Math.random() * 300),
               disponible: true,
               url_producto: 'https://www.farmaciasahumada.cl'
             }
@@ -217,16 +193,6 @@ function MedicationDetailPage() {
               precio: 1800 + Math.floor(Math.random() * 200),
               disponible: true,
               url_producto: 'https://salcobrand.cl'
-            },
-            {
-              id: 12,
-              medicamento_id: medication.id + 200,
-              nombre: `${medication.principio_activo} MK`,
-              es_generico: false,
-              imagen_url: getDefaultImageForActiveIngredient(medication.principio_activo),
-              precio: 2200 + Math.floor(Math.random() * 400),
-              disponible: Math.random() > 0.3,
-              url_producto: 'https://salcobrand.cl'
             }
           ]
         }
@@ -251,9 +217,9 @@ function MedicationDetailPage() {
       <div className="container py-5">
         <div className="alert alert-warning" role="alert">
           <i className="bi bi-exclamation-triangle me-2"></i>
-          Medication not found. 
+          {t('medicationDetail.notFound')}
           <button className="btn btn-link p-0 ms-2" onClick={handleBackToSearch}>
-            Return to search
+            {t('priceComparison.backToSearch')}
           </button>
         </div>
       </div>
@@ -265,7 +231,7 @@ function MedicationDetailPage() {
       {/* Navigation */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
         <a className="navbar-brand fw-bold" href="/" onClick={handleReturnHome}>
-          Farmafia
+          {t('nav.brand')}
         </a>
         <button
           className="navbar-toggler"
@@ -293,14 +259,14 @@ function MedicationDetailPage() {
                     e.preventDefault();
                     navigate('/login');
                   }}>
-                  Login
+                  {t('nav.login')}
                 </a>
               </li>
             )}
             <li className="nav-item">
               <a className="nav-link" href="/" onClick={handleReturnHome}>
                 <i className="bi bi-house-door me-1"></i>
-                Home
+                {t('nav.home')}
               </a>
             </li>
           </ul>
@@ -312,10 +278,10 @@ function MedicationDetailPage() {
         <nav aria-label="breadcrumb" className="mb-4">
           <ol className="breadcrumb">
             <li className="breadcrumb-item">
-              <button className="btn btn-link p-0" onClick={handleReturnHome}>Home</button>
+              <button className="btn btn-link p-0" onClick={handleReturnHome}>{t('nav.home')}</button>
             </li>
             <li className="breadcrumb-item">
-              <button className="btn btn-link p-0" onClick={handleBackToSearch}>Search</button>
+              <button className="btn btn-link p-0" onClick={handleBackToSearch}>{t('priceComparison.search')}</button>
             </li>
             <li className="breadcrumb-item active" aria-current="page">
               {selectedMedication.nombre}
@@ -331,7 +297,7 @@ function MedicationDetailPage() {
               onClick={handleBackToSearch}
             >
               <i className="bi bi-arrow-left me-2"></i>
-              Back to search
+              {t('priceComparison.backToSearch')}
             </button>
           </div>
         </div>
@@ -347,15 +313,11 @@ function MedicationDetailPage() {
           </div>
         )}
 
-        {/* Price Charts Section - WITH DEBUG AND TEST DATA */}
+        {/* Price Charts Section */}
         {comparisonResults.farmacias && (
           <div className="row mb-5">
             <div className="col-12">
-              {/* DEBUG: Show data before passing it */}
               {(() => {
-                console.log('🔍 Original comparisonResults data:', comparisonResults);
-                console.log('🔍 Pharmacies:', comparisonResults.farmacias);
-                
                 const medicationDataForChart = comparisonResults.farmacias.flatMap(farmacia => 
                   farmacia.medicamentos.map(med => ({
                     farmacia: farmacia.farmacia,
@@ -366,10 +328,6 @@ function MedicationDetailPage() {
                   }))
                 );
                 
-                console.log('🔍 Transformed data for chart:', medicationDataForChart);
-                console.log('🔍 Number of elements:', medicationDataForChart.length);
-                
-                // If no valid data, use test data
                 const finalData = medicationDataForChart.length > 0 
                   ? medicationDataForChart 
                   : [
@@ -379,24 +337,8 @@ function MedicationDetailPage() {
                         disponible: true,
                         url_producto: 'https://www.farmaciasahumada.cl',
                         medicamento_nombre: selectedMedication.nombre
-                      },
-                      {
-                        farmacia: { id: 2, nombre: 'Cruz Verde' },
-                        precio: 1200,
-                        disponible: true,
-                        url_producto: 'https://www.cruzverde.cl',
-                        medicamento_nombre: selectedMedication.nombre
-                      },
-                      {
-                        farmacia: { id: 3, nombre: 'Salcobrand' },
-                        precio: 1800,
-                        disponible: true,
-                        url_producto: 'https://salcobrand.cl',
-                        medicamento_nombre: selectedMedication.nombre
                       }
                     ];
-                
-                console.log('🎯 Final data for chart:', finalData);
                 
                 return (
                   <PriceChartsContainer 
@@ -406,45 +348,6 @@ function MedicationDetailPage() {
                   />
                 );
               })()}
-            </div>
-          </div>
-        )}
-
-        {/* Special case: If no comparisonResults.farmacias */}
-        {!comparisonResults.farmacias && (
-          <div className="row mb-5">
-            <div className="col-12">
-              <div className="alert alert-info mb-4">
-                <i className="bi bi-info-circle me-2"></i>
-                No price data found. Showing chart with demo data.
-              </div>
-              <PriceChartsContainer 
-                medicationData={[
-                  {
-                    farmacia: { id: 1, nombre: 'Ahumada' },
-                    precio: 1500,
-                    disponible: true,
-                    url_producto: '#',
-                    medicamento_nombre: selectedMedication.nombre
-                  },
-                  {
-                    farmacia: { id: 2, nombre: 'Cruz Verde' },
-                    precio: 1200,
-                    disponible: true,
-                    url_producto: '#',
-                    medicamento_nombre: selectedMedication.nombre
-                  },
-                  {
-                    farmacia: { id: 3, nombre: 'Salcobrand' },
-                    precio: 1800,
-                    disponible: false,
-                    url_producto: '#',
-                    medicamento_nombre: selectedMedication.nombre
-                  }
-                ]}
-                medicationName={selectedMedication.nombre}
-                selectedMedication={selectedMedication}
-              />
             </div>
           </div>
         )}
@@ -463,11 +366,11 @@ function MedicationDetailPage() {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-              <h5>Farmafia</h5>
-              <p className="mb-0">Your trusted platform for pharmaceutical services.</p>
+              <h5>{t('nav.brand')}</h5>
+              <p className="mb-0">{t('footer.description')}</p>
             </div>
             <div className="col-md-6 text-md-end">
-              <p className="mb-0">© 2025 Farmafia. All rights reserved.</p>
+              <p className="mb-0">© 2025 {t('nav.brand')}. {t('footer.rights')}</p>
             </div>
           </div>
         </div>

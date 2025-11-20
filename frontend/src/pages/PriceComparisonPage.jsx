@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 import '../styles/PriceComparison.css';
 
-// 🌐 API Configuration - Detecta automáticamente el entorno
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://wellaging-production-99c2.up.railway.app'  // 🚂 Railway URL
-  : 'http://localhost:5000';                            // 💻 Local development
+  ? 'https://wellaging-production-99c2.up.railway.app'
+  : 'http://localhost:5000';
 
 function PriceComparisonPage() {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -58,19 +59,18 @@ function PriceComparisonPage() {
       setSearchResults(data);
       
       if (data.length === 0) {
-        setErrorMessage('No medications found. Try a different search term.');
+        setErrorMessage(t('priceComparison.noMedicationsFound'));
       }
     } catch (error) {
       console.error('❌ Error searching medications:', error);
       
-      // Usar datos de muestra como fallback
       const sampleResults = generateSampleResults(searchTerm);
       setSearchResults(sampleResults);
       
       if (error.message.includes('Failed to fetch')) {
-        setErrorMessage('Cannot connect to server. Showing sample data for demonstration.');
+        setErrorMessage(t('priceComparison.connectionError'));
       } else if (!sampleResults.length) {
-        setErrorMessage('No matching medications were found');
+        setErrorMessage(t('priceComparison.noMatchingMedications'));
       }
     } finally {
       setIsSearching(false);
@@ -84,17 +84,13 @@ function PriceComparisonPage() {
 
   const handleSelectMedication = (medication) => {
     console.log('🔍 Navigating to medication details:', medication);
-    
-    // Guardar el medicamento seleccionado en sessionStorage
     sessionStorage.setItem('selectedMedication', JSON.stringify(medication));
-    
-    // Navegar a la página de detalles
     navigate(`/medication/${medication.id}`);
   };
 
   const handleReturnHome = (e) => {
     e.preventDefault();
-    setLoadingMessage('Returning to home page...');
+    setLoadingMessage(t('loading.refreshing'));
     setIsLoading(true);
 
     setTimeout(() => {
@@ -103,7 +99,6 @@ function PriceComparisonPage() {
     }, 1500);
   };
 
-  // Componente para manejar imágenes con fallback
   const MedicationImage = ({ src, alt, className = "" }) => {
     const [imageSrc, setImageSrc] = useState(src);
     const [hasError, setHasError] = useState(false);
@@ -138,7 +133,6 @@ function PriceComparisonPage() {
     );
   };
 
-  // Helper function to generate sample search results
   const generateSampleResults = (term) => {
     const lowercaseTerm = term.toLowerCase();
     
@@ -156,27 +150,6 @@ function PriceComparisonPage() {
         principio_activo: 'Ibuprofeno', 
         es_generico: true,
         imagen_url: 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw8f4e4e1e/images/large/103738-ibuprofeno-400-mg-20-comprimidos.jpg'
-      },
-      { 
-        id: 3, 
-        nombre: 'Aspirina 100mg', 
-        principio_activo: 'Ácido acetilsalicílico', 
-        es_generico: false,
-        imagen_url: 'https://www.cruzverde.cl/dw/image/v2/BDPM_PRD/on/demandware.static/-/Sites-masterCatalog_Chile/default/dw1c5c8c1f/images/large/103715-aspirina-100-mg-30-comprimidos.jpg'
-      },
-      { 
-        id: 4, 
-        nombre: 'Tapsin Compuesto Día', 
-        principio_activo: 'Día', 
-        es_generico: false,
-        imagen_url: 'https://via.placeholder.com/150x150/4ecdc4/ffffff?text=Tapsin'
-      },
-      { 
-        id: 5, 
-        nombre: 'Gesidol Paracetamol', 
-        principio_activo: 'Gesidol', 
-        es_generico: false,
-        imagen_url: 'https://via.placeholder.com/150x150/ff6b6b/ffffff?text=Gesidol'
       },
     ];
     
@@ -197,10 +170,9 @@ function PriceComparisonPage() {
 
   return (
     <div className="price-comparison-page">
-      {/* Navigation */}
       <nav className="navbar navbar-expand-lg navbar-light bg-light px-4 shadow-sm sticky-top">
         <a className="navbar-brand fw-bold" href="/" onClick={handleReturnHome}>
-          Farmafia
+          {t('nav.brand')}
         </a>
         <button
           className="navbar-toggler"
@@ -228,14 +200,14 @@ function PriceComparisonPage() {
                     e.preventDefault();
                     navigate('/login');
                   }}>
-                  Login
+                  {t('nav.login')}
                 </a>
               </li>
             )}
             <li className="nav-item">
               <a className="nav-link" href="/" onClick={handleReturnHome}>
                 <i className="bi bi-house-door me-1"></i>
-                Home
+                {t('nav.home')}
               </a>
             </li>
           </ul>
@@ -243,17 +215,15 @@ function PriceComparisonPage() {
       </nav>
 
       <div className="container py-5">
-        {/* Header */}
         <div className="row">
           <div className="col-12">
-            <h1 className="text-center mb-4">Medication Price Comparator</h1>
+            <h1 className="text-center mb-4">{t('priceComparison.title')}</h1>
             <p className="text-center text-muted mb-5">
-              Save on Medications: Find the Best Prices in Chile
+              {t('priceComparison.subtitle')}
             </p>
           </div>
         </div>
 
-        {/* Search Form */}
         <div className="row justify-content-center mb-5">
           <div className="col-md-8">
             <div className="card shadow">
@@ -263,7 +233,7 @@ function PriceComparisonPage() {
                     <input
                       type="text"
                       className="form-control form-control-lg"
-                      placeholder="Search by name or active ingredient..."
+                      placeholder={t('priceComparison.searchPlaceholder')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -277,11 +247,11 @@ function PriceComparisonPage() {
                       ) : (
                         <i className="bi bi-search me-2"></i>
                       )}
-                      Search
+                      {t('priceComparison.search')}
                     </button>
                   </div>
                   {searchTerm.length > 0 && searchTerm.length < 3 && (
-                    <div className="form-text text-muted">Enter at least 3 characters to search</div>
+                    <div className="form-text text-muted">{t('priceComparison.minCharacters')}</div>
                   )}
                 </form>
               </div>
@@ -289,7 +259,6 @@ function PriceComparisonPage() {
           </div>
         </div>
 
-        {/* Error Message */}
         {errorMessage && (
           <div className="alert alert-warning my-4" role="alert">
             <i className="bi bi-exclamation-triangle me-2"></i>
@@ -297,24 +266,23 @@ function PriceComparisonPage() {
           </div>
         )}
 
-        {/* Search Results */}
         {searchResults.length > 0 && (
           <div className="row">
             <div className="col-12">
               <div className="card shadow">
                 <div className="card-header bg-light">
-                  <h5 className="mb-0">Search results ({searchResults.length} found)</h5>
+                  <h5 className="mb-0">{t('priceComparison.searchResults')} ({searchResults.length} {t('priceComparison.found')})</h5>
                 </div>
                 <div className="card-body p-0">
                   <div className="table-responsive">
                     <table className="table table-hover mb-0">
                       <thead>
                         <tr>
-                          <th style={{ width: '80px' }}>Image</th>
-                          <th>Name</th>
-                          <th>Active Ingredient</th>
-                          <th>Type</th>
-                          <th>Action</th>
+                          <th style={{ width: '80px' }}>{t('priceComparison.image')}</th>
+                          <th>{t('priceComparison.name')}</th>
+                          <th>{t('priceComparison.activeIngredient')}</th>
+                          <th>{t('priceComparison.type')}</th>
+                          <th>{t('priceComparison.action')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -338,9 +306,9 @@ function PriceComparisonPage() {
                             <td>{medication.principio_activo}</td>
                             <td>
                               {medication.es_generico ? (
-                                <span className="badge bg-success">Generic</span>
+                                <span className="badge bg-success">{t('priceComparison.generic')}</span>
                               ) : (
-                                <span className="badge bg-info">Brand</span>
+                                <span className="badge bg-info">{t('priceComparison.brand')}</span>
                               )}
                             </td>
                             <td>
@@ -349,7 +317,7 @@ function PriceComparisonPage() {
                                 onClick={() => handleSelectMedication(medication)}
                               >
                                 <i className="bi bi-search-heart me-1"></i>
-                                View Details & Compare
+                                {t('priceComparison.viewDetails')}
                               </button>
                             </td>
                           </tr>
@@ -363,14 +331,13 @@ function PriceComparisonPage() {
           </div>
         )}
 
-        {/* Quick Tips */}
         <div className="row mt-5">
           <div className="col-md-12">
             <div className="card shadow-sm">
               <div className="card-body">
                 <h4 className="card-title">
                   <i className="bi bi-lightbulb me-2 text-warning"></i>
-                  Search Tips
+                  {t('priceComparison.searchTips')}
                 </h4>
                 <div className="row mt-3">
                   <div className="col-md-4 mb-3">
@@ -379,8 +346,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-search text-primary fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Search by name or ingredient</h5>
-                        <p className="text-muted">Try "Paracetamol", "Tapsin", or "Gesidol"</p>
+                        <h5>{t('priceComparison.tipSearchTitle')}</h5>
+                        <p className="text-muted">{t('priceComparison.tipSearchDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -390,8 +357,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-eye text-success fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>View detailed comparison</h5>
-                        <p className="text-muted">Click "View Details" to see prices across all pharmacies</p>
+                        <h5>{t('priceComparison.tipDetailsTitle')}</h5>
+                        <p className="text-muted">{t('priceComparison.tipDetailsDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -401,8 +368,8 @@ function PriceComparisonPage() {
                         <i className="bi bi-currency-dollar text-info fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Find best prices</h5>
-                        <p className="text-muted">Compare medications with the same active ingredient</p>
+                        <h5>{t('priceComparison.tipPriceTitle')}</h5>
+                        <p className="text-muted">{t('priceComparison.tipPriceDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -417,17 +384,16 @@ function PriceComparisonPage() {
         <div className="container">
           <div className="row">
             <div className="col-md-6">
-              <h5>Farmafia</h5>
-              <p className="mb-0">Your trusted platform for pharmaceutical services.</p>
+              <h5>{t('nav.brand')}</h5>
+              <p className="mb-0">{t('footer.description')}</p>
             </div>
             <div className="col-md-6 text-md-end">
-              <p className="mb-0">© 2025 Farmafia. All rights reserved.</p>
+              <p className="mb-0">© 2025 {t('nav.brand')}. {t('footer.rights')}</p>
             </div>
           </div>
         </div>
       </footer>
       
-      {/* 🔧 Debug info en desarrollo */}
       {process.env.NODE_ENV === 'development' && (
         <div style={{ 
           position: 'fixed', 
