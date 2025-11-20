@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation'; // ✅ AGREGADO
 import MedicationReminders from './MedicationReminders';
 import QuickStatsDashboard from './QuickStatsDashboard';
 import UpcomingDosesWidget from './UpcomingDosesWidget';
@@ -91,6 +92,7 @@ const dashboardStyles = `
 
 const MedicationDashboardSection = ({ user }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation(); // ✅ AGREGADO EL HOOK
 
   if (!user) {
     return null; // Don't render anything if user is not logged in
@@ -107,16 +109,18 @@ const MedicationDashboardSection = ({ user }) => {
               <div>
                 <h2 className="fw-bold mb-1">
                   <i className="bi bi-heart-pulse me-2"></i>
-                  Health Dashboard
+                  {t('dashboard.title') || 'Health Dashboard'} {/* ✅ TRADUCIDO */}
                 </h2>
-                <p className="mb-0 opacity-90">Welcome back, {user.nombre}! Manage your medications and track your health</p>
+                <p className="mb-0 opacity-90">
+                  {t('dashboard.welcome')?.replace('{name}', user.nombre) || `Welcome back, ${user.nombre}! Manage your medications and track your health`} {/* ✅ TRADUCIDO */}
+                </p>
               </div>
               <button
                 className="btn btn-light btn-lg"
-                onClick={() => navigate('/my-meds')}
+                onClick={() => navigate('/my-medications')} // ✅ CORREGIDA LA RUTA
               >
                 <i className="bi bi-plus-circle me-2"></i>
-                Manage Medications
+                {t('medications.manage') || 'Manage Medications'} {/* ✅ TRADUCIDO */}
               </button>
             </div>
           </div>
@@ -140,31 +144,31 @@ const MedicationDashboardSection = ({ user }) => {
                 <div className="card-header bg-primary text-white">
                   <h6 className="mb-0">
                     <i className="bi bi-lightning me-2"></i>
-                    Quick Actions
+                    {t('dashboard.quickActions') || 'Quick Actions'} {/* ✅ TRADUCIDO */}
                   </h6>
                 </div>
                 <div className="card-body">
                   <div className="d-grid gap-2">
                     <button
                       className="btn btn-outline-primary btn-sm quick-action-btn"
-                      onClick={() => navigate('/my-meds')}
+                      onClick={() => navigate('/my-medications')} // ✅ CORREGIDA LA RUTA
                     >
                       <i className="bi bi-plus me-2"></i>
-                      Add Medication
+                      {t('medications.addMedication') || 'Add Medication'} {/* ✅ TRADUCIDO */}
                     </button>
                     <button
                       className="btn btn-outline-success btn-sm quick-action-btn"
                       onClick={() => navigate('/price-comparison')}
                     >
                       <i className="bi bi-graph-up me-2"></i>
-                      Compare Prices
+                      {t('dashboard.comparePrices') || 'Compare Prices'} {/* ✅ TRADUCIDO */}
                     </button>
                     <button
                       className="btn btn-outline-info btn-sm quick-action-btn"
                       onClick={() => navigate('/GoogleMapsComponent')}
                     >
                       <i className="bi bi-geo-alt me-2"></i>
-                      Find Pharmacies
+                      {t('dashboard.findPharmacies') || 'Find Pharmacies'} {/* ✅ TRADUCIDO */}
                     </button>
                   </div>
                 </div>
@@ -174,9 +178,9 @@ const MedicationDashboardSection = ({ user }) => {
               <div className="card mt-3 border-warning">
                 <div className="card-body text-center">
                   <i className="bi bi-shield-check text-warning mb-2" style={{ fontSize: '2rem' }}></i>
-                  <h6 className="card-title">Health Reminder</h6>
+                  <h6 className="card-title">{t('dashboard.healthReminder') || 'Health Reminder'}</h6>
                   <p className="card-text small text-muted">
-                    Remember to consult your doctor before making any changes to your medication regimen.
+                    {t('dashboard.consultDoctor') || 'Remember to consult your doctor before making any changes to your medication regimen.'}
                   </p>
                 </div>
               </div>
@@ -190,7 +194,7 @@ const MedicationDashboardSection = ({ user }) => {
                 <div className="card-body">
                   <h5 className="card-title text-primary">
                     <i className="bi bi-lightbulb me-2"></i>
-                    Daily Health Tips
+                    {t('dashboard.dailyTips') || 'Daily Health Tips'} {/* ✅ TRADUCIDO */}
                   </h5>
                   <div className="row">
                     <div className="col-md-4 mb-3">
@@ -199,8 +203,10 @@ const MedicationDashboardSection = ({ user }) => {
                           <i className="bi bi-droplet-fill text-info me-2" style={{ fontSize: '1.5rem' }}></i>
                         </div>
                         <div>
-                          <h6 className="mb-1">Stay Hydrated</h6>
-                          <small className="text-muted">Drink water regularly, especially when taking medications. Proper hydration helps your body absorb medications effectively.</small>
+                          <h6 className="mb-1">{t('dashboard.tip1Title') || 'Stay Hydrated'}</h6>
+                          <small className="text-muted">
+                            {t('dashboard.tip1Desc') || 'Drink water regularly, especially when taking medications. Proper hydration helps your body absorb medications effectively.'}
+                          </small>
                         </div>
                       </div>
                     </div>
@@ -210,8 +216,10 @@ const MedicationDashboardSection = ({ user }) => {
                           <i className="bi bi-clock-fill text-success me-2" style={{ fontSize: '1.5rem' }}></i>
                         </div>
                         <div>
-                          <h6 className="mb-1">Consistent Timing</h6>
-                          <small className="text-muted">Take medications at the same time daily to maintain consistent levels in your system.</small>
+                          <h6 className="mb-1">{t('dashboard.tip2Title') || 'Consistent Timing'}</h6>
+                          <small className="text-muted">
+                            {t('dashboard.tip2Desc') || 'Take medications at the same time daily to maintain consistent levels in your system.'}
+                          </small>
                         </div>
                       </div>
                     </div>
@@ -221,8 +229,10 @@ const MedicationDashboardSection = ({ user }) => {
                           <i className="bi bi-journal-medical text-primary me-2" style={{ fontSize: '1.5rem' }}></i>
                         </div>
                         <div>
-                          <h6 className="mb-1">Track Symptoms</h6>
-                          <small className="text-muted">Note any side effects or improvements to discuss with your healthcare provider.</small>
+                          <h6 className="mb-1">{t('dashboard.tip3Title') || 'Track Symptoms'}</h6>
+                          <small className="text-muted">
+                            {t('dashboard.tip3Desc') || 'Note any side effects or improvements to discuss with your healthcare provider.'}
+                          </small>
                         </div>
                       </div>
                     </div>
@@ -234,13 +244,17 @@ const MedicationDashboardSection = ({ user }) => {
                     <div className="col-md-6 mb-2">
                       <div className="d-flex align-items-center">
                         <i className="bi bi-moon-stars text-purple me-2"></i>
-                        <small><strong>Sleep Well:</strong> Good sleep helps your body heal and process medications</small>
+                        <small>
+                          <strong>{t('dashboard.sleepTitle') || 'Sleep Well:'}:</strong> {t('dashboard.sleepDesc') || 'Good sleep helps your body heal and process medications'}
+                        </small>
                       </div>
                     </div>
                     <div className="col-md-6 mb-2">
                       <div className="d-flex align-items-center">
                         <i className="bi bi-heart text-danger me-2"></i>
-                        <small><strong>Stay Active:</strong> Regular exercise supports overall health and medication effectiveness</small>
+                        <small>
+                          <strong>{t('dashboard.activeTitle') || 'Stay Active'}:</strong> {t('dashboard.activeDesc') || 'Regular exercise supports overall health and medication effectiveness'}
+                        </small>
                       </div>
                     </div>
                   </div>

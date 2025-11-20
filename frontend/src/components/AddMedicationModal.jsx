@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-// ✅ IMPORT CORREGIDO - cambiar de 'searchMedicamentos' a 'searchMedications'
+import { useTranslation } from '../hooks/useTranslation';
 import { searchMedications } from '../utils/medicationAPI';
 
 // Counter component inline
 const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
+  const { t } = useTranslation();
   const [count, setCount] = useState(initialCount);
 
   const increment = () => {
@@ -29,6 +30,7 @@ const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
         onClick={decrement} 
         disabled={count <= 0}
         type="button"
+        aria-label={t('counter.decrease')}
       >
         <i className="bi bi-dash"></i>
       </button>
@@ -38,6 +40,7 @@ const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
         onClick={increment} 
         disabled={count >= maxCount}
         type="button"
+        aria-label={t('counter.increase')}
       >
         <i className="bi bi-plus"></i>
       </button>
@@ -46,6 +49,7 @@ const Counter = ({ initialCount = 0, maxCount = 10, onCountChange }) => {
 };
 
 const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLoading }) => {
+  const { t } = useTranslation();
   const [searchResults, setSearchResults] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
@@ -58,7 +62,6 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
         console.log('🔍 Searching medications for:', formData.name);
         
         try {
-          // ✅ FUNCIÓN CORREGIDA - usar 'searchMedications' en lugar de 'searchMedicamentos'
           const results = await searchMedications(formData.name);
           console.log('📋 Search results:', results);
           
@@ -86,7 +89,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
     setFormData({
       ...formData,
       name: medication.nombre,
-      dosage: '', // El usuario puede especificar la dosis
+      dosage: '',
       category: medication.es_generico ? 'otc' : 'prescription'
     });
     setShowDropdown(false);
@@ -126,13 +129,14 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
           <div className="modal-header">
             <h5 className="modal-title">
               <i className="bi bi-plus-circle me-2"></i>
-              Add New Medication
+              {t('medicationModal.addTitle')}
             </h5>
             <button 
               type="button" 
               className="btn-close btn-close-white"
               onClick={onClose}
               disabled={isLoading}
+              aria-label={t('common.close')}
             ></button>
           </div>
           <div className="modal-body">
@@ -140,7 +144,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">
-                    Medication Name <span className="text-danger">*</span>
+                    {t('medicationModal.medicationName')} <span className="text-danger">*</span>
                   </label>
                   <div className="position-relative">
                     <input
@@ -148,7 +152,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                       className="form-control"
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      placeholder="Start typing to search medications..."
+                      placeholder={t('medicationModal.searchPlaceholder')}
                       disabled={isLoading}
                       required
                       autoComplete="off"
@@ -158,7 +162,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                     {isSearching && (
                       <div className="position-absolute top-50 end-0 translate-middle-y pe-3">
                         <div className="spinner-border spinner-border-sm" role="status">
-                          <span className="visually-hidden">Searching...</span>
+                          <span className="visually-hidden">{t('medicationModal.searching')}</span>
                         </div>
                       </div>
                     )}
@@ -183,9 +187,9 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                               </div>
                               <div>
                                 {medication.es_generico ? (
-                                  <span className="badge bg-success">Generic</span>
+                                  <span className="badge bg-success">{t('medicationModal.generic')}</span>
                                 ) : (
-                                  <span className="badge bg-info">Brand</span>
+                                  <span className="badge bg-info">{t('medicationModal.brand')}</span>
                                 )}
                               </div>
                             </button>
@@ -194,7 +198,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                         <div className="p-2 border-top bg-light">
                           <small className="text-muted">
                             <i className="bi bi-info-circle me-1"></i>
-                            Click to select a medication or continue typing to add a new one
+                            {t('medicationModal.selectHint')}
                           </small>
                         </div>
                       </div>
@@ -205,20 +209,20 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                       <div className="position-absolute w-100 mt-1 bg-white border rounded shadow p-3">
                         <div className="text-center text-muted">
                           <i className="bi bi-info-circle me-2"></i>
-                          No medications found. You can add "{formData.name}" as a new medication.
+                          {t('medicationModal.noResults').replace('{name}', formData.name)}
                         </div>
                       </div>
                     )}
                   </div>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Dosage</label>
+                  <label className="form-label">{t('medicationModal.dosage')}</label>
                   <input
                     type="text"
                     className="form-control"
                     value={formData.dosage}
                     onChange={(e) => setFormData({...formData, dosage: e.target.value})}
-                    placeholder="e.g., 500mg, 1 tablet"
+                    placeholder={t('medicationModal.dosagePlaceholder')}
                     disabled={isLoading}
                   />
                 </div>
@@ -226,36 +230,36 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
 
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Category</label>
+                  <label className="form-label">{t('medicationModal.category')}</label>
                   <select
                     className="form-select"
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
                     disabled={isLoading}
                   >
-                    <option value="prescription">Prescription</option>
-                    <option value="otc">Over-the-counter</option>
-                    <option value="supplement">Supplement</option>
+                    <option value="prescription">{t('medicationModal.prescription')}</option>
+                    <option value="otc">{t('medicationModal.otc')}</option>
+                    <option value="supplement">{t('medicationModal.supplement')}</option>
                   </select>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Frequency</label>
+                  <label className="form-label">{t('medicationModal.frequency')}</label>
                   <select
                     className="form-select"
                     value={formData.frequency}
                     onChange={(e) => setFormData({...formData, frequency: e.target.value})}
                     disabled={isLoading}
                   >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="as-needed">As needed</option>
+                    <option value="daily">{t('medicationModal.daily')}</option>
+                    <option value="weekly">{t('medicationModal.weekly')}</option>
+                    <option value="as-needed">{t('medicationModal.asNeeded')}</option>
                   </select>
                 </div>
               </div>
 
               {formData.frequency !== 'as-needed' && (
                 <div className="mb-3">
-                  <label className="form-label">Daily Schedule</label>
+                  <label className="form-label">{t('medicationModal.dailySchedule')}</label>
                   {formData.times.map((time, index) => (
                     <div key={index} className="schedule-item d-flex align-items-center mb-2">
                       <input
@@ -271,6 +275,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                           className="btn btn-outline-danger btn-sm"
                           onClick={() => removeTimeSlot(index)}
                           disabled={isLoading}
+                          aria-label={t('common.delete')}
                         >
                           <i className="bi bi-trash"></i>
                         </button>
@@ -283,14 +288,14 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                     onClick={addTimeSlot}
                     disabled={isLoading}
                   >
-                    <i className="bi bi-plus"></i> Add Time Slot
+                    <i className="bi bi-plus"></i> {t('medicationModal.addTimeSlot')}
                   </button>
                 </div>
               )}
 
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Start Date</label>
+                  <label className="form-label">{t('medicationModal.startDate')}</label>
                   <input
                     type="date"
                     className="form-control"
@@ -300,24 +305,24 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Treatment Duration (days)</label>
+                  <label className="form-label">{t('medicationModal.duration')}</label>
                   <Counter
                     initialCount={formData.duration}
                     maxCount={365}
                     onCountChange={(count) => setFormData({...formData, duration: count})}
                   />
-                  <small className="text-muted d-block mt-1">Set to 0 for ongoing treatments</small>
+                  <small className="text-muted d-block mt-1">{t('medicationModal.durationHint')}</small>
                 </div>
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Notes</label>
+                <label className="form-label">{t('medicationModal.notes')}</label>
                 <textarea
                   className="form-control"
                   rows="3"
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                  placeholder="Special instructions, side effects to watch for, etc."
+                  placeholder={t('medicationModal.notesPlaceholder')}
                   disabled={isLoading}
                 ></textarea>
               </div>
@@ -333,7 +338,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
                 />
                 <label className="form-check-label" htmlFor="reminderCheck">
                   <i className="bi bi-bell me-1"></i>
-                  Enable reminders for this medication
+                  {t('medicationModal.enableReminders')}
                 </label>
               </div>
             </form>
@@ -346,7 +351,7 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
               disabled={isLoading}
             >
               <i className="bi bi-x-circle me-1"></i>
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               type="button" 
@@ -357,12 +362,12 @@ const AddMedicationModal = ({ show, onClose, onSave, formData, setFormData, isLo
               {isLoading ? (
                 <>
                   <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  Adding...
+                  {t('medicationModal.adding')}
                 </>
               ) : (
                 <>
                   <i className="bi bi-check-circle me-1"></i>
-                  Add Medication
+                  {t('medicationModal.addButton')}
                 </>
               )}
             </button>

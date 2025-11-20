@@ -202,5 +202,73 @@
     "loadError": "Error loading Google Maps",
     "checkConnection": "Check your API key and internet connection",
     "loadingMap": "Loading Google Maps..."
+  },
+  "counter": {
+    "quantity": "Quantity",
+    "decrease": "Decrease quantity",
+    "increase": "Increase quantity",
+    "reset": "Reset",
+    "selected": "{count}/{max} selected"
+  },
+  "dashboard": {
+    "title": "Health Dashboard",
+    "welcome": "Welcome back, {name}! Manage your medications and track your health",
+    "quickActions": "Quick Actions",
+    "comparePrices": "Compare Prices",
+    "findPharmacies": "Find Pharmacies",
+    "healthReminder": "Health Reminder",
+    "consultDoctor": "Remember to consult your doctor before making any changes to your medication regimen.",
+    "dailyTips": "Daily Health Tips",
+    "tip1Title": "Stay Hydrated",
+    "tip1Desc": "Drink water regularly, especially when taking medications. Proper hydration helps your body absorb medications effectively.",
+    "tip2Title": "Consistent Timing",
+    "tip2Desc": "Take medications at the same time daily to maintain consistent levels in your system.",
+    "tip3Title": "Track Symptoms",
+    "tip3Desc": "Note any side effects or improvements to discuss with your healthcare provider.",
+    "sleepTitle": "Sleep Well",
+    "sleepDesc": "Good sleep helps your body heal and process medications",
+    "activeTitle": "Stay Active",
+    "activeDesc": "Regular exercise supports overall health and medication effectiveness"
+  },
+  "medicationModal": {
+    "addTitle": "Add New Medication",
+    "editTitle": "Edit Medication",
+    "medicationName": "Medication Name",
+    "searchPlaceholder": "Search medication...",
+    "dosage": "Dosage",
+    "dosagePlaceholder": "e.g., 500mg, 1 tablet",
+    "category": "Category",
+    "prescription": "Prescription",
+    "frequency": "Frequency",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "asNeeded": "As Needed",
+    "dailySchedule": "Daily Schedule",
+    "addTimeSlot": "Add Time Slot",
+    "startDate": "Start Date",
+    "duration": "Duration (days)",
+    "durationHint": "Leave blank for ongoing treatment",
+    "notes": "Notes",
+    "notesPlaceholder": "Additional instructions, side effects, etc.",
+    "enableReminders": "Enable reminders for this medication",
+    "addButton": "Add Medication",
+    "updateButton": "Update Medication",
+    "cancel": "Cancel",
+    "categories": {
+      "antibiotic": "Antibiotic",
+      "painkiller": "Painkiller",
+      "vitamin": "Vitamin",
+      "heartMedication": "Heart Medication",
+      "diabetesMedication": "Diabetes Medication",
+      "other": "Other"
+    },
+    "validation": {
+      "nameRequired": "Medication name is required",
+      "dosageRequired": "Dosage is required",
+      "categoryRequired": "Please select a category",
+      "frequencyRequired": "Please select a frequency",
+      "scheduleRequired": "Add at least one time slot",
+      "startDateRequired": "Start date is required"
+    }
   }
 }

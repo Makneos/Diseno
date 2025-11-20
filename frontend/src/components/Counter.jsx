@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import './Counter.css'; 
 
-const Counter = ({ onCountChange, initialCount = 0, maxCount = 10, label = "Cantidad" }) => {
+const Counter = ({ onCountChange, initialCount = 0, maxCount = 10, label = null }) => {
+  const { t } = useTranslation();
   const [count, setCount] = useState(initialCount);
 
   const increment = () => {
@@ -33,13 +35,13 @@ const Counter = ({ onCountChange, initialCount = 0, maxCount = 10, label = "Cant
 
   return (
     <div className="counter-container">
-      <label className="counter-label">{label}</label>
+      <label className="counter-label">{label || t('counter.quantity')}</label>
       <div className="counter-controls">
         <button 
           className="counter-btn counter-btn-decrement"
           onClick={decrement}
           disabled={count <= 0}
-          aria-label="Disminuir cantidad"
+          aria-label={t('counter.decrease')}
         >
           <i className="bi bi-dash"></i>
         </button>
@@ -52,7 +54,7 @@ const Counter = ({ onCountChange, initialCount = 0, maxCount = 10, label = "Cant
           className="counter-btn counter-btn-increment"
           onClick={increment}
           disabled={count >= maxCount}
-          aria-label="Aumentar cantidad"
+          aria-label={t('counter.increase')}
         >
           <i className="bi bi-plus"></i>
         </button>
@@ -62,16 +64,16 @@ const Counter = ({ onCountChange, initialCount = 0, maxCount = 10, label = "Cant
         <button 
           className="counter-reset-btn"
           onClick={reset}
-          aria-label="Resetear contador"
+          aria-label={t('counter.reset')}
         >
           <i className="bi bi-arrow-clockwise me-1"></i>
-          Reset
+          {t('counter.reset')}
         </button>
       )}
       
       <div className="counter-info">
         <small className="text-muted">
-          {count}/{maxCount} seleccionados
+          {t('counter.selected').replace('{count}', count).replace('{max}', maxCount)}
         </small>
       </div>
     </div>

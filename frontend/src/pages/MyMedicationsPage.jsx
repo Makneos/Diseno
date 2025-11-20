@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// ✅ SOLO UNA IMPORTACIÓN DE AuthGuard
 import AuthGuard, { useAuth } from '../components/AuthGuard';
+import { useTranslation } from '../hooks/useTranslation';
 import MedicationStats from '../components/MedicationStats';
 import MedicationTabs from '../components/MedicationTabs';
 import MedicationCard from '../components/MedicationCard';
@@ -27,8 +27,10 @@ function MyMedicationsPageContent() {
 
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  
+  // ✅ SOLUCIÓN CORRECTA: Solo llamar el hook, sin parámetros
+  const { t } = useTranslation();
 
-  // ✅ El resto del código permanece igual...
   // Load medications on mount
   useEffect(() => {
     const loadData = async () => {
@@ -48,7 +50,7 @@ function MyMedicationsPageContent() {
         }
       } catch (error) {
         console.error('❌ Error loading medications:', error);
-        setError('Failed to load medications. Please refresh the page.');
+        setError(t('medications.errorLoading'));
       }
 
       setIsPageLoading(false);
@@ -57,7 +59,7 @@ function MyMedicationsPageContent() {
     if (user) {
       loadData();
     }
-  }, [user]);
+  }, [user]); // ✅ Solo depende de user
 
   const handleAddMedication = async () => {
     setIsLoading(true);
@@ -71,18 +73,16 @@ function MyMedicationsPageContent() {
         setShowAddModal(false);
         setMedicationForm(getDefaultMedicationForm());
         
-        // Reload medications
-        console.log('🔄 Reloading medications after adding...');
         const updatedMedications = await fetchMedicamentos();
         setMedications(updatedMedications);
         
         console.log('✅ Medication added and list updated');
       } else {
-        setError('Failed to add medication. Please try again.');
+        setError(t('medications.errorAdding'));
       }
     } catch (error) {
       console.error('❌ Error in handleAddMedication:', error);
-      setError('An error occurred while adding the medication.');
+      setError(t('medications.errorOccurred'));
     } finally {
       setIsLoading(false);
     }
@@ -90,29 +90,28 @@ function MyMedicationsPageContent() {
 
   const handleEditMedication = (medication) => {
     console.log('✏️ Edit medication:', medication);
-    alert('Edit functionality will be implemented soon!');
+    alert(t('medications.editComingSoon'));
   };
 
   const handleDeleteMedication = async (medication) => {
-    if (window.confirm(`Are you sure you want to delete "${medication.name}"?`)) {
+    const confirmMessage = t('medications.confirmDelete').replace('{name}', medication.name);
+    if (window.confirm(confirmMessage)) {
       console.log('🗑️ Deleting medication:', medication.name);
       
       try {
         const success = await deleteMedicamento(medication.tratamiento_id);
         
         if (success) {
-          console.log('🔄 Reloading medications after deletion...');
           const updatedMedications = await fetchMedicamentos();
           setMedications(updatedMedications);
-          
           console.log('✅ Medication deleted and list updated');
         } else {
           console.error('❌ Failed to delete medication');
-          setError('Failed to delete medication. Please try again.');
+          setError(t('medications.errorDeleting'));
         }
       } catch (error) {
         console.error('❌ Error deleting medication:', error);
-        setError('An error occurred while deleting the medication.');
+        setError(t('medications.errorOccurred'));
       }
     }
   };
@@ -129,7 +128,7 @@ function MyMedicationsPageContent() {
   };
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to log out?')) {
+    if (window.confirm(t('medications.confirmLogout'))) {
       logout();
     }
   };
@@ -143,7 +142,7 @@ function MyMedicationsPageContent() {
     return (
       <div className="fullscreen-loader-container">
         <div className="loader"></div>
-        <p className="loading-text">Loading your medications...</p>
+        <p className="loading-text">{t('medications.loading')}</p>
       </div>
     );
   }
@@ -194,23 +193,23 @@ function MyMedicationsPageContent() {
                     <li>
                       <a className="dropdown-item" href="/profile">
                         <i className="bi bi-person me-2"></i>
-                        Profile
+                        {t('nav.profile')}
                       </a>
                     </li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
                       <button className="dropdown-item" onClick={handleLogout}>
                         <i className="bi bi-box-arrow-right me-2"></i>
-                        Logout
+                        {t('nav.logout')}
                       </button>
                     </li>
                   </ul>
                 </li>
               )}
               <li className="nav-item">
-                <a className="nav-link" href="/" onClick={(e) => handleNavigation(e, '/', 'Going home...')}>
+                <a className="nav-link" href="/" onClick={(e) => handleNavigation(e, '/', t('loading.refreshing'))}>
                   <i className="bi bi-house-door me-1"></i>
-                  Home
+                  {t('nav.home')}
                 </a>
               </li>
             </ul>
@@ -225,10 +224,10 @@ function MyMedicationsPageContent() {
             <div>
               <h1 className="mb-2">
                 <i className="bi bi-prescription2 me-2"></i>
-                My Medications
+                {t('medications.myMedications')}
               </h1>
               <p className="mb-0 opacity-75">
-                Manage your treatments and medication schedule
+                {t('medications.manage')}
               </p>
             </div>
             <button 
@@ -236,7 +235,7 @@ function MyMedicationsPageContent() {
               onClick={() => setShowAddModal(true)}
             >
               <i className="bi bi-plus-circle me-2"></i>
-              Add Medication
+              {t('medications.addMedication')}
             </button>
           </div>
         </div>
@@ -249,6 +248,7 @@ function MyMedicationsPageContent() {
               type="button" 
               className="btn-close" 
               onClick={() => setError('')}
+              aria-label={t('common.close')}
             ></button>
           </div>
         )}
@@ -265,12 +265,10 @@ function MyMedicationsPageContent() {
 
         {/* Medications Grid */}
         <div className="row">
-          {/* Add New Medication Card - only show in active tab */}
           {currentTab === 'active' && (
             <AddMedicationCard onAddClick={() => setShowAddModal(true)} />
           )}
 
-          {/* Medication Cards */}
           {filteredMedications.map((medication) => (
             <MedicationCard
               key={medication.id}
@@ -280,19 +278,18 @@ function MyMedicationsPageContent() {
             />
           ))}
 
-          {/* Empty State */}
           {filteredMedications.length === 0 && currentTab !== 'active' && (
             <div className="col-12">
               <div className="empty-state">
                 <i className="bi bi-inbox"></i>
-                <h5>No medications in this category</h5>
-                <p>Add some medications to start tracking your treatments</p>
+                <h5>{t('medications.noMedications')}</h5>
+                <p>{t('medications.addToStartTracking')}</p>
                 <button 
                   className="btn btn-primary"
                   onClick={() => setShowAddModal(true)}
                 >
                   <i className="bi bi-plus-circle me-2"></i>
-                  Add Your First Medication
+                  {t('medications.addFirst')}
                 </button>
               </div>
             </div>
@@ -306,7 +303,7 @@ function MyMedicationsPageContent() {
               <div className="card-body">
                 <h4 className="card-title">
                   <i className="bi bi-lightbulb me-2 text-warning"></i>
-                  Tips for Managing Your Medications
+                  {t('medications.tipsTitle')}
                 </h4>
                 <div className="row mt-3">
                   <div className="col-md-4 mb-3">
@@ -315,8 +312,8 @@ function MyMedicationsPageContent() {
                         <i className="bi bi-clock-fill text-primary fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Set Regular Times</h5>
-                        <p className="text-muted">Take medications at the same time each day to maintain consistent levels.</p>
+                        <h5>{t('medications.tipRegularTitle')}</h5>
+                        <p className="text-muted">{t('medications.tipRegularDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -326,8 +323,8 @@ function MyMedicationsPageContent() {
                         <i className="bi bi-bell-fill text-success fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Enable Reminders</h5>
-                        <p className="text-muted">Use our reminder system to never miss a dose of your important medications.</p>
+                        <h5>{t('medications.tipRemindersTitle')}</h5>
+                        <p className="text-muted">{t('medications.tipRemindersDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -337,8 +334,8 @@ function MyMedicationsPageContent() {
                         <i className="bi bi-journal-medical text-info fs-4"></i>
                       </div>
                       <div className="flex-grow-1 ms-3">
-                        <h5>Track Progress</h5>
-                        <p className="text-muted">Monitor your treatment progress and note any side effects or improvements.</p>
+                        <h5>{t('medications.tipTrackTitle')}</h5>
+                        <p className="text-muted">{t('medications.tipTrackDesc')}</p>
                       </div>
                     </div>
                   </div>
@@ -366,14 +363,14 @@ function MyMedicationsPageContent() {
             <div className="col-md-6">
               <h5>
                 <i className="bi bi-heart-pulse me-2"></i>
-                Farmafia
+                {t('nav.brand')}
               </h5>
-              <p className="mb-0">Your trusted platform for pharmaceutical services and medication management.</p>
+              <p className="mb-0">{t('footer.description')}</p>
             </div>
             <div className="col-md-6 text-md-end">
-              <p className="mb-0">© 2025 Farmafia. All rights reserved.</p>
+              <p className="mb-0">© 2025 {t('nav.brand')}. {t('footer.rights')}</p>
               <small className="text-muted">
-                Always consult with healthcare professionals before making changes to your medication regimen.
+                {t('medications.disclaimer')}
               </small>
             </div>
           </div>
@@ -383,7 +380,6 @@ function MyMedicationsPageContent() {
   );
 }
 
-// ✅ Componente principal envuelto con AuthGuard
 function MyMedicationsPage() {
   return (
     <AuthGuard>

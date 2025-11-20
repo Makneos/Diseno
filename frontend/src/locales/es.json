@@ -55,6 +55,7 @@
   "medications": {
     "myMedications": "Mis Medicamentos",
     "addMedication": "Agregar Medicamento",
+    "startTracking": "Comienza a rastrear un nuevo tratamiento",
     "loading": "Cargando tus medicamentos...",
     "manage": "Gestiona tus tratamientos y horarios de medicación",
     "noMedications": "No hay medicamentos en esta categoría",
@@ -202,5 +203,73 @@
     "loadError": "Error al cargar Google Maps",
     "checkConnection": "Verifica tu clave API y conexión a internet",
     "loadingMap": "Cargando Google Maps..."
+  },
+  
+  "counter": {
+    "quantity": "Cantidad",
+    "decrease": "Disminuir cantidad",
+    "increase": "Aumentar cantidad",
+    "reset": "Restablecer",
+    "selected": "{count}/{max} seleccionados"
+  },
+   "dashboard": {
+    "title": "Panel de Salud",
+    "welcome": "¡Bienvenido de nuevo, {name}! Gestiona tus medicamentos y rastrea tu salud",
+    "quickActions": "Acciones Rápidas",
+    "comparePrices": "Comparar Precios",
+    "findPharmacies": "Buscar Farmacias",
+    "healthReminder": "Recordatorio de Salud",
+    "consultDoctor": "Recuerda consultar a tu médico antes de hacer cualquier cambio en tu régimen de medicación.",
+    "dailyTips": "Consejos de Salud Diarios",
+    "tip1Title": "Mantente Hidratado",
+    "tip1Desc": "Bebe agua regularmente, especialmente al tomar medicamentos. La hidratación adecuada ayuda a tu cuerpo a absorber los medicamentos de manera efectiva.",
+    "tip2Title": "Horario Consistente",
+    "tip2Desc": "Toma los medicamentos a la misma hora diariamente para mantener niveles consistentes en tu sistema.",
+    "tip3Title": "Rastrea Síntomas",
+    "tip3Desc": "Anota cualquier efecto secundario o mejora para discutir con tu proveedor de salud.",
+    "sleepTitle": "Duerme Bien",
+    "sleepDesc": "El buen sueño ayuda a tu cuerpo a sanar y procesar medicamentos",
+    "activeTitle": "Mantente Activo",
+    "activeDesc": "El ejercicio regular apoya la salud general y la efectividad de los medicamentos"
+  },  "medicationModal": {
+    "addTitle": "Agregar Nuevo Medicamento",
+    "editTitle": "Editar Medicamento",
+    "medicationName": "Nombre del Medicamento",
+    "searchPlaceholder": "Buscar medicamento...",
+    "dosage": "Dosis",
+    "dosagePlaceholder": "Ej: 500mg, 1 tableta",
+    "category": "Categoría",
+    "prescription": "Prescripción",
+    "frequency": "Frecuencia",
+    "daily": "Diaria",
+    "weekly": "Semanal",
+    "asNeeded": "Según sea necesario",
+    "dailySchedule": "Horario Diario",
+    "addTimeSlot": "Agregar Horario",
+    "startDate": "Fecha de Inicio",
+    "duration": "Duración (días)",
+    "durationHint": "Dejar en blanco para tratamiento continuo",
+    "notes": "Notas",
+    "notesPlaceholder": "Instrucciones adicionales, efectos secundarios, etc.",
+    "enableReminders": "Habilitar recordatorios para este medicamento",
+    "addButton": "Agregar Medicamento",
+    "updateButton": "Actualizar Medicamento",
+    "cancelar": "Cancelar",
+    "categories": {
+      "antibiotic": "Antibiótico",
+      "painkiller": "Analgésico",
+      "vitamin": "Vitamina",
+      "heartMedication": "Medicamento Cardíaco",
+      "diabetesMedication": "Medicamento para Diabetes",
+      "other": "Otro"
+    },
+    "validation": {
+      "nameRequired": "El nombre del medicamento es obligatorio",
+      "dosageRequired": "La dosis es obligatoria",
+      "categoryRequired": "Selecciona una categoría",
+      "frequencyRequired": "Selecciona una frecuencia",
+      "scheduleRequired": "Agrega al menos un horario",
+      "startDateRequired": "La fecha de inicio es obligatoria"
+    }
   }
 }
