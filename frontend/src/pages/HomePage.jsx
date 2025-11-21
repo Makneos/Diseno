@@ -246,7 +246,7 @@ function HomePage() {
           <div className="tools-section container mt-4">
             <h3 className="mb-4">{t('tools.pharmacyTools')}</h3>
             <div className="row g-3">
-              <div className="col-12 col-md-6 col-lg-3">
+              <div className="col-12 col-md-6 col-lg-4">
                 <div 
                   className="card h-100 tool-card shadow-sm"
                   onClick={(e) => handleNavigation(e, '/price-comparison', t('loading.loadingTool'))}
@@ -260,7 +260,7 @@ function HomePage() {
                 </div>
               </div>
               
-              <div className="col-12 col-md-6 col-lg-3">
+              <div className="col-12 col-md-6 col-lg-4">
                 <div className="card h-100 tool-card shadow-sm position-relative">
                   <div className="card-body d-flex flex-column align-items-center justify-content-center">
                     <i className="bi bi-calendar-check mb-3" style={{ fontSize: '2rem', color: '#198754' }}></i>
@@ -271,24 +271,13 @@ function HomePage() {
                 </div>
               </div>
               
-              <div className="col-12 col-md-6 col-lg-3">
+              <div className="col-12 col-md-6 col-lg-4">
                 <div className="card h-100 tool-card shadow-sm position-relative">
                   <div className="card-body d-flex flex-column align-items-center justify-content-center">
                     <i className="bi bi-capsule mb-3" style={{ fontSize: '2rem', color: '#dc3545' }}></i>
                     <h5 className="card-title">{t('tools.medicationInfo.title')}</h5>
                     <p className="card-text small text-muted">{t('tools.medicationInfo.description')}</p>
                     <span className="badge bg-warning position-absolute top-0 end-0 m-2">{t('tools.medicationInfo.comingSoon')}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="col-12 col-md-6 col-lg-3">
-                <div className="card h-100 tool-card shadow-sm position-relative">
-                  <div className="card-body d-flex flex-column align-items-center justify-content-center">
-                    <i className="bi bi-chat-dots mb-3" style={{ fontSize: '2rem', color: '#6610f2' }}></i>
-                    <h5 className="card-title">{t('tools.pharmacyChat.title')}</h5>
-                    <p className="card-text small text-muted">{t('tools.pharmacyChat.description')}</p>
-                    <span className="badge bg-warning position-absolute top-0 end-0 m-2">{t('tools.pharmacyChat.comingSoon')}</span>
                   </div>
                 </div>
               </div>

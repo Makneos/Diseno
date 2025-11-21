@@ -15,6 +15,9 @@ import MyMedicationsPage from './pages/MyMedicationsPage';
 import PriceComparisonPage from './pages/PriceComparisonPage';
 import MedicationDetailPage from './pages/MedicationDetailPage';
 
+// 🤖 CHATBOT FLOTANTE
+import ChatbotFloating from './components/ChatbotFloating';
+
 // Componentes y páginas especiales
 import GoogleMapsComponent from "./pages/GoogleMapsComponent";
 
@@ -86,9 +89,12 @@ function App() {
               </AuthGuard>
             } />
             
-            {/* 🚫 RUTA DE FALLBACK */}
+            {/*RUTA DE FALLBACK */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+
+          {/*CHATBOT FLOTANTE - Disponible en todas las páginas */}
+          <ChatbotFloating />
         </div>
       </Router>
     </LanguageProvider>

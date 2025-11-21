@@ -6,6 +6,12 @@ const path = require('path');
 // Cargar variables de entorno
 require('dotenv').config();
 
+// ✅ GROQ SDK en lugar de OpenAI
+const Groq = require("groq-sdk");
+const groq = new Groq({
+    apiKey: process.env.GROQ_API_KEY
+});
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -33,12 +39,12 @@ console.log('- DB_PASSWORD:', DB_CONFIG.password ? 'SÍ' : 'NO');
 console.log('- DB_NAME:', DB_CONFIG.database);
 console.log('- DB_PORT:', DB_CONFIG.port);
 console.log('- JWT_SECRET:', JWT_SECRET ? 'SÍ' : 'NO');
+console.log('- GROQ_API_KEY:', process.env.GROQ_API_KEY ? 'SÍ' : 'NO');
 console.log('- NODE_ENV:', process.env.NODE_ENV || 'development');
 
-// ✅ CORS OPTIMIZADO - Permite Azure pero sin complicaciones
+// ✅ CORS OPTIMIZADO
 const corsOptions = {
   origin: function (origin, callback) {
-    // Lista de orígenes permitidos
     const allowedOrigins = [
       'https://red-cliff-05a52f31e.2.azurestaticapps.net',
       'http://localhost:3000',
@@ -46,15 +52,13 @@ const corsOptions = {
       'http://127.0.0.1:3000'
     ];
     
-    // Permitir requests sin origin (Postman, servidores, etc.)
     if (!origin) return callback(null, true);
     
-    // Verificar si el origin está permitido
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.log(`⚠️ Origen no listado: ${origin} - permitiendo temporalmente`);
-      callback(null, true); // Permitir para evitar bloqueos en producción
+      callback(null, true);
     }
   },
   credentials: true,
@@ -92,7 +96,6 @@ const testConnection = async () => {
     console.log('✅ Conexión a MySQL establecida correctamente');
     console.log(`✅ Conectado a la base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
     
-    // Verificar tabla usuarios
     const [tables] = await connection.query('SHOW TABLES LIKE "usuarios"');
     if (tables.length === 0) {
       console.log('⚠️ La tabla usuarios no existe');
@@ -116,6 +119,7 @@ app.get('/', (req, res) => {
     host: DB_CONFIG.host,
     port: DB_CONFIG.port,
     jwt_configured: JWT_SECRET ? true : false,
+    groq_configured: process.env.GROQ_API_KEY ? true : false,
     timestamp: new Date().toISOString(),
     cors_enabled: true,
     allowed_origins: [
@@ -126,7 +130,8 @@ app.get('/', (req, res) => {
       '/api/usuarios',
       '/api/medicamentos',
       '/api/stock',
-      '/api/tratamientos'
+      '/api/tratamientos',
+      '/api/chatbot-medico'
     ]
   });
 });
@@ -140,6 +145,7 @@ app.get('/health', async (req, res) => {
     res.json({
       status: 'healthy',
       database: 'connected',
+      groq: process.env.GROQ_API_KEY ? 'configured' : 'not configured',
       environment: process.env.NODE_ENV || 'development',
       timestamp: new Date().toISOString(),
       uptime: process.uptime()
@@ -154,7 +160,7 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// ✅ CARGAR RUTAS API - Método directo y confiable
+// ✅ CARGAR RUTAS API
 console.log('🔄 Cargando rutas API...');
 
 // Usuarios
@@ -195,7 +201,135 @@ try {
 
 console.log('✅ Rutas API cargadas correctamente');
 
-// ✅ Endpoint de test para debug
+// ============================================
+// 🤖 ENDPOINT CHATBOT MÉDICO CON GROQ (Solo texto)
+// ============================================
+app.post('/api/chatbot-medico', async (req, res) => {
+    try {
+        const { mensaje, historial = [] } = req.body;
+
+        if (!mensaje) {
+            return res.status(400).json({ error: 'Se requiere el campo "mensaje"' });
+        }
+
+        console.log(`🤖 Chatbot médico (Groq): "${mensaje}"`);
+
+        const systemPrompt = `Eres un asistente virtual de farmacia llamado "FarmaBot". Tu función es:
+
+1. Escuchar síntomas comunes del usuario
+2. Sugerir medicamentos de venta libre apropiados
+3. Dar consejos básicos de salud
+4. SIEMPRE incluir el disclaimer de que no reemplazas la opinión de un profesional
+
+REGLAS IMPORTANTES:
+- Para síntomas graves o persistentes, SIEMPRE recomienda ver a un médico
+- Solo sugiere medicamentos de venta libre comunes
+- Sé breve y claro (máximo 100 palabras por respuesta)
+- Incluye el disclaimer al final de cada recomendación
+- Nunca diagnostiques enfermedades específicas
+- Si no estás seguro, recomienda consultar a un profesional
+
+EJEMPLOS:
+
+Usuario: "Me duele la cabeza"
+Tú: "Para dolor de cabeza leve, puedes tomar Paracetamol 500mg cada 8 horas o Ibuprofeno 400mg cada 6-8 horas. Asegúrate de beber agua y descansar. Si el dolor persiste más de 3 días o es muy intenso, consulta a un médico.
+
+⚠️ Esta información no reemplaza la opinión de un profesional de la salud."`;
+
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            ...historial,
+            { role: 'user', content: mensaje }
+        ];
+
+        // Llamar a Groq con Llama 3.3 70B
+        const completion = await groq.chat.completions.create({
+            model: 'llama-3.3-70b-versatile',
+            messages: messages,
+            max_tokens: 300,
+            temperature: 0.7,
+        });
+
+        const respuesta = completion.choices[0].message.content;
+
+        console.log('✅ Respuesta generada con Groq');
+
+        res.json({
+            respuesta: respuesta,
+            uso: {
+                prompt_tokens: completion.usage?.prompt_tokens || 0,
+                completion_tokens: completion.usage?.completion_tokens || 0,
+                total_tokens: completion.usage?.total_tokens || 0
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error en chatbot:', error.message);
+        res.status(500).json({ error: 'Error al procesar la consulta' });
+    }
+});
+
+// ============================================
+// 🤖 ENDPOINT CHATBOT MÉDICO CON AUDIO (sin audio por ahora)
+// ============================================
+app.post('/api/chatbot-medico-audio', async (req, res) => {
+    try {
+        const { mensaje, historial = [], incluirAudio = false } = req.body;
+
+        if (!mensaje) {
+            return res.status(400).json({ error: 'Se requiere el campo "mensaje"' });
+        }
+
+        console.log(`🤖 Chatbot médico (Groq): "${mensaje}"`);
+
+        const systemPrompt = `Eres un asistente virtual de farmacia llamado "FarmaBot". Tu función es:
+
+1. Escuchar síntomas comunes del usuario
+2. Sugerir medicamentos de venta libre apropiados
+3. Dar consejos básicos de salud
+4. SIEMPRE incluir el disclaimer de que no reemplazas la opinión de un profesional
+
+REGLAS IMPORTANTES:
+- Para síntomas graves o persistentes, SIEMPRE recomienda ver a un médico
+- Solo sugiere medicamentos de venta libre comunes
+- Sé breve y claro (máximo 80 palabras por respuesta)
+- Incluye el disclaimer al final
+- Nunca diagnostiques enfermedades específicas`;
+
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            ...historial,
+            { role: 'user', content: mensaje }
+        ];
+
+        const completion = await groq.chat.completions.create({
+            model: 'llama-3.3-70b-versatile',
+            messages: messages,
+            max_tokens: 250,
+            temperature: 0.7,
+        });
+
+        const respuestaTexto = completion.choices[0].message.content;
+
+        console.log('✅ Respuesta generada con Groq');
+
+        res.json({
+            respuesta: respuestaTexto,
+            audio: null, // Sin audio
+            uso: {
+                prompt_tokens: completion.usage?.prompt_tokens || 0,
+                completion_tokens: completion.usage?.completion_tokens || 0,
+                total_tokens: completion.usage?.total_tokens || 0
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error en chatbot:', error.message);
+        res.status(500).json({ error: 'Error al procesar la consulta' });
+    }
+});
+
+// ✅ Endpoint de test
 app.get('/test', (req, res) => {
   res.json({
     message: 'Test endpoint funcionando',
@@ -204,17 +338,13 @@ app.get('/test', (req, res) => {
       'GET /',
       'GET /health',
       'GET /test',
-      'GET /api/usuarios',
-      'POST /api/usuarios/login',
-      'POST /api/usuarios/registro',
-      'GET /api/usuarios/perfil',
-      'GET /api/medicamentos/buscar',
-      'GET /api/stock/medications',
-      'GET /api/tratamientos/mis-medicamentos'
+      'POST /api/chatbot-medico',
+      'POST /api/chatbot-medico-audio'
     ],
     cors_enabled: true,
     database_configured: !!DB_CONFIG.host,
-    jwt_configured: !!JWT_SECRET
+    jwt_configured: !!JWT_SECRET,
+    groq_configured: !!process.env.GROQ_API_KEY
   });
 });
 
@@ -230,7 +360,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ 404 handler - DEBE IR AL FINAL
+// ✅ 404 handler
 app.use('*', (req, res) => {
   console.log(`❌ 404: ${req.method} ${req.originalUrl}`);
   
@@ -239,24 +369,7 @@ app.use('*', (req, res) => {
     path: req.originalUrl,
     method: req.method,
     message: `No se encontró la ruta ${req.method} ${req.originalUrl}`,
-    available_endpoints: [
-      'GET /',
-      'GET /health',
-      'GET /test',
-      'GET /api/usuarios',
-      'POST /api/usuarios/login',
-      'POST /api/usuarios/registro',
-      'GET /api/usuarios/perfil',
-      'GET /api/usuarios/verificar-token',
-      'GET /api/medicamentos/buscar',
-      'GET /api/medicamentos/precios-por-principio/:principio',
-      'GET /api/stock/medications',
-      'GET /api/stock/search',
-      'GET /api/tratamientos/mis-medicamentos',
-      'POST /api/tratamientos/agregar-medicamento'
-    ],
-    timestamp: new Date().toISOString(),
-    tip: 'Verifica que la URL esté correcta y que uses el método HTTP correcto'
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -265,17 +378,15 @@ const startServer = async () => {
   try {
     console.log('🚀 Iniciando servidor Farmafia...');
     
-    // Verificar conexión a BD
     await testConnection();
     
-    // Iniciar servidor
     app.listen(port, '0.0.0.0', () => {
       console.log('🚀 Servidor iniciado exitosamente!');
       console.log(`📡 Escuchando en puerto ${port}`);
       console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🏥 Base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
       console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
-      console.log(`🌍 CORS configurado para Azure Static Apps`);
+      console.log(`🤖 Groq API configurado: ${process.env.GROQ_API_KEY ? 'SÍ' : 'NO'}`);
       console.log('✅ API lista para recibir solicitudes');
       
       if (process.env.NODE_ENV === 'production') {
@@ -304,7 +415,6 @@ process.on('SIGTERM', async () => {
   }
 });
 
-// Manejo de errores no capturados
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
 });
