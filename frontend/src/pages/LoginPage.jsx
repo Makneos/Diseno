@@ -102,6 +102,10 @@ function LoginPage() {
     );
   }
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:5000/auth/google";
+  };
+
   return (
     <div className="auth-container">
       <div className="auth-card">
@@ -141,6 +145,29 @@ function LoginPage() {
           <button type="submit" className="auth-submit-button">
             {t('auth.login')}
           </button>
+
+          <div style={{ 
+            textAlign: 'center',
+            margin: '15px 0',
+            color: '#888',
+            fontWeight: 'bold'
+          }}>
+            or
+          </div>
+
+          <a
+            className="auth-google-button"
+            href="http://localhost:5000/auth/google"
+          >
+            <img
+              src="/google-icon.png"
+              alt="Google"
+              style={{ width: '20px', height: '20px' }}
+            />
+            Login with your Google account
+          </a>
+
+          
         </form>
 
         <div className="auth-footer">

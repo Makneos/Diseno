@@ -25,6 +25,17 @@ const DB_CONFIG = {
 const JWT_SECRET = process.env.JWT_SECRET || 'farmacia_jwt_super_secret_key_2024_muy_larga_y_segura_12345';
 process.env.JWT_SECRET = JWT_SECRET;
 
+// GOOGLE AUTH CONFIG
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
+
+console.log('🔑 Google OAuth configurado:', {
+  CLIENT_ID: GOOGLE_CLIENT_ID ? 'SÍ' : 'NO',
+  CLIENT_SECRET: GOOGLE_CLIENT_SECRET ? 'SÍ' : 'NO',
+  CALLBACK_URL: GOOGLE_CALLBACK_URL || 'NO'
+});
+
 // Log de configuración
 console.log('🔧 Configuración cargada:');
 console.log('- DB_HOST:', DB_CONFIG.host);
@@ -156,6 +167,15 @@ app.get('/health', async (req, res) => {
 
 // ✅ CARGAR RUTAS API - Método directo y confiable
 console.log('🔄 Cargando rutas API...');
+
+// Google Auth
+try {
+  const googleAuthRoutes = require('./api/googleAuth');
+  app.use('/', googleAuthRoutes);
+  console.log('✅ /auth/google registrada');
+} catch (error) {
+  console.error('❌ Error cargando GoogleAuth:', error.message);
+}
 
 // Usuarios
 try {
