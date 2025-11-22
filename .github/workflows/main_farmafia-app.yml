@@ -26,33 +26,26 @@ jobs:
         run: |
           cd backend
           npm install
-          cd ..
 
       - name: Install frontend dependencies and build
         run: |
           cd frontend
           npm install
           npm run build
-          cd ..
 
       - name: Create deployment package
         run: |
-          # Crear carpeta temporal para el deployment
           mkdir -p deploy-package
-          
-          # Copiar archivos necesarios
           cp -r backend deploy-package/
-          cp -r frontend/build deploy-package/frontend/build
+          mkdir -p deploy-package/frontend/build
+          cp -r frontend/build/* deploy-package/frontend/build/
           cp index.js deploy-package/
           cp package.json deploy-package/
-          
-          # Crear zip
           cd deploy-package
-          zip -r ../release.zip . -x "*/node_modules/*" -x "frontend/src/*" -x "frontend/public/*"
-          cd ..
+          zip -r ../release.zip .
 
       - name: Upload artifact for deployment
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: farmafia-app
           path: release.zip
@@ -62,11 +55,10 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: farmafia-app
 
@@ -74,10 +66,9 @@ jobs:
         run: unzip release.zip
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'farmafia-app'  # CAMBIAR POR EL NOMBRE DE TU APP SERVICE
+          app-name: 'farmafia-app'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: .   
+          package: .
