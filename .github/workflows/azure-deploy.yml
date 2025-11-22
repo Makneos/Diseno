@@ -31,7 +31,7 @@ jobs:
         run: |
           cd frontend
           npm install
-          CI=false npm run build
+          npm run build
         env:
           CI: false
 
