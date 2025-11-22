@@ -15,7 +15,7 @@ const groq = new Groq({
 const app = express();
 const port = process.env.PORT || 5000;
 
-// ✅ CONFIGURACIÓN PARA RAILWAY
+// ✅ CONFIGURACIÓN PARA RAILWAY/AZURE
 const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -348,6 +348,34 @@ app.get('/test', (req, res) => {
   });
 });
 
+// ============================================
+// 🎨 SERVIR FRONTEND BUILDEADO (Para Azure App Service)
+// ============================================
+const fs = require('fs');
+
+// Detectar si estamos en Azure (con frontend buildeado junto al backend)
+const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
+const frontendExists = fs.existsSync(frontendPath);
+
+if (frontendExists) {
+  console.log('📁 Frontend build detectado, sirviendo archivos estáticos');
+  console.log('📂 Frontend path:', frontendPath);
+  
+  // Servir archivos estáticos del frontend
+  app.use(express.static(frontendPath));
+  
+  // Catch-all: cualquier ruta que NO sea /api/* devuelve el index.html
+  // Esto debe ir AL FINAL de todas las rutas API
+  app.get('*', (req, res) => {
+    // Solo si NO es una ruta de API
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.join(frontendPath, 'index.html'));
+    }
+  });
+} else {
+  console.log('⚠️ No se encontró frontend build, solo sirviendo API');
+}
+
 // ✅ Middleware de manejo de errores
 app.use((err, req, res, next) => {
   console.error('❌ Error no manejado:', err.message);
@@ -360,8 +388,8 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ✅ 404 handler
-app.use('*', (req, res) => {
+// ✅ 404 handler (solo para rutas API)
+app.use('/api/*', (req, res) => {
   console.log(`❌ 404: ${req.method} ${req.originalUrl}`);
   
   res.status(404).json({
@@ -381,19 +409,22 @@ const startServer = async () => {
     await testConnection();
     
     app.listen(port, '0.0.0.0', () => {
+      console.log('='.repeat(60));
       console.log('🚀 Servidor iniciado exitosamente!');
       console.log(`📡 Escuchando en puerto ${port}`);
       console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
       console.log(`🏥 Base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
       console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
       console.log(`🤖 Groq API configurado: ${process.env.GROQ_API_KEY ? 'SÍ' : 'NO'}`);
+      console.log(`📁 Frontend: ${frontendExists ? 'Servido desde ' + frontendPath : 'No disponible (solo API)'}`);
       console.log('✅ API lista para recibir solicitudes');
       
       if (process.env.NODE_ENV === 'production') {
-        console.log('🌍 Servidor público: https://wellaging-production-99c2.up.railway.app');
+        console.log('🌍 Modo producción activado');
       } else {
         console.log(`🏠 Servidor local: http://localhost:${port}`);
       }
+      console.log('='.repeat(60));
     });
     
   } catch (error) {

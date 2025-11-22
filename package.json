@@ -1,0 +1,30 @@
+{
+  "name": "farmafia-app",
+  "version": "1.0.0",
+  "description": "Farmafia - Sistema de gestión de farmacia con IA",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "cd backend && npm run dev",
+    "build": "cd frontend && npm install && npm run build",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "postinstall": "npm run build"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "farmacia",
+    "ai",
+    "chat",
+    "medicamentos"
+  ],
+  "author": "Tu Nombre",
+  "license": "ISC"
+}
