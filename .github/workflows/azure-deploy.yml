@@ -80,4 +80,4 @@ jobs:
           app-name: 'farmafia-app'  # CAMBIAR POR EL NOMBRE DE TU APP SERVICE
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: .   
+          package: .
