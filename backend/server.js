@@ -2,11 +2,12 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 // Cargar variables de entorno
 require('dotenv').config();
 
-// ✅ GROQ SDK en lugar de OpenAI
+// ✅ GROQ SDK
 const Groq = require("groq-sdk");
 const groq = new Groq({
     apiKey: process.env.GROQ_API_KEY
@@ -109,6 +110,56 @@ const testConnection = async () => {
   }
 };
 
+// ✅ CARGAR RUTAS API
+console.log('🔄 Cargando rutas API...');
+
+// Usuarios
+try {
+  const usuariosRoutes = require('./api/usuarios');
+  app.use('/api/usuarios', usuariosRoutes);
+  console.log('✅ /api/usuarios registrada');
+} catch (error) {
+  console.error('❌ Error cargando usuarios:', error.message);
+}
+
+// Medicamentos
+try {
+  const medicamentosRoutes = require('./api/medicamentos');
+  app.use('/api/medicamentos', medicamentosRoutes);
+  console.log('✅ /api/medicamentos registrada');
+} catch (error) {
+  console.error('❌ Error cargando medicamentos:', error.message);
+}
+
+// Stock/Pharmacy
+try {
+  const stockRoutes = require('./api/pharmacyStock');
+  app.use('/api/stock', stockRoutes);
+  console.log('✅ /api/stock registrada');
+} catch (error) {
+  console.error('❌ Error cargando pharmacyStock:', error.message);
+}
+
+// Tratamientos
+try {
+  const tratamientosRoutes = require('./api/tratamientos');
+  app.use('/api/tratamientos', tratamientosRoutes);
+  console.log('✅ /api/tratamientos registrada');
+} catch (error) {
+  console.error('❌ Error cargando tratamientos:', error.message);
+}
+
+// Google Auth
+try {
+  const googleAuthRoutes = require('./api/googleAuth');
+  app.use('/', googleAuthRoutes);
+  console.log('✅ /auth/google y /auth/google/callback registrados');
+} catch (error) {
+  console.error('❌ Error cargando GoogleAuth:', error.message);
+}
+
+console.log('✅ Rutas API cargadas correctamente');
+
 // ✅ RUTAS PRINCIPALES
 app.get('/', (req, res) => {
   res.json({ 
@@ -160,58 +211,8 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// ✅ CARGAR RUTAS API
-console.log('🔄 Cargando rutas API...');
-
-// Usuarios
-try {
-  const usuariosRoutes = require('./api/usuarios');
-  app.use('/api/usuarios', usuariosRoutes);
-  console.log('✅ /api/usuarios registrada');
-} catch (error) {
-  console.error('❌ Error cargando usuarios:', error.message);
-}
-
-// Medicamentos
-try {
-  const medicamentosRoutes = require('./api/medicamentos');
-  app.use('/api/medicamentos', medicamentosRoutes);
-  console.log('✅ /api/medicamentos registrada');
-} catch (error) {
-  console.error('❌ Error cargando medicamentos:', error.message);
-}
-
-// Stock/Pharmacy
-try {
-  const stockRoutes = require('./api/pharmacyStock');
-  app.use('/api/stock', stockRoutes);
-  console.log('✅ /api/stock registrada');
-} catch (error) {
-  console.error('❌ Error cargando pharmacyStock:', error.message);
-}
-
-// Tratamientos
-try {
-  const tratamientosRoutes = require('./api/tratamientos');
-  app.use('/api/tratamientos', tratamientosRoutes);
-  console.log('✅ /api/tratamientos registrada');
-} catch (error) {
-  console.error('❌ Error cargando tratamientos:', error.message);
-}
-
-// Google Auth
-try {
-  const googleAuthRoutes = require('./api/googleAuth');
-  app.use('/', googleAuthRoutes); // SIN /api
-  console.log('✅ /auth/google y /auth/google/callback registrados');
-} catch (error) {
-  console.error('❌ Error cargando GoogleAuth:', error.message);
-}
-
-console.log('✅ Rutas API cargadas correctamente');
-
 // ============================================
-// 🤖 ENDPOINT CHATBOT MÉDICO CON GROQ (Solo texto)
+// 🤖 ENDPOINT CHATBOT MÉDICO CON GROQ
 // ============================================
 app.post('/api/chatbot-medico', async (req, res) => {
     try {
@@ -236,14 +237,7 @@ REGLAS IMPORTANTES:
 - Sé breve y claro (máximo 100 palabras por respuesta)
 - Incluye el disclaimer al final de cada recomendación
 - Nunca diagnostiques enfermedades específicas
-- Si no estás seguro, recomienda consultar a un profesional
-
-EJEMPLOS:
-
-Usuario: "Me duele la cabeza"
-Tú: "Para dolor de cabeza leve, puedes tomar Paracetamol 500mg cada 8 horas o Ibuprofeno 400mg cada 6-8 horas. Asegúrate de beber agua y descansar. Si el dolor persiste más de 3 días o es muy intenso, consulta a un médico.
-
-⚠️ Esta información no reemplaza la opinión de un profesional de la salud."`;
+- Si no estás seguro, recomienda consultar a un profesional`;
 
         const messages = [
             { role: 'system', content: systemPrompt },
@@ -251,7 +245,6 @@ Tú: "Para dolor de cabeza leve, puedes tomar Paracetamol 500mg cada 8 horas o I
             { role: 'user', content: mensaje }
         ];
 
-        // Llamar a Groq con Llama 3.3 70B
         const completion = await groq.chat.completions.create({
             model: 'llama-3.3-70b-versatile',
             messages: messages,
@@ -278,12 +271,9 @@ Tú: "Para dolor de cabeza leve, puedes tomar Paracetamol 500mg cada 8 horas o I
     }
 });
 
-// ============================================
-// 🤖 ENDPOINT CHATBOT MÉDICO CON AUDIO (sin audio por ahora)
-// ============================================
 app.post('/api/chatbot-medico-audio', async (req, res) => {
     try {
-        const { mensaje, historial = [], incluirAudio = false } = req.body;
+        const { mensaje, historial = [] } = req.body;
 
         if (!mensaje) {
             return res.status(400).json({ error: 'Se requiere el campo "mensaje"' });
@@ -291,19 +281,7 @@ app.post('/api/chatbot-medico-audio', async (req, res) => {
 
         console.log(`🤖 Chatbot médico (Groq): "${mensaje}"`);
 
-        const systemPrompt = `Eres un asistente virtual de farmacia llamado "FarmaBot". Tu función es:
-
-1. Escuchar síntomas comunes del usuario
-2. Sugerir medicamentos de venta libre apropiados
-3. Dar consejos básicos de salud
-4. SIEMPRE incluir el disclaimer de que no reemplazas la opinión de un profesional
-
-REGLAS IMPORTANTES:
-- Para síntomas graves o persistentes, SIEMPRE recomienda ver a un médico
-- Solo sugiere medicamentos de venta libre comunes
-- Sé breve y claro (máximo 80 palabras por respuesta)
-- Incluye el disclaimer al final
-- Nunca diagnostiques enfermedades específicas`;
+        const systemPrompt = `Eres un asistente virtual de farmacia llamado "FarmaBot". Sé breve y claro (máximo 80 palabras).`;
 
         const messages = [
             { role: 'system', content: systemPrompt },
@@ -320,11 +298,9 @@ REGLAS IMPORTANTES:
 
         const respuestaTexto = completion.choices[0].message.content;
 
-        console.log('✅ Respuesta generada con Groq');
-
         res.json({
             respuesta: respuestaTexto,
-            audio: null, // Sin audio
+            audio: null,
             uso: {
                 prompt_tokens: completion.usage?.prompt_tokens || 0,
                 completion_tokens: completion.usage?.completion_tokens || 0,
@@ -338,74 +314,43 @@ REGLAS IMPORTANTES:
     }
 });
 
-// ✅ Endpoint de test
 app.get('/test', (req, res) => {
   res.json({
     message: 'Test endpoint funcionando',
-    server_time: new Date().toISOString(),
-    routes_available: [
-      'GET /',
-      'GET /health',
-      'GET /test',
-      'POST /api/chatbot-medico',
-      'POST /api/chatbot-medico-audio'
-    ],
-    cors_enabled: true,
-    database_configured: !!DB_CONFIG.host,
-    jwt_configured: !!JWT_SECRET,
-    groq_configured: !!process.env.GROQ_API_KEY
+    server_time: new Date().toISOString()
   });
 });
 
 // ============================================
-// 🎨 SERVIR FRONTEND BUILDEADO (Para Azure App Service)
+// 🎨 SERVIR FRONTEND (React build)
 // ============================================
-const fs = require('fs');
+const localFrontendPath = path.join(__dirname, '..', 'frontend', 'build');  // entorno local
+const deployedFrontendPath = path.join(__dirname, 'frontend', 'build');     // entorno Azure
 
-// Detectar si estamos en Azure (con frontend buildeado junto al backend)
-const frontendPath = path.join(__dirname, 'frontend', 'build');
-const frontendExists = fs.existsSync(frontendPath);
+// Detectar cuál usar
+const frontendPath = fs.existsSync(deployedFrontendPath)
+  ? deployedFrontendPath
+  : localFrontendPath;
 
-if (frontendExists) {
-  console.log('📁 Frontend build detectado, sirviendo archivos estáticos');
-  console.log('📂 Frontend path:', frontendPath);
-  
-  // Servir archivos estáticos del frontend
-  app.use(express.static(frontendPath));
-  
-  // Catch-all: cualquier ruta que NO sea /api/* devuelve el index.html
-  // Esto debe ir AL FINAL de todas las rutas API
-  app.get('*', (req, res) => {
-    // Solo si NO es una ruta de API
-    if (!req.path.startsWith('/api')) {
-      res.sendFile(path.join(frontendPath, 'index.html'));
-    }
-  });
-} else {
-  console.log('⚠️ No se encontró frontend build, solo sirviendo API');
-}
+console.log('📂 Frontend path detectado:', frontendPath);
+console.log('📁 Frontend existe:', fs.existsSync(frontendPath));
+
+// Servir archivos estáticos del frontend
+app.use(express.static(frontendPath));
+
+// Catch-all para rutas que no sean /api
+// IMPORTANTE: Esto debe ir AL FINAL, después de todas las rutas API
+app.get(/^(?!\/api).*/, (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
 
 // ✅ Middleware de manejo de errores
 app.use((err, req, res, next) => {
   console.error('❌ Error no manejado:', err.message);
-  console.error('Stack:', err.stack);
   
   res.status(err.status || 500).json({
     error: 'Error interno del servidor',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// ✅ 404 handler (solo para rutas API)
-app.use('/api/*', (req, res) => {
-  console.log(`❌ 404: ${req.method} ${req.originalUrl}`);
-  
-  res.status(404).json({
-    error: 'Endpoint no encontrado',
-    path: req.originalUrl,
-    method: req.method,
-    message: `No se encontró la ruta ${req.method} ${req.originalUrl}`,
     timestamp: new Date().toISOString()
   });
 });
@@ -422,17 +367,7 @@ const startServer = async () => {
       console.log('🚀 Servidor iniciado exitosamente!');
       console.log(`📡 Escuchando en puerto ${port}`);
       console.log(`🌐 Entorno: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🏥 Base de datos: ${DB_CONFIG.database} en ${DB_CONFIG.host}:${DB_CONFIG.port}`);
-      console.log(`🔐 JWT configurado: ${JWT_SECRET ? 'SÍ' : 'NO'}`);
-      console.log(`🤖 Groq API configurado: ${process.env.GROQ_API_KEY ? 'SÍ' : 'NO'}`);
-      console.log(`📁 Frontend: ${frontendExists ? 'Servido desde ' + frontendPath : 'No disponible (solo API)'}`);
-      console.log('✅ API lista para recibir solicitudes');
-      
-      if (process.env.NODE_ENV === 'production') {
-        console.log('🌍 Modo producción activado');
-      } else {
-        console.log(`🏠 Servidor local: http://localhost:${port}`);
-      }
+      console.log(`📁 Frontend: ${fs.existsSync(frontendPath) ? frontendPath : 'No disponible'}`);
       console.log('='.repeat(60));
     });
     
@@ -453,15 +388,6 @@ process.on('SIGTERM', async () => {
     console.error('❌ Error al cerrar:', error);
     process.exit(1);
   }
-});
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('❌ Uncaught Exception:', error);
-  process.exit(1);
 });
 
 // Iniciar servidor
