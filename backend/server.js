@@ -199,6 +199,15 @@ try {
   console.error('❌ Error cargando tratamientos:', error.message);
 }
 
+// Google Auth
+try {
+  const googleAuthRoutes = require('./api/googleAuth');
+  app.use('/', googleAuthRoutes); // SIN /api
+  console.log('✅ /auth/google y /auth/google/callback registrados');
+} catch (error) {
+  console.error('❌ Error cargando GoogleAuth:', error.message);
+}
+
 console.log('✅ Rutas API cargadas correctamente');
 
 // ============================================

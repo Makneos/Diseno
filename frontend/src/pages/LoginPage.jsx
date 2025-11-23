@@ -141,6 +141,19 @@ function LoginPage() {
           <button type="submit" className="auth-submit-button">
             {t('auth.login')}
           </button>
+
+          <div style={{ textAlign: 'center', margin: '20px 0', fontWeight: 'bold' }}>
+            or
+          </div>
+
+          <a href={`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/auth/google`} className="auth-submit-button google-login-button">
+            <img 
+              src="/google-icon.png" 
+              alt="Google icon" 
+              style={{ width: '20px', marginRight: '10px', verticalAlign: 'middle' }}
+            />
+            Login with your Google account
+          </a>
         </form>
 
         <div className="auth-footer">
