@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import MedicationImage from './MedicationImage';
 
 const MedicationHeader = ({ selectedMedication }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="row mb-5">
       <div className="col-12">
@@ -9,7 +12,7 @@ const MedicationHeader = ({ selectedMedication }) => {
           <div className="card-header bg-primary text-white">
             <h2 className="mb-0">
               <i className="bi bi-capsule me-2"></i>
-              Medication Details & Price Comparison
+              {t('medicationHeader.title')}
             </h2>
           </div>
           <div className="card-body">
@@ -27,19 +30,19 @@ const MedicationHeader = ({ selectedMedication }) => {
                 <h3 className="mb-3">{selectedMedication.nombre}</h3>
                 <div className="medication-details">
                   <p className="mb-2">
-                    <strong>Active Ingredient:</strong> 
+                    <strong>{t('medicationHeader.activeIngredient')}:</strong> 
                     <span className="badge bg-info ms-2">{selectedMedication.principio_activo}</span>
                   </p>
                   <p className="mb-2">
-                    <strong>Type:</strong> 
+                    <strong>{t('medicationHeader.type')}:</strong> 
                     {selectedMedication.es_generico ? (
-                      <span className="badge bg-success ms-2">Generic</span>
+                      <span className="badge bg-success ms-2">{t('medicationModal.generic')}</span>
                     ) : (
-                      <span className="badge bg-primary ms-2">Brand</span>
+                      <span className="badge bg-primary ms-2">{t('medicationModal.brand')}</span>
                     )}
                   </p>
                   <p className="mb-0">
-                    <strong>Medication ID:</strong> 
+                    <strong>{t('medicationHeader.medicationId')}:</strong> 
                     <code className="ms-2">{selectedMedication.id}</code>
                   </p>
                 </div>
@@ -47,11 +50,11 @@ const MedicationHeader = ({ selectedMedication }) => {
               <div className="col-md-3 text-md-end">
                 <div className="text-muted">
                   <i className="bi bi-clock me-1"></i>
-                  Last update: {new Date().toLocaleDateString()}
+                  {t('medicationHeader.lastUpdate')}: {new Date().toLocaleDateString()}
                 </div>
                 <div className="mt-2">
                   <span className="badge bg-secondary">
-                    Comparing medications with "{selectedMedication.principio_activo}"
+                    {t('medicationHeader.comparing')} "{selectedMedication.principio_activo}"
                   </span>
                 </div>
               </div>

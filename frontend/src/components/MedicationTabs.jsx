@@ -1,28 +1,31 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const MedicationTabs = ({ medications, currentTab, onTabChange }) => {
+  const { t } = useTranslation();
+
   const tabs = [
     {
       id: 'active',
-      label: 'Active',
+      label: t('medications.status.active'),
       icon: 'bi-play-circle',
       count: medications.filter(m => m.status === 'active').length
     },
     {
       id: 'standby',
-      label: 'Standby',
+      label: t('medications.status.standby'),
       icon: 'bi-pause-circle',
       count: medications.filter(m => m.status === 'standby').length
     },
     {
       id: 'completed',
-      label: 'Completed',
+      label: t('medications.status.completed'),
       icon: 'bi-check-circle',
       count: medications.filter(m => m.status === 'completed').length
     },
     {
       id: 'all',
-      label: 'All',
+      label: t('medications.all'),
       icon: 'bi-list',
       count: medications.length
     }

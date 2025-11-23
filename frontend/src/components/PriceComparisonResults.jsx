@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import MedicationImage from './MedicationImage';
 
 const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
+  const { t } = useTranslation();
+
   if (!comparisonResults.farmacias) {
     return null;
   }
@@ -11,7 +14,7 @@ const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
       <div className="col-12">
         <h3 className="mb-4">
           <i className="bi bi-graph-up me-2"></i>
-          Price Comparison ({comparisonResults.farmacias.length} pharmacies)
+          {t('priceComparison.title')} ({comparisonResults.farmacias.length} {t('priceComparison.pharmacies')})
         </h3>
         
         <div className="price-comparison-results">
@@ -23,7 +26,7 @@ const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
                     <i className="bi bi-shop me-2 text-primary"></i>
                     {farmacia.farmacia.nombre}
                     <span className="badge bg-secondary ms-2">
-                      {farmacia.medicamentos.length} product{farmacia.medicamentos.length !== 1 ? 's' : ''}
+                      {farmacia.medicamentos.length} {farmacia.medicamentos.length !== 1 ? t('priceComparison.products') : t('priceComparison.product')}
                     </span>
                   </h4>
                 </div>
@@ -41,15 +44,15 @@ const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
                             <div className={`card-header text-center ${isSelectedMed ? 'bg-primary text-white' : isBestPrice ? 'bg-success text-white' : 'bg-light'}`}>
                               <div className="d-flex justify-content-center mb-2">
                                 {isSelectedMed && (
-                                  <span className="badge bg-white text-primary me-1">Selected</span>
+                                  <span className="badge bg-white text-primary me-1">{t('priceComparison.selected')}</span>
                                 )}
                                 {isBestPrice && !isSelectedMed && (
-                                  <span className="badge bg-white text-success me-1">Best Price</span>
+                                  <span className="badge bg-white text-success me-1">{t('priceComparison.bestPrice')}</span>
                                 )}
                                 {medicamento.es_generico ? (
-                                  <span className="badge bg-success">Generic</span>
+                                  <span className="badge bg-success">{t('medicationModal.generic')}</span>
                                 ) : (
-                                  <span className="badge bg-info">Brand</span>
+                                  <span className="badge bg-info">{t('medicationModal.brand')}</span>
                                 )}
                               </div>
                               <h6 className="mb-0 small">{medicamento.nombre}</h6>
@@ -68,19 +71,19 @@ const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
                               
                               <div className="flex-grow-1">
                                 <h4 className={`price mb-3 fw-bold ${isBestPrice ? 'text-success' : 'text-primary'}`}>
-                                  ${medicamento.precio.toLocaleString('en-US')}
+                                  ${medicamento.precio.toLocaleString('es-CL')}
                                 </h4>
                                 
                                 <div className="availability mb-3">
                                   {medicamento.disponible ? (
                                     <span className="text-success">
                                       <i className="bi bi-check-circle me-2"></i>
-                                      Available
+                                      {t('priceComparison.available')}
                                     </span>
                                   ) : (
                                     <span className="text-danger">
                                       <i className="bi bi-x-circle me-2"></i>
-                                      Not available
+                                      {t('priceComparison.notAvailable')}
                                     </span>
                                   )}
                                 </div>
@@ -95,12 +98,12 @@ const PriceComparisonResults = ({ comparisonResults, selectedMedication }) => {
                                   className={`btn w-100 ${medicamento.disponible ? 'btn-outline-primary' : 'btn-outline-secondary disabled'}`}
                                 >
                                   <i className="bi bi-external-link me-2"></i>
-                                  View on site
+                                  {t('priceComparison.viewOnSite')}
                                 </a>
                               ) : (
                                 <button className="btn btn-outline-secondary w-100" disabled>
                                   <i className="bi bi-exclamation-circle me-2"></i>
-                                  Link not available
+                                  {t('priceComparison.linkNotAvailable')}
                                 </button>
                               )}
                             </div>

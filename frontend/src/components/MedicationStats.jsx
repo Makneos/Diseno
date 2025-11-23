@@ -1,7 +1,10 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { getTotalDailyDoses } from '../utils/medicationUtils';
 
 const MedicationStats = ({ medications }) => {
+  const { t } = useTranslation();
+  
   const activeMedications = medications.filter(m => m.status === 'active').length;
   const medicationsWithReminders = medications.filter(m => m.reminder).length;
   const totalDailyDoses = getTotalDailyDoses(medications);
@@ -11,25 +14,25 @@ const MedicationStats = ({ medications }) => {
     {
       icon: 'bi-activity',
       value: activeMedications,
-      label: 'Active Treatments',
+      label: t('medicationStats.activeTreatments'),
       color: 'primary'
     },
     {
       icon: 'bi-clock',
       value: medicationsWithReminders,
-      label: 'With Reminders',
+      label: t('medicationStats.withReminders'),
       color: 'success'
     },
     {
       icon: 'bi-calendar-check',
       value: totalDailyDoses,
-      label: 'Daily Doses',
+      label: t('medicationStats.dailyDoses'),
       color: 'info'
     },
     {
       icon: 'bi-check-circle',
       value: completedMedications,
-      label: 'Completed',
+      label: t('medicationStats.completed'),
       color: 'secondary'
     }
   ];

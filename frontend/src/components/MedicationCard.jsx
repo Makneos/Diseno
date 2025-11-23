@@ -18,7 +18,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
       <div className="card medication-card h-100">
         <div className="medication-status">
           <span className={`badge bg-${getStatusColor(medication.status)}`}>
-            {medication.status}
+            {t(`medications.status.${medication.status}`)}
           </span>
         </div>
         
@@ -39,7 +39,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
           <div className="dosage-info">
             <div className="d-flex justify-content-between align-items-center mb-2">
               <span className="fw-bold">{t('medications.schedule')}</span>
-              <small className="text-muted">{medication.frequency}</small>
+              <small className="text-muted">{t(`medications.frequency.${medication.frequency}`)}</small>
             </div>
             {medication.times && medication.times.length > 0 && (
               <div className="d-flex flex-wrap gap-1">
@@ -85,7 +85,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             <button 
               className="btn btn-outline-primary btn-sm"
               onClick={() => onEdit(medication)}
-              title="Edit medication"
+              title={t('common.edit')}
             >
               <i className="bi bi-pencil"></i>
             </button>
@@ -93,7 +93,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             {medication.reminder && (
               <button 
                 className="btn btn-outline-success btn-sm"
-                title="Reminders enabled"
+                title={t('medications.remindersEnabled')}
               >
                 <i className="bi bi-bell"></i>
               </button>
@@ -101,7 +101,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             
             <button 
               className="btn btn-outline-info btn-sm"
-              title="View details"
+              title={t('medications.viewDetails')}
             >
               <i className="bi bi-eye"></i>
             </button>
@@ -109,7 +109,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
             <button 
               className="btn btn-outline-danger btn-sm"
               onClick={() => onDelete(medication)}
-              title="Delete medication"
+              title={t('common.delete')}
             >
               <i className="bi bi-trash"></i>
             </button>

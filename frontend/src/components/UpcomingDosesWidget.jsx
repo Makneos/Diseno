@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { fetchMedicamentos } from '../utils/medicationAPI';
 
 const UpcomingDosesWidget = ({ user }) => {
+  const { t } = useTranslation();
   const [upcomingDoses, setUpcomingDoses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -61,11 +63,14 @@ const UpcomingDosesWidget = ({ user }) => {
 
   const formatTimeUntil = (minutes) => {
     if (minutes < 60) {
-      return `in ${minutes}m`;
+      return t('upcomingDoses.inMinutes', { minutes });
     } else {
       const hours = Math.floor(minutes / 60);
       const mins = minutes % 60;
-      return mins > 0 ? `in ${hours}h ${mins}m` : `in ${hours}h`;
+      if (mins > 0) {
+        return t('upcomingDoses.inHoursMinutes', { hours, minutes: mins });
+      }
+      return t('upcomingDoses.inHours', { hours });
     }
   };
 
@@ -74,9 +79,9 @@ const UpcomingDosesWidget = ({ user }) => {
       <div className="card">
         <div className="card-body text-center">
           <div className="spinner-border spinner-border-sm me-2" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('common.loading')}</span>
           </div>
-          Loading upcoming doses...
+          {t('upcomingDoses.loading')}
         </div>
       </div>
     );
@@ -88,12 +93,12 @@ const UpcomingDosesWidget = ({ user }) => {
         <div className="card-header">
           <h6 className="mb-0">
             <i className="bi bi-clock me-2"></i>
-            Next Doses
+            {t('upcomingDoses.title')}
           </h6>
         </div>
         <div className="card-body text-center">
           <i className="bi bi-check-circle text-success" style={{ fontSize: '2rem' }}></i>
-          <p className="text-muted mt-2 mb-0 small">No upcoming doses in the next 6 hours</p>
+          <p className="text-muted mt-2 mb-0 small">{t('upcomingDoses.noDoses')}</p>
         </div>
       </div>
     );
@@ -104,7 +109,7 @@ const UpcomingDosesWidget = ({ user }) => {
       <div className="card-header">
         <h6 className="mb-0">
           <i className="bi bi-clock me-2"></i>
-          Next Doses
+          {t('upcomingDoses.title')}
         </h6>
       </div>
       <div className="card-body p-0">

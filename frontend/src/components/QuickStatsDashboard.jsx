@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { fetchMedicamentos } from '../utils/medicationAPI';
 
 const QuickStatsDashboard = ({ user }) => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     activeMedications: 0,
     todayDoses: 0,
@@ -67,7 +69,7 @@ const QuickStatsDashboard = ({ user }) => {
             <div className="card">
               <div className="card-body text-center">
                 <div className="spinner-border spinner-border-sm" role="status">
-                  <span className="visually-hidden">Loading...</span>
+                  <span className="visually-hidden">{t('common.loading')}</span>
                 </div>
               </div>
             </div>
@@ -79,32 +81,32 @@ const QuickStatsDashboard = ({ user }) => {
 
   const statsData = [
     {
-      title: 'Active Treatments',
+      title: t('dashboard.stats.activeTreatments'),
       value: stats.activeMedications,
       icon: 'bi-activity',
       color: 'primary',
-      description: 'medications in progress'
+      description: t('dashboard.stats.medicationsInProgress')
     },
     {
-      title: "Today's Doses",
+      title: t('dashboard.stats.todaysDoses'),
       value: stats.todayDoses,
       icon: 'bi-calendar-check',
       color: 'success',
-      description: 'scheduled for today'
+      description: t('dashboard.stats.scheduledForToday')
     },
     {
-      title: 'Upcoming Reminders',
+      title: t('dashboard.stats.upcomingReminders'),
       value: stats.upcomingReminders,
       icon: 'bi-bell',
       color: 'warning',
-      description: 'in next 2 hours'
+      description: t('dashboard.stats.inNext2Hours')
     },
     {
-      title: 'Completed',
+      title: t('dashboard.stats.completed'),
       value: stats.completedTreatments,
       icon: 'bi-check-circle',
       color: 'info',
-      description: 'treatments finished'
+      description: t('dashboard.stats.treatmentsFinished')
     }
   ];
 
