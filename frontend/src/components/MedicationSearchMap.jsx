@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import pharmacyStockService from '../services/PharmacyStockService';
 
 const MedicationSearchMap = ({ 
@@ -7,6 +8,7 @@ const MedicationSearchMap = ({
   onClearSearch,
   className = '' 
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -14,12 +16,10 @@ const MedicationSearchMap = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [availabilityInfo, setAvailabilityInfo] = useState(null);
 
-  // Load available medications on component mount
   useEffect(() => {
     loadAvailableMedications();
   }, []);
 
-  // Search for medications when search term changes
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchTerm.length >= 2) {
@@ -33,7 +33,6 @@ const MedicationSearchMap = ({
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
-  // Load availability info when medication is selected
   useEffect(() => {
     if (selectedMedication) {
       loadAvailabilityInfo(selectedMedication);
@@ -56,7 +55,6 @@ const MedicationSearchMap = ({
   const performSearch = () => {
     setIsSearching(true);
     
-    // Filter medications based on search term
     const filtered = availableMedications.filter(med =>
       med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       med.displayName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -104,11 +102,11 @@ const MedicationSearchMap = ({
     const total = pharmacies.length;
     
     if (inStock === 0) {
-      return <span className="badge bg-danger">Not Available</span>;
+      return <span className="badge bg-danger">{t('priceComparison.notAvailable')}</span>;
     } else if (inStock === total) {
-      return <span className="badge bg-success">Available at {total} pharmacies</span>;
+      return <span className="badge bg-success">{t('pharmacyMap.availableAt')} {total} {t('pharmacyMap.pharmacies')}</span>;
     } else {
-      return <span className="badge bg-warning">Available at {inStock}/{total} pharmacies</span>;
+      return <span className="badge bg-warning">{t('pharmacyMap.availableAt')} {inStock}/{total} {t('pharmacyMap.pharmacies')}</span>;
     }
   };
 
@@ -123,7 +121,7 @@ const MedicationSearchMap = ({
           <input
             type="text"
             className="form-control border-start-0"
-            placeholder="Search for medications on map..."
+            placeholder={t('pharmacyMap.searchPlaceholder')}
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
@@ -133,7 +131,7 @@ const MedicationSearchMap = ({
               className="btn btn-outline-secondary" 
               type="button"
               onClick={handleClearSearch}
-              title="Clear search"
+              title={t('pharmacyMap.clearSearch')}
             >
               <i className="bi bi-x"></i>
             </button>
@@ -155,7 +153,7 @@ const MedicationSearchMap = ({
                     <strong>{medication.displayName}</strong>
                   </div>
                   <small className="text-muted">
-                    {medication.availablePharmacies} pharmacies
+                    {medication.availablePharmacies} {t('pharmacyMap.pharmacies')}
                   </small>
                 </button>
               ))}
@@ -167,9 +165,9 @@ const MedicationSearchMap = ({
         {isSearching && (
           <div className="search-loading position-absolute w-100 mt-1 bg-white border rounded shadow-sm p-3 text-center">
             <div className="spinner-border spinner-border-sm me-2" role="status">
-              <span className="visually-hidden">Searching...</span>
+              <span className="visually-hidden">{t('priceComparison.searching')}</span>
             </div>
-            Searching medications...
+            {t('priceComparison.searching')}
           </div>
         )}
       </div>
@@ -188,7 +186,7 @@ const MedicationSearchMap = ({
               </div>
               
               <p className="card-text small text-muted mb-3">
-                Showing availability in {availabilityInfo.totalPharmacies} nearby pharmacies
+                {t('pharmacyMap.showingIn')} {availabilityInfo.totalPharmacies} {t('pharmacyMap.nearbyPharmacies')}
               </p>
 
               {/* Quick Pharmacy List */}
@@ -221,30 +219,30 @@ const MedicationSearchMap = ({
                 
                 {availabilityInfo.pharmacies.length > 3 && (
                   <small className="text-muted">
-                    +{availabilityInfo.pharmacies.length - 3} more pharmacies
+                    +{availabilityInfo.pharmacies.length - 3} {t('pharmacyMap.morePlaces')}
                   </small>
                 )}
               </div>
 
               {/* Legend */}
               <div className="legend mt-3 pt-2 border-top">
-                <small className="text-muted">Map Legend:</small>
+                <small className="text-muted">{t('pharmacyMap.legend')}</small>
                 <div className="d-flex flex-wrap gap-2 mt-1">
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle me-1" style={{ width: '8px', height: '8px', backgroundColor: '#28a745' }}></div>
-                    <small>In Stock</small>
+                    <small>{t('pharmacyMap.inStock')}</small>
                   </div>
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle me-1" style={{ width: '8px', height: '8px', backgroundColor: '#ffc107' }}></div>
-                    <small>Limited</small>
+                    <small>{t('pharmacyMap.limited')}</small>
                   </div>
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle me-1" style={{ width: '8px', height: '8px', backgroundColor: '#fd7e14' }}></div>
-                    <small>Low Stock</small>
+                    <small>{t('pharmacyMap.lowStock')}</small>
                   </div>
                   <div className="d-flex align-items-center">
                     <div className="rounded-circle me-1" style={{ width: '8px', height: '8px', backgroundColor: '#dc3545' }}></div>
-                    <small>Out of Stock</small>
+                    <small>{t('pharmacyMap.outOfStock')}</small>
                   </div>
                 </div>
               </div>
@@ -258,7 +256,7 @@ const MedicationSearchMap = ({
         <div className="no-results mt-3">
           <div className="alert alert-info">
             <i className="bi bi-info-circle me-2"></i>
-            No medications found matching "<strong>{searchTerm}</strong>"
+            {t('pharmacyMap.noResults')} "<strong>{searchTerm}</strong>"
           </div>
         </div>
       )}
@@ -266,7 +264,7 @@ const MedicationSearchMap = ({
       {/* Popular Medications (when no search) */}
       {!searchTerm && !selectedMedication && (
         <div className="popular-medications mt-3">
-          <h6 className="text-muted">Popular Medications:</h6>
+          <h6 className="text-muted">{t('pharmacyMap.popularMedications')}</h6>
           <div className="d-flex flex-wrap gap-2">
             {['paracetamol', 'ibuprofeno', 'omeprazol', 'loratadina'].map(med => (
               <button

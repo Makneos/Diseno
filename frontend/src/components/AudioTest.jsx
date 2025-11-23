@@ -2,18 +2,20 @@
 // Componente de prueba para el sistema de audio
 
 import React, { useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { generarAudio, VOCES } from '../services/audioService';
 
 function AudioTest() {
+    const { t } = useTranslation();
     const [cargando, setCargando] = useState(false);
-    const [texto, setTexto] = useState('Bienvenido a Farmafia');
+    const [texto, setTexto] = useState(t('nav.brand'));
 
     const handleReproducir = async () => {
         setCargando(true);
         try {
             await generarAudio(texto, VOCES.NOVA);
         } catch (error) {
-            alert('Error al generar audio. Verifica que el servidor esté corriendo.');
+            alert(t('chatbot.errorProcessing'));
         } finally {
             setCargando(false);
         }
@@ -21,13 +23,13 @@ function AudioTest() {
 
     return (
         <div style={{ padding: '20px', maxWidth: '500px' }}>
-            <h2>🎙️ Test Audio - Farmafia</h2>
+            <h2>🎙️ {t('audioTest.title')}</h2>
             
             <textarea
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 style={{ width: '100%', height: '100px', marginBottom: '10px' }}
-                placeholder="Escribe el texto a convertir..."
+                placeholder={t('audioTest.placeholder')}
             />
 
             <button 
@@ -42,7 +44,7 @@ function AudioTest() {
                     cursor: cargando ? 'not-allowed' : 'pointer'
                 }}
             >
-                {cargando ? 'Generando...' : '▶️ Reproducir Audio'}
+                {cargando ? t('audioTest.generating') : `▶️ ${t('audioTest.play')}`}
             </button>
         </div>
     );

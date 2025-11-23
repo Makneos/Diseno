@@ -7,14 +7,12 @@ const SimpleMedicationSearch = ({
   onClearSearch,
   className = '' 
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  
-  const { t } = useTranslation();
 
-  // Available medications for search
   const availableMedications = [
     { name: 'paracetamol', displayName: 'Paracetamol' },
     { name: 'ibuprofeno', displayName: 'Ibuprofeno' },
@@ -28,7 +26,6 @@ const SimpleMedicationSearch = ({
     { name: 'cetirizina', displayName: 'Cetirizina' }
   ];
 
-  // Search for medications when search term changes
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       if (searchTerm.length >= 2) {
@@ -42,7 +39,6 @@ const SimpleMedicationSearch = ({
     return () => clearTimeout(debounceTimer);
   }, [searchTerm]);
 
-  // Update search term when medication is selected externally
   useEffect(() => {
     if (selectedMedication) {
       setSearchTerm(selectedMedication.charAt(0).toUpperCase() + selectedMedication.slice(1));
@@ -54,7 +50,6 @@ const SimpleMedicationSearch = ({
     setIsSearching(true);
     
     try {
-      // Try to fetch from API first
       const response = await fetch(`http://localhost:5000/api/stock/search?q=${encodeURIComponent(searchTerm)}`);
       if (response.ok) {
         const data = await response.json();
@@ -73,7 +68,6 @@ const SimpleMedicationSearch = ({
       console.log('API not available, using local search');
     }
 
-    // Fallback to local search
     const filtered = availableMedications.filter(med =>
       med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       med.displayName.toLowerCase().includes(searchTerm.toLowerCase())
@@ -115,7 +109,7 @@ const SimpleMedicationSearch = ({
           <input
             type="text"
             className="form-control border-start-0"
-            placeholder={t('home.searchPlaceholder')}
+            placeholder={t('simpleMedicationSearch.searchPlaceholder')}
             value={searchTerm}
             onChange={handleInputChange}
             onFocus={() => searchResults.length > 0 && setShowDropdown(true)}
@@ -149,7 +143,7 @@ const SimpleMedicationSearch = ({
                   </div>
                   <small className="text-muted">
                     <i className="bi bi-geo-alt me-1"></i>
-                    {t('priceComparison.available')}
+                    {t('simpleMedicationSearch.available')}
                   </small>
                 </button>
               ))}
@@ -161,9 +155,9 @@ const SimpleMedicationSearch = ({
         {isSearching && (
           <div className="search-loading position-absolute w-100 mt-1 bg-white border rounded shadow-sm p-3 text-center">
             <div className="spinner-border spinner-border-sm me-2" role="status">
-              <span className="visually-hidden">{t('priceComparison.searching')}</span>
+              <span className="visually-hidden">{t('simpleMedicationSearch.searching')}</span>
             </div>
-            {t('priceComparison.searching')}
+            {t('simpleMedicationSearch.searching')}
           </div>
         )}
       </div>
@@ -171,7 +165,7 @@ const SimpleMedicationSearch = ({
       {/* Popular Medications (when no search) */}
       {!searchTerm && !selectedMedication && (
         <div className="popular-medications mt-3">
-          <h6 className="text-muted mb-2">{t('home.popularMedications')}</h6>
+          <h6 className="text-muted mb-2">{t('simpleMedicationSearch.popularMedications')}</h6>
           <div className="d-flex flex-wrap gap-2">
             {['Paracetamol', 'Ibuprofeno', 'Omeprazol', 'Loratadina'].map(med => (
               <button
@@ -212,7 +206,7 @@ const SimpleMedicationSearch = ({
         <div className="no-results mt-3">
           <div className="alert alert-warning">
             <i className="bi bi-exclamation-triangle me-2"></i>
-            {t('priceComparison.notAvailable')} "<strong>{searchTerm}</strong>"
+            {t('simpleMedicationSearch.noResults')} "<strong>{searchTerm}</strong>"
           </div>
         </div>
       )}
@@ -256,7 +250,7 @@ const SimpleMedicationSearch = ({
         
         @media (max-width: 768px) {
           .medication-search .form-control {
-            font-size: 16px; /* Prevent zoom on iOS */
+            font-size: 16px;
           }
         }
       `}</style>

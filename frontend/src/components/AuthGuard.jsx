@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '../hooks/useTranslation';
 
 // Utility function to check if user is authenticated
 const isAuthenticated = () => {
@@ -14,20 +15,17 @@ const isAuthenticated = () => {
     const userData = JSON.parse(user);
     console.log('🔍 Checking auth for user:', userData.email);
     
-    // Check if token exists
     if (!userData.token) {
       console.log('❌ No token found in user data');
       return false;
     }
     
-    // Basic token validation (check if it looks like a JWT)
     const tokenParts = userData.token.split('.');
     if (tokenParts.length !== 3) {
       console.log('❌ Invalid token format');
       return false;
     }
     
-    // Decode token to check expiration (optional)
     try {
       const payload = JSON.parse(atob(tokenParts[1]));
       const currentTime = Math.floor(Date.now() / 1000);
@@ -52,7 +50,6 @@ const isAuthenticated = () => {
   }
 };
 
-// Get user data safely
 const getUserData = () => {
   try {
     const user = sessionStorage.getItem('user');
@@ -63,8 +60,8 @@ const getUserData = () => {
   }
 };
 
-// AuthGuard component for protecting routes
 const AuthGuard = ({ children, redirectTo = '/login' }) => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuth, setIsAuth] = useState(false);
   const navigate = useNavigate();
@@ -72,7 +69,6 @@ const AuthGuard = ({ children, redirectTo = '/login' }) => {
   useEffect(() => {
     console.log('🔒 AuthGuard: Checking authentication...');
     
-    // Small delay to ensure sessionStorage is fully loaded
     const checkAuth = async () => {
       await new Promise(resolve => setTimeout(resolve, 100));
       
@@ -91,21 +87,18 @@ const AuthGuard = ({ children, redirectTo = '/login' }) => {
     checkAuth();
   }, [navigate, redirectTo]);
 
-  // Show loading while checking authentication
   if (isLoading) {
     return (
       <div className="fullscreen-loader-container">
         <div className="loader"></div>
-        <p className="loading-text">Verifying authentication...</p>
+        <p className="loading-text">{t('auth.verifying')}</p>
       </div>
     );
   }
 
-  // Only render children if authenticated
   return isAuth ? children : null;
 };
 
-// Hook for components to use authentication data
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -121,7 +114,6 @@ const useAuth = () => {
 
     checkAuth();
 
-    // Listen for storage changes (in case of logout in another tab)
     const handleStorageChange = (e) => {
       if (e.key === 'user') {
         checkAuth();
@@ -137,7 +129,7 @@ const useAuth = () => {
     sessionStorage.removeItem('user');
     setUser(null);
     setIsAuthenticated(false);
-    window.location.href = '/login'; // Force reload to clear any cached state
+    window.location.href = '/login';
   };
 
   return {
@@ -147,14 +139,12 @@ const useAuth = () => {
   };
 };
 
-// Logout function that can be used anywhere
 const logoutUser = () => {
   console.log('🚪 Global logout function called');
   sessionStorage.removeItem('user');
   window.location.href = '/login';
 };
 
-// CSS styles for the loading screen
 const styles = `
 .fullscreen-loader-container {
   position: fixed;
@@ -206,7 +196,6 @@ const styles = `
 }
 `;
 
-// Inject styles if not already present
 if (typeof document !== 'undefined' && !document.getElementById('auth-guard-styles')) {
   const styleSheet = document.createElement('style');
   styleSheet.id = 'auth-guard-styles';

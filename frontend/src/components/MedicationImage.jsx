@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const MedicationImage = ({ src, alt, className = "" }) => {
+  const { t } = useTranslation();
   const [imageSrc, setImageSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
   const [isImageLoading, setIsImageLoading] = useState(true);
@@ -24,7 +26,6 @@ const MedicationImage = ({ src, alt, className = "" }) => {
     setIsImageLoading(!!src);
   }, [src]);
 
-  // If no src or empty
   if (!src || src === 'null' || src === 'undefined' || src === '') {
     console.log(`❌ No valid image for: ${alt}`);
     return (
@@ -32,13 +33,12 @@ const MedicationImage = ({ src, alt, className = "" }) => {
            style={{ backgroundColor: '#f8f9fa', border: '2px dashed #dee2e6', borderRadius: '8px' }}>
         <div className="text-center">
           <i className="bi bi-capsule fs-1 text-muted"></i>
-          <div className="small text-muted mt-2">No image</div>
+          <div className="small text-muted mt-2">{t('medicationImage.noImage')}</div>
         </div>
       </div>
     );
   }
 
-  // If error loading image
   if (hasError) {
     console.log(`❌ Image error for: ${alt}`);
     return (
@@ -46,7 +46,7 @@ const MedicationImage = ({ src, alt, className = "" }) => {
            style={{ backgroundColor: '#fff3cd', border: '2px dashed #ffc107', borderRadius: '8px' }}>
         <div className="text-center">
           <i className="bi bi-exclamation-triangle fs-1 text-warning"></i>
-          <div className="small text-muted mt-2">Error loading</div>
+          <div className="small text-muted mt-2">{t('medicationImage.errorLoading')}</div>
         </div>
       </div>
     );
@@ -57,7 +57,7 @@ const MedicationImage = ({ src, alt, className = "" }) => {
       {isImageLoading && (
         <div className="position-absolute top-50 start-50 translate-middle">
           <div className="spinner-border spinner-border-sm text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('medicationImage.loading')}</span>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { STOCK_LEVELS, STOCK_COLORS, STOCK_LABELS } from '../services/PharmacyStockService';
 
 const PharmacyStockIndicator = ({ 
@@ -8,13 +9,32 @@ const PharmacyStockIndicator = ({
   size = 'medium',
   className = '' 
 }) => {
+  const { t } = useTranslation();
+
   if (!stockInfo) {
     return null;
   }
 
   const { level, quantity, price, lastUpdated } = stockInfo;
   const color = STOCK_COLORS[level];
-  const label = STOCK_LABELS[level];
+  
+  // Traducir el label según el nivel
+  const getTranslatedLabel = (level) => {
+    switch (level) {
+      case STOCK_LEVELS.HIGH:
+        return t('stock.high');
+      case STOCK_LEVELS.MEDIUM:
+        return t('stock.medium');
+      case STOCK_LEVELS.LOW:
+        return t('stock.low');
+      case STOCK_LEVELS.OUT_OF_STOCK:
+        return t('stock.out');
+      default:
+        return t('common.unknown');
+    }
+  };
+
+  const label = getTranslatedLabel(level);
 
   // Size configurations
   const sizeConfig = {
@@ -37,7 +57,6 @@ const PharmacyStockIndicator = ({
 
   const config = sizeConfig[size] || sizeConfig.medium;
 
-  // Get appropriate icon based on stock level
   const getStockIcon = () => {
     switch (level) {
       case STOCK_LEVELS.HIGH:
@@ -58,9 +77,9 @@ const PharmacyStockIndicator = ({
     const now = new Date();
     const diffMinutes = Math.floor((now - date) / (1000 * 60));
     
-    if (diffMinutes < 1) return 'Just now';
-    if (diffMinutes < 60) return `${diffMinutes}m ago`;
-    if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)}h ago`;
+    if (diffMinutes < 1) return t('stock.justNow');
+    if (diffMinutes < 60) return t('stock.minutesAgo', { minutes: diffMinutes });
+    if (diffMinutes < 1440) return t('stock.hoursAgo', { hours: Math.floor(diffMinutes / 60) });
     return date.toLocaleDateString();
   };
 
@@ -80,7 +99,8 @@ const PharmacyStockIndicator = ({
         className="stock-dot rounded-circle"
         style={{
           backgroundColor: color,
-          ...config.indicator,
+          width: config.indicator.split(':')[1].trim(),
+          height: config.indicator.split(':')[1].trim(),
           flexShrink: 0
         }}
         title={label}
@@ -92,10 +112,7 @@ const PharmacyStockIndicator = ({
           <div className="d-flex align-items-center gap-2">
             <span 
               className="fw-medium"
-              style={{ 
-                color: color,
-                ...config.text
-              }}
+              style={{ color: color }}
             >
               <i className={`bi ${getStockIcon()} me-1`}></i>
               {label}
@@ -106,11 +123,10 @@ const PharmacyStockIndicator = ({
                 className="badge"
                 style={{
                   backgroundColor: color,
-                  color: 'white',
-                  ...config.badge
+                  color: 'white'
                 }}
               >
-                {quantity} units
+                {quantity} {t('stock.units')}
               </span>
             )}
           </div>
@@ -119,16 +135,16 @@ const PharmacyStockIndicator = ({
         {/* Price information */}
         {price && (
           <div className="price-info">
-            <span className="fw-bold text-primary" style={config.text}>
+            <span className="fw-bold text-primary">
               {formatPrice(price)}
             </span>
           </div>
         )}
 
-        {/* Last updated - only show for small components when requested */}
+        {/* Last updated */}
         {size === 'large' && lastUpdated && (
           <small className="text-muted">
-            Updated {formatLastUpdated(lastUpdated)}
+            {t('stock.updated')} {formatLastUpdated(lastUpdated)}
           </small>
         )}
       </div>
@@ -138,10 +154,19 @@ const PharmacyStockIndicator = ({
 
 // Compact version for map markers
 export const CompactStockIndicator = ({ stockInfo, showPrice = false }) => {
+  const { t } = useTranslation();
+
   if (!stockInfo) return null;
 
   const { level, quantity, price } = stockInfo;
   const color = STOCK_COLORS[level];
+
+  const getCompactLabel = (level) => {
+    if (level === STOCK_LEVELS.OUT_OF_STOCK) return t('stock.out');
+    if (level === STOCK_LEVELS.LOW) return `${quantity}`;
+    if (level === STOCK_LEVELS.MEDIUM) return t('stock.limited');
+    return t('stock.inStock');
+  };
 
   return (
     <div className="compact-stock-indicator d-flex align-items-center gap-1">
@@ -155,9 +180,7 @@ export const CompactStockIndicator = ({ stockInfo, showPrice = false }) => {
       ></div>
       
       <small style={{ color: color, fontSize: '0.7rem' }}>
-        {level === STOCK_LEVELS.OUT_OF_STOCK ? 'Out' : 
-         level === STOCK_LEVELS.LOW ? `${quantity}` :
-         level === STOCK_LEVELS.MEDIUM ? 'Limited' : 'In Stock'}
+        {getCompactLabel(level)}
       </small>
       
       {showPrice && price && (
@@ -171,34 +194,41 @@ export const CompactStockIndicator = ({ stockInfo, showPrice = false }) => {
 
 // Badge version for lists
 export const StockBadge = ({ stockInfo, variant = 'default' }) => {
+  const { t } = useTranslation();
+
   if (!stockInfo) return null;
 
   const { level, quantity } = stockInfo;
   const color = STOCK_COLORS[level];
-  const label = STOCK_LABELS[level];
 
   const badgeClass = variant === 'pill' ? 'badge rounded-pill' : 'badge';
+
+  const getBadgeText = (level, quantity) => {
+    if (level === STOCK_LEVELS.OUT_OF_STOCK) return t('stock.outOfStock');
+    if (level === STOCK_LEVELS.LOW) return `${t('stock.lowStock')} (${quantity})`;
+    if (level === STOCK_LEVELS.MEDIUM) return `${t('stock.limited')} (${quantity})`;
+    return `${t('stock.inStock')} (${quantity})`;
+  };
 
   return (
     <span 
       className={`${badgeClass} text-white`}
       style={{ backgroundColor: color }}
     >
-      {level === STOCK_LEVELS.OUT_OF_STOCK ? 'Out of Stock' :
-       level === STOCK_LEVELS.LOW ? `Low (${quantity})` :
-       level === STOCK_LEVELS.MEDIUM ? `Limited (${quantity})` :
-       `In Stock (${quantity})`}
+      {getBadgeText(level, quantity)}
     </span>
   );
 };
 
 // Stock level comparison component
 export const StockComparison = ({ medications }) => {
+  const { t } = useTranslation();
+
   if (!medications || medications.length === 0) return null;
 
   return (
     <div className="stock-comparison">
-      <h6 className="mb-3">Stock Availability Comparison</h6>
+      <h6 className="mb-3">{t('priceComparison.title')}</h6>
       {medications.map((med, index) => (
         <div key={index} className="d-flex justify-content-between align-items-center py-2 border-bottom">
           <div>

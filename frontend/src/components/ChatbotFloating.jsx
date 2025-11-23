@@ -2,10 +2,12 @@
 // Botón flotante para el chatbot médico
 
 import React, { useState } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import ChatbotMedico from './ChatbotMedico';
 import './ChatbotFloating.css';
 
 function ChatbotFloating() {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
 
     const toggleChatbot = () => {
@@ -18,8 +20,8 @@ function ChatbotFloating() {
             <button 
                 className="chatbot-floating-button"
                 onClick={toggleChatbot}
-                title={isOpen ? "Cerrar FarmaBot" : "Consultar con FarmaBot"}
-                aria-label="Toggle chatbot"
+                title={isOpen ? t('chatbotFloating.close') : t('chatbotFloating.open')}
+                aria-label={isOpen ? t('chatbotFloating.close') : t('chatbotFloating.open')}
             >
                 {isOpen ? '✕' : '🤖'}
             </button>

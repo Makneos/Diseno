@@ -2,14 +2,16 @@
 // Chatbot médico para Farmafia
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { consultarChatbotConAudio, reproducirRespuesta } from '../services/chatbotService';
-import './ChatbotMedico.css'; // Estilos opcionales
+import './ChatbotMedico.css';
 
 function ChatbotMedico() {
+    const { t } = useTranslation();
     const [mensajes, setMensajes] = useState([
         {
             rol: 'bot',
-            texto: '¡Hola! Soy FarmaBot, tu asistente virtual de farmacia. ¿En qué puedo ayudarte hoy? Puedes contarme tus síntomas y te recomendaré medicamentos de venta libre. 💊',
+            texto: t('chatbot.greeting'),
             timestamp: new Date()
         }
     ]);
@@ -46,7 +48,7 @@ function ChatbotMedico() {
         try {
             // Preparar historial para el API (excluir mensaje inicial de bienvenida)
             const historial = mensajes
-                .slice(1) // Excluir el primer mensaje de bienvenida
+                .slice(1)
                 .map(m => ({
                     role: m.rol === 'usuario' ? 'user' : 'assistant',
                     content: m.texto
@@ -86,7 +88,7 @@ function ChatbotMedico() {
             console.error('Error:', error);
             setMensajes(prev => [...prev, {
                 rol: 'bot',
-                texto: '❌ Lo siento, hubo un error al procesar tu consulta. Por favor, intenta nuevamente.',
+                texto: `${t('chatbot.errorProcessing')}`,
                 timestamp: new Date()
             }]);
         } finally {
@@ -97,7 +99,6 @@ function ChatbotMedico() {
     // Reproducir audio de un mensaje específico
     const reproducirAudioMensaje = (mensaje) => {
         if (mensaje.audioUrl) {
-            // Detener audio actual si está reproduciéndose
             if (audioRef.current) {
                 audioRef.current.pause();
             }
@@ -116,11 +117,11 @@ function ChatbotMedico() {
 
     // Sugerencias rápidas
     const sugerencias = [
-        "Me duele la cabeza",
-        "Tengo tos seca",
-        "Dolor de estómago",
-        "Tengo fiebre",
-        "Dolor muscular"
+        t('chatbot.quickSuggestions.headache'),
+        t('chatbot.quickSuggestions.cough'),
+        t('chatbot.quickSuggestions.stomach'),
+        t('chatbot.quickSuggestions.fever'),
+        t('chatbot.quickSuggestions.muscle')
     ];
 
     const usarSugerencia = (sugerencia) => {
@@ -132,7 +133,7 @@ function ChatbotMedico() {
         setMensajes([
             {
                 rol: 'bot',
-                texto: '¡Hola! Soy FarmaBot. ¿En qué puedo ayudarte hoy? 💊',
+                texto: t('chatbot.greeting'),
                 timestamp: new Date()
             }
         ]);
@@ -146,21 +147,21 @@ function ChatbotMedico() {
             {/* Header */}
             <div className="chatbot-header">
                 <div className="header-info">
-                    <h2>🤖 FarmaBot</h2>
-                    <span className="subtitle">Asistente Virtual de Farmacia</span>
+                    <h2>🤖 {t('chatbot.title')}</h2>
+                    <span className="subtitle">{t('chatbot.subtitle')}</span>
                 </div>
                 <div className="header-controls">
                     <button 
                         onClick={() => setAudioHabilitado(!audioHabilitado)}
                         className="control-btn"
-                        title={audioHabilitado ? "Desactivar audio" : "Activar audio"}
+                        title={audioHabilitado ? t('chatbot.audioOn') : t('chatbot.audioOff')}
                     >
                         {audioHabilitado ? '🔊' : '🔇'}
                     </button>
                     <button 
                         onClick={limpiarChat}
                         className="control-btn"
-                        title="Limpiar chat"
+                        title={t('chatbot.clear')}
                     >
                         🗑️
                     </button>
@@ -169,8 +170,7 @@ function ChatbotMedico() {
 
             {/* Disclaimer */}
             <div className="disclaimer">
-                ⚠️ <strong>Importante:</strong> Este chatbot proporciona información general. 
-                No reemplaza la consulta con un profesional de la salud.
+                 <strong>{t('dashboard.healthReminder')}:</strong> {t('chatbot.disclaimer')}
             </div>
 
             {/* Área de mensajes */}
@@ -193,7 +193,7 @@ function ChatbotMedico() {
                                     className="btn-audio"
                                     disabled={audioReproduciendose}
                                 >
-                                    {audioReproduciendose ? '🔊' : '▶️'} Escuchar
+                                    {audioReproduciendose ? '🔊' : '▶️'} {t('chatbot.listen')}
                                 </button>
                             )}
                             <span className="mensaje-hora">
@@ -225,7 +225,7 @@ function ChatbotMedico() {
             {/* Sugerencias rápidas */}
             {mensajes.length === 1 && (
                 <div className="sugerencias">
-                    <p>Sugerencias rápidas:</p>
+                    <p>{t('chatbot.suggestions')}</p>
                     <div className="sugerencias-botones">
                         {sugerencias.map((sug, index) => (
                             <button 
@@ -246,7 +246,7 @@ function ChatbotMedico() {
                     type="text"
                     value={inputMensaje}
                     onChange={(e) => setInputMensaje(e.target.value)}
-                    placeholder="Describe tus síntomas..."
+                    placeholder={t('chatbot.inputPlaceholder')}
                     disabled={cargando}
                     className="chat-input"
                 />
@@ -254,6 +254,7 @@ function ChatbotMedico() {
                     type="submit" 
                     disabled={cargando || !inputMensaje.trim()}
                     className="btn-enviar"
+                    title={t('chatbot.send')}
                 >
                     {cargando ? '⏳' : '📤'}
                 </button>
