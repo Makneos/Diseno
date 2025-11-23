@@ -29,19 +29,26 @@ jobs:
           cd frontend
           npm install
           npm run build
+          ls -la build/
         env:
           CI: false
 
       - name: Copy frontend build to backend
         run: |
           mkdir -p backend/frontend/build
-          cp -r frontend/build/* backend/frontend/build/
+          cp -r frontend/build/. backend/frontend/build/
+          echo "Frontend files copied:"
           ls -la backend/frontend/build/
 
       - name: Create deployment package
         run: |
           cd backend
+          echo "Creating zip with these files:"
+          find . -name "*.html" -o -name "*.js" | head -20
           zip -r ../release.zip . -x "node_modules/*"
+          cd ..
+          echo "Zip contents:"
+          unzip -l release.zip | grep -E "(html|index)" | head -10
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
