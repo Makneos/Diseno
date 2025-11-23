@@ -363,7 +363,7 @@ app.get('/test', (req, res) => {
 const fs = require('fs');
 
 // Detectar si estamos en Azure (con frontend buildeado junto al backend)
-const frontendPath = path.join(__dirname, '..', 'frontend', 'build');
+const frontendPath = path.join(__dirname, 'frontend', 'build');
 const frontendExists = fs.existsSync(frontendPath);
 
 if (frontendExists) {
