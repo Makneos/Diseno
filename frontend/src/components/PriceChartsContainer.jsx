@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 // CSS Styles
@@ -41,6 +42,7 @@ const PriceTrendChart = ({
   showComparison = false,
   timeRange = '30d' 
 }) => {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -49,11 +51,11 @@ const PriceTrendChart = ({
     const data = [];
     const today = new Date();
     
-    console.log(`📈 Using real data points for "${medicationName}"`);
-    console.log(`📊 Available real prices:`, allMedicationData);
+    console.log(`  Using real data points for "${medicationName}"`);
+    console.log(` Available real prices:`, allMedicationData);
     
     if (!allMedicationData || allMedicationData.length === 0) {
-      console.log('❌ No real data available');
+      console.log('  No real data available');
       return [];
     }
     
@@ -65,11 +67,11 @@ const PriceTrendChart = ({
         date.setDate(today.getDate() - (allMedicationData.length - 1 - index));
         
         data.push({
-          date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          date: date.toLocaleDateString('es-CL', { month: 'short', day: 'numeric' }),
           fullDate: date.toISOString().split('T')[0],
           precio: medData.precio,
           pharmacy: medData.farmacia.nombre,
-          isRealPrice: true, // All points are real
+          isRealPrice: true,
           availability: medData.disponible
         });
       }
@@ -78,7 +80,7 @@ const PriceTrendChart = ({
     // Sort by date
     data.sort((a, b) => new Date(a.fullDate) - new Date(b.fullDate));
     
-    console.log(`📊 Generated ${data.length} real data points:`, data);
+    console.log(` Generated ${data.length} real data points:`, data);
     return data;
   };
 
@@ -97,15 +99,12 @@ const PriceTrendChart = ({
       return;
     }
 
-    // Simulate data loading
     setTimeout(() => {
       let data;
       
       if (showComparison) {
-        // For bar chart: show comparison between pharmacies
         data = generatePharmacyComparison(selectedMedicationData);
       } else {
-        // For line chart: use only real existing data
         const selectedMed = selectedMedicationData[0];
         if (selectedMed && selectedMed.precio) {
           data = generateRealDataPoints(
@@ -122,16 +121,15 @@ const PriceTrendChart = ({
     }, 1000);
   }, [selectedMedicationData, timeRange, showComparison]);
 
-  // Formatters for tooltips
   const formatTooltip = (value, name) => {
-    return [`$${value.toLocaleString('en-US')}`, 'Price'];
+    return [`$${value.toLocaleString('es-CL')}`, t('priceCharts.price')];
   };
 
   const formatLabel = (label) => {
     if (showComparison) {
-      return `Pharmacy: ${label}`;
+      return `${t('priceCharts.pharmacy')}: ${label}`;
     }
-    return `Date: ${label}`;
+    return `${t('priceCharts.date')}: ${label}`;
   };
 
   if (isLoading) {
@@ -139,9 +137,9 @@ const PriceTrendChart = ({
       <div className="d-flex justify-content-center align-items-center" style={{ height: '300px' }}>
         <div className="text-center">
           <div className="spinner-border text-primary mb-3" role="status">
-            <span className="visually-hidden">Loading chart...</span>
+            <span className="visually-hidden">{t('priceCharts.loadingChart')}</span>
           </div>
-          <div className="text-muted">Loading price data...</div>
+          <div className="text-muted">{t('priceCharts.loadingPriceData')}</div>
         </div>
       </div>
     );
@@ -151,19 +149,18 @@ const PriceTrendChart = ({
     return (
       <div className="alert alert-info text-center">
         <i className="bi bi-info-circle me-2"></i>
-        No price data available to display the chart.
+        {t('priceCharts.noPriceData')}
       </div>
     );
   }
 
   if (showComparison) {
-    // Bar chart: Comparison between pharmacies
     return (
       <div className="card shadow-sm">
         <div className="card-header bg-light">
           <h5 className="mb-0">
             <i className="bi bi-bar-chart me-2"></i>
-            Price Comparison by Pharmacy
+            {t('priceCharts.comparisonByPharmacy')}
           </h5>
         </div>
         <div className="card-body">
@@ -179,11 +176,11 @@ const PriceTrendChart = ({
               />
               <YAxis 
                 tick={{ fontSize: 12 }}
-                tickFormatter={(value) => `$${value.toLocaleString('en-US')}`}
+                tickFormatter={(value) => `$${value.toLocaleString('es-CL')}`}
               />
               <Tooltip 
-                formatter={(value) => [`$${value.toLocaleString('en-US')}`, 'Price']}
-                labelFormatter={(label) => `Pharmacy: ${label}`}
+                formatter={(value) => [`$${value.toLocaleString('es-CL')}`, t('priceCharts.price')]}
+                labelFormatter={(label) => `${t('priceCharts.pharmacy')}: ${label}`}
                 contentStyle={{
                   backgroundColor: '#fff',
                   border: '1px solid #ccc',
@@ -201,21 +198,21 @@ const PriceTrendChart = ({
           <div className="mt-3">
             <div className="row text-center">
               <div className="col-md-4">
-                <div className="small text-muted">Minimum Price</div>
+                <div className="small text-muted">{t('priceCharts.minimumPrice')}</div>
                 <div className="h6 text-success">
-                  ${Math.min(...chartData.map(d => d.precio)).toLocaleString('en-US')}
+                  ${Math.min(...chartData.map(d => d.precio)).toLocaleString('es-CL')}
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="small text-muted">Maximum Price</div>
+                <div className="small text-muted">{t('priceCharts.maximumPrice')}</div>
                 <div className="h6 text-danger">
-                  ${Math.max(...chartData.map(d => d.precio)).toLocaleString('en-US')}
+                  ${Math.max(...chartData.map(d => d.precio)).toLocaleString('es-CL')}
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="small text-muted">Difference</div>
+                <div className="small text-muted">{t('priceCharts.difference')}</div>
                 <div className="h6 text-warning">
-                  ${(Math.max(...chartData.map(d => d.precio)) - Math.min(...chartData.map(d => d.precio))).toLocaleString('en-US')}
+                  ${(Math.max(...chartData.map(d => d.precio)) - Math.min(...chartData.map(d => d.precio))).toLocaleString('es-CL')}
                 </div>
               </div>
             </div>
@@ -225,18 +222,17 @@ const PriceTrendChart = ({
     );
   }
 
-  // Line chart: Only trend of selected medication
   return (
     <div className="card shadow-sm">
       <div className="card-header bg-light d-flex justify-content-between align-items-center">
         <h5 className="mb-0">
           <i className="bi bi-graph-up me-2"></i>
-          Price Trend - {medicationName} 
-          <small className="text-muted">({chartData.length} real price{chartData.length !== 1 ? 's' : ''})</small>
+          {t('priceCharts.priceTrend')} - {medicationName} 
+          <small className="text-muted">({chartData.length} {t('priceCharts.realPrices', { count: chartData.length })})</small>
         </h5>
         <div className="btn-group btn-group-sm" role="group">
           <span className="btn btn-outline-secondary disabled">
-            Real Data Only
+            {t('priceCharts.realDataOnly')}
           </span>
         </div>
       </div>
@@ -264,7 +260,6 @@ const PriceTrendChart = ({
             />
             <Legend />
             
-            {/* SINGLE LINE: Only the selected medication */}
             <Line
               type="monotone"
               dataKey="precio"
@@ -272,7 +267,6 @@ const PriceTrendChart = ({
               stroke="#007bff"
               strokeWidth={3}
               dot={(props) => {
-                // Show all points as real
                 return (
                   <circle
                     cx={props.cx}
@@ -288,8 +282,6 @@ const PriceTrendChart = ({
             />
           </LineChart>
         </ResponsiveContainer>
-        
-        
       </div>
     </div>
   );
@@ -297,29 +289,28 @@ const PriceTrendChart = ({
 
 // Main container component
 const PriceChartsContainer = ({ medicationData, medicationName, selectedMedication }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('trend');
 
-  // DEBUG: Show what data is arriving
-  console.log('📊 PriceChartsContainer received:');
+  console.log(' PriceChartsContainer received:');
   console.log('- medicationData:', medicationData);
   console.log('- medicationName:', medicationName);
   console.log('- selectedMedication:', selectedMedication);
 
   if (!medicationData || medicationData.length === 0) {
-    console.log('❌ No medicationData available');
+    console.log('  No medicationData available');
     return (
       <div className="alert alert-warning">
         <i className="bi bi-exclamation-triangle me-2"></i>
-        No price data available to display the chart.
+        {t('priceCharts.noPriceDataAvailable')}
         <br />
         <small className="text-muted">
-          Debug: medicationData = {medicationData ? `${medicationData.length} elements` : 'null/undefined'}
+          Debug: medicationData = {medicationData ? `${medicationData.length} ${t('priceCharts.elements')}` : 'null/undefined'}
         </small>
       </div>
     );
   }
 
-  // Validate that data has correct structure
   const validMedicationData = medicationData.filter(med => 
     med && 
     med.farmacia && 
@@ -329,47 +320,43 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
     !isNaN(med.precio)
   );
 
-  console.log('✅ Valid data after filter:', validMedicationData);
+  console.log('  Valid data after filter:', validMedicationData);
 
   if (validMedicationData.length === 0) {
     return (
       <div className="alert alert-warning">
         <i className="bi bi-exclamation-triangle me-2"></i>
-        Price data does not have the correct format to display charts.
+        {t('priceCharts.invalidDataFormat')}
         <br />
         <small className="text-muted">
-          Found {medicationData.length} elements, but none have valid structure.
+          {t('priceCharts.foundElements', { count: medicationData.length })}
         </small>
       </div>
     );
   }
 
-  // 🎯 FILTER ONLY THE SPECIFIC SELECTED MEDICATION
   const specificMedicationData = validMedicationData.filter(med => {
-    // Filter by exact name of selected medication
     const medicationMatch = med.medicamento_nombre && 
                            selectedMedication && 
                            selectedMedication.nombre &&
                            med.medicamento_nombre.toLowerCase().includes(selectedMedication.nombre.toLowerCase());
     
-    console.log(`🔍 Comparing: "${med.medicamento_nombre}" vs "${selectedMedication?.nombre}" = ${medicationMatch}`);
+    console.log(` Comparing: "${med.medicamento_nombre}" vs "${selectedMedication?.nombre}" = ${medicationMatch}`);
     
     return medicationMatch;
   });
 
-  console.log('🎯 Specific medication data:', specificMedicationData);
-  console.log(`📊 Found ${specificMedicationData.length} prices for "${selectedMedication?.nombre}"`);
+  console.log('  Specific medication data:', specificMedicationData);
+  console.log(` Found ${specificMedicationData.length} prices for "${selectedMedication?.nombre}"`);
 
-  // For trend chart: ONLY the specific medication
   const singleMedicationData = specificMedicationData.length > 0 ? specificMedicationData : [];
 
-  // If no specific medication data, use first available
   const fallbackData = specificMedicationData.length === 0 && validMedicationData.length > 0 
     ? [validMedicationData[0]] 
     : [];
 
-  console.log('📈 Data for trend chart:', singleMedicationData);
-  console.log('🔄 Fallback data:', fallbackData);
+  console.log('  Data for trend chart:', singleMedicationData);
+  console.log('  Fallback data:', fallbackData);
 
   return (
     <div className="price-charts-container">
@@ -386,7 +373,7 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                     type="button"
                   >
                     <i className="bi bi-graph-up me-2"></i>
-                    Price Trend
+                    {t('priceCharts.priceTrendTab')}
                   </button>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -396,7 +383,7 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                     type="button"
                   >
                     <i className="bi bi-bar-chart me-2"></i>
-                    Pharmacy Comparison
+                    {t('priceCharts.pharmacyComparisonTab')}
                   </button>
                 </li>
               </ul>
@@ -409,12 +396,12 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                       <div>
                         <div className="alert alert-info mb-3">
                           <i className="bi bi-info-circle me-2"></i>
-                          Showing price trend for: <strong>"{selectedMedication?.nombre}"</strong>
+                          {t('priceCharts.showingTrendFor')}: <strong>"{selectedMedication?.nombre}"</strong>
                           <br />
                           <small>
-                            Found {singleMedicationData.length} real price(s) for this specific medication.
-                            {singleMedicationData.length === 1 && " Displaying single data point."}
-                            {singleMedicationData.length > 1 && " Connecting real price points from different pharmacies."}
+                            {t('priceCharts.foundRealPrices', { count: singleMedicationData.length })}
+                            {singleMedicationData.length === 1 && ` ${t('priceCharts.displayingSinglePoint')}`}
+                            {singleMedicationData.length > 1 && ` ${t('priceCharts.connectingRealPrices')}`}
                           </small>
                         </div>
                         <PriceTrendChart 
@@ -429,9 +416,9 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                       <div>
                         <div className="alert alert-warning mb-3">
                           <i className="bi bi-exclamation-triangle me-2"></i>
-                          No specific prices found for <strong>"{selectedMedication?.nombre}"</strong>.
+                          {t('priceCharts.noPricesForMedication', { name: selectedMedication?.nombre })}
                           <br />
-                          <small>Showing data from first medication with the same active ingredient as reference.</small>
+                          <small>{t('priceCharts.showingFallbackData')}</small>
                         </div>
                         <PriceTrendChart 
                           selectedMedicationData={fallbackData}
@@ -444,22 +431,9 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                     ) : (
                       <div className="alert alert-info">
                         <i className="bi bi-info-circle me-2"></i>
-                        Not enough data to show price trend.
+                        {t('priceCharts.notEnoughData')}
                         <br />
-                        <small>No real price data available for this medication.</small>
-                        <PriceTrendChart 
-                          selectedMedicationData={[{
-                            farmacia: { nombre: 'Demo' },
-                            precio: 1500,
-                            disponible: true,
-                            url_producto: '#',
-                            medicamento_nombre: selectedMedication?.nombre || 'Test Medication'
-                          }]}
-                          medicationName={selectedMedication?.nombre || 'Test Medication'}
-                          chartType="line"
-                          showComparison={false}
-                          timeRange="30d"
-                        />
+                        <small>{t('priceCharts.noRealPriceData')}</small>
                       </div>
                     )}
                   </div>
@@ -476,7 +450,7 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
                     ) : (
                       <div className="alert alert-info">
                         <i className="bi bi-info-circle me-2"></i>
-                        Not enough data to show pharmacy comparison.
+                        {t('priceCharts.notEnoughDataComparison')}
                       </div>
                     )}
                   </div>
@@ -494,39 +468,39 @@ const PriceChartsContainer = ({ medicationData, medicationName, selectedMedicati
             <div className="card-body">
               <h6 className="card-title">
                 <i className="bi bi-calculator me-2"></i>
-                Price Summary for "{medicationName}"
+                {t('priceCharts.priceSummaryFor', { name: medicationName })}
               </h6>
               <div className="row text-center">
                 <div className="col-md-3">
                   <div className="statistic">
                     <div className="h5 text-success">
-                      ${Math.min(...medicationData.map(d => d.precio)).toLocaleString('en-US')}
+                      ${Math.min(...medicationData.map(d => d.precio)).toLocaleString('es-CL')}
                     </div>
-                    <div className="small text-muted">Lowest Price</div>
+                    <div className="small text-muted">{t('priceCharts.lowestPrice')}</div>
                   </div>
                 </div>
                 <div className="col-md-3">
                   <div className="statistic">
                     <div className="h5 text-danger">
-                      ${Math.max(...medicationData.map(d => d.precio)).toLocaleString('en-US')}
+                      ${Math.max(...medicationData.map(d => d.precio)).toLocaleString('es-CL')}
                     </div>
-                    <div className="small text-muted">Highest Price</div>
+                    <div className="small text-muted">{t('priceCharts.highestPrice')}</div>
                   </div>
                 </div>
                 <div className="col-md-3">
                   <div className="statistic">
                     <div className="h5 text-info">
-                      ${Math.round(medicationData.reduce((sum, d) => sum + d.precio, 0) / medicationData.length).toLocaleString('en-US')}
+                      ${Math.round(medicationData.reduce((sum, d) => sum + d.precio, 0) / medicationData.length).toLocaleString('es-CL')}
                     </div>
-                    <div className="small text-muted">Average Price</div>
+                    <div className="small text-muted">{t('priceCharts.averagePrice')}</div>
                   </div>
                 </div>
                 <div className="col-md-3">
                   <div className="statistic">
                     <div className="h5 text-warning">
-                      ${(Math.max(...medicationData.map(d => d.precio)) - Math.min(...medicationData.map(d => d.precio))).toLocaleString('en-US')}
+                      ${(Math.max(...medicationData.map(d => d.precio)) - Math.min(...medicationData.map(d => d.precio))).toLocaleString('es-CL')}
                     </div>
-                    <div className="small text-muted">Max Savings</div>
+                    <div className="small text-muted">{t('priceCharts.maxSavings')}</div>
                   </div>
                 </div>
               </div>
