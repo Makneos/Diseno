@@ -30,6 +30,8 @@ import './App.css';
 // Componente 404 con multilenguaje
 import NotFoundPage from './pages/NotFoundPage';
 
+import GoogleSuccessPage from './pages/GoogleSuccessPage';
+
 function App() {
   // Valores predeterminados para GoogleMapsComponent cuando se usa como página
   const defaultProps = {
@@ -87,6 +89,10 @@ function App() {
               <AuthGuard>
                 <MyMedicationsPage />
               </AuthGuard>
+            } />
+
+            <Route path="/google-success" element={
+              <GoogleSuccessPage />
             } />
             
             {/*RUTA DE FALLBACK */}
