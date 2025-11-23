@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { 
   calculateProgress, 
   getCurrentDay, 
@@ -8,6 +9,7 @@ import {
 } from '../utils/medicationUtils';
 
 const MedicationCard = ({ medication, onEdit, onDelete }) => {
+  const { t } = useTranslation();
   const progress = calculateProgress(medication);
   const currentDay = getCurrentDay(medication);
 
@@ -36,7 +38,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
 
           <div className="dosage-info">
             <div className="d-flex justify-content-between align-items-center mb-2">
-              <span className="fw-bold">Schedule</span>
+              <span className="fw-bold">{t('medications.schedule')}</span>
               <small className="text-muted">{medication.frequency}</small>
             </div>
             {medication.times && medication.times.length > 0 && (
@@ -53,7 +55,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
           {medication.duration > 0 && (
             <div className="mt-3">
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <span className="small text-muted">Treatment Progress</span>
+                <span className="small text-muted">{t('medications.treatmentProgress')}</span>
                 <span className="small fw-bold">{Math.round(progress)}%</span>
               </div>
               <div className="progress" style={{ height: '8px' }}>
@@ -63,7 +65,7 @@ const MedicationCard = ({ medication, onEdit, onDelete }) => {
                 ></div>
               </div>
               <small className="text-muted">
-                Day {currentDay} of {medication.duration}
+                {t('medications.day')} {currentDay} {t('medications.of')} {medication.duration}
               </small>
             </div>
           )}

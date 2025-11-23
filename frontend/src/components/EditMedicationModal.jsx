@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import Counter from '../Counter';
 import { validateMedicationForm } from '../utils/medicationUtils';
 
@@ -10,6 +11,8 @@ const EditMedicationModal = ({
   setFormData,
   selectedMedication 
 }) => {
+  const { t } = useTranslation();
+  
   const addTimeSlot = () => {
     setFormData({
       ...formData,
@@ -59,7 +62,7 @@ const EditMedicationModal = ({
           <div className="modal-header">
             <h5 className="modal-title">
               <i className="bi bi-pencil me-2"></i>
-              Edit Medication
+              {t('medicationModal.editTitle')}
             </h5>
             <button 
               type="button" 
@@ -71,7 +74,7 @@ const EditMedicationModal = ({
             <div>
               {/* Status Controls */}
               <div className="mb-4">
-                <label className="form-label">Medication Status</label>
+                <label className="form-label">{t('medications.status.title')}</label>
                 <div className="btn-group w-100" role="group">
                   <input 
                     type="radio" 
@@ -84,7 +87,7 @@ const EditMedicationModal = ({
                   />
                   <label className="btn btn-outline-success" htmlFor="status-active">
                     <i className="bi bi-play-circle me-1"></i>
-                    Active
+                    {t('medications.status.active')}
                   </label>
 
                   <input 
@@ -98,7 +101,7 @@ const EditMedicationModal = ({
                   />
                   <label className="btn btn-outline-warning" htmlFor="status-standby">
                     <i className="bi bi-pause-circle me-1"></i>
-                    Standby
+                    {t('medications.status.standby')}
                   </label>
 
                   <input 
@@ -112,7 +115,7 @@ const EditMedicationModal = ({
                   />
                   <label className="btn btn-outline-info" htmlFor="status-completed">
                     <i className="bi bi-check-circle me-1"></i>
-                    Completed
+                    {t('medications.status.completed')}
                   </label>
                 </div>
               </div>
@@ -120,58 +123,58 @@ const EditMedicationModal = ({
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">
-                    Medication Name <span className="text-danger">*</span>
+                    {t('medicationModal.medicationName')} <span className="text-danger">*</span>
                   </label>
                   <input
                     type="text"
                     className="form-control"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="e.g., Paracetamol 500mg"
+                    placeholder={t('medicationModal.dosagePlaceholder')}
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Dosage</label>
+                  <label className="form-label">{t('medicationModal.dosage')}</label>
                   <input
                     type="text"
                     className="form-control"
                     value={formData.dosage}
                     onChange={(e) => setFormData({...formData, dosage: e.target.value})}
-                    placeholder="e.g., 500mg, 1 tablet"
+                    placeholder={t('medicationModal.dosagePlaceholder')}
                   />
                 </div>
               </div>
 
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Category</label>
+                  <label className="form-label">{t('medicationModal.category')}</label>
                   <select
                     className="form-select"
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
                   >
-                    <option value="prescription">Prescription</option>
-                    <option value="otc">Over-the-counter</option>
-                    <option value="supplement">Supplement</option>
+                    <option value="prescription">{t('medicationModal.prescription')}</option>
+                    <option value="otc">{t('medicationModal.otc')}</option>
+                    <option value="supplement">{t('medicationModal.supplement')}</option>
                   </select>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Frequency</label>
+                  <label className="form-label">{t('medicationModal.frequency')}</label>
                   <select
                     className="form-select"
                     value={formData.frequency}
                     onChange={(e) => setFormData({...formData, frequency: e.target.value})}
                   >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="as-needed">As needed</option>
+                    <option value="daily">{t('medicationModal.daily')}</option>
+                    <option value="weekly">{t('medicationModal.weekly')}</option>
+                    <option value="as-needed">{t('medicationModal.asNeeded')}</option>
                   </select>
                 </div>
               </div>
 
               {formData.frequency !== 'as-needed' && (
                 <div className="mb-3">
-                  <label className="form-label">Daily Schedule</label>
+                  <label className="form-label">{t('medicationModal.dailySchedule')}</label>
                   {formData.times.map((time, index) => (
                     <div key={index} className="schedule-item d-flex align-items-center mb-2">
                       <input
@@ -196,14 +199,14 @@ const EditMedicationModal = ({
                     className="btn btn-outline-primary btn-sm mt-2"
                     onClick={addTimeSlot}
                   >
-                    <i className="bi bi-plus"></i> Add Time Slot
+                    <i className="bi bi-plus"></i> {t('medicationModal.addTimeSlot')}
                   </button>
                 </div>
               )}
 
               <div className="row">
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Start Date</label>
+                  <label className="form-label">{t('medicationModal.startDate')}</label>
                   <input
                     type="date"
                     className="form-control"
@@ -212,25 +215,25 @@ const EditMedicationModal = ({
                   />
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">Treatment Duration (days)</label>
+                  <label className="form-label">{t('medicationModal.duration')}</label>
                   <Counter
                     initialCount={formData.duration}
                     maxCount={365}
                     label=""
                     onCountChange={(count) => setFormData({...formData, duration: count})}
                   />
-                  <small className="text-muted">Set to 0 for ongoing treatments</small>
+                  <small className="text-muted">{t('medicationModal.durationHint')}</small>
                 </div>
               </div>
 
               <div className="mb-3">
-                <label className="form-label">Notes</label>
+                <label className="form-label">{t('medicationModal.notes')}</label>
                 <textarea
                   className="form-control"
                   rows="3"
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                  placeholder="Special instructions, side effects to watch for, etc."
+                  placeholder={t('medicationModal.notesPlaceholder')}
                 ></textarea>
               </div>
 
@@ -243,7 +246,7 @@ const EditMedicationModal = ({
                 />
                 <label className="form-check-label">
                   <i className="bi bi-bell me-1"></i>
-                  Enable reminders for this medication
+                  {t('medicationModal.enableReminders')}
                 </label>
               </div>
 
@@ -252,17 +255,17 @@ const EditMedicationModal = ({
                 <div className="mt-4 p-3 bg-light rounded">
                   <h6 className="mb-3">
                     <i className="bi bi-graph-up me-2"></i>
-                    Treatment Progress
+                    {t('medications.treatmentProgress')}
                   </h6>
                   <div className="row">
                     <div className="col-md-6">
-                      <small className="text-muted">Days Completed:</small>
+                      <small className="text-muted">{t('medications.daysCompleted')}:</small>
                       <div className="fw-bold">
                         {Math.floor((new Date() - new Date(formData.startDate)) / (1000 * 60 * 60 * 24)) + 1} / {formData.duration}
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <small className="text-muted">Progress:</small>
+                      <small className="text-muted">{t('medications.progress')}:</small>
                       <div className="fw-bold">
                         {Math.min(Math.round(((new Date() - new Date(formData.startDate)) / (1000 * 60 * 60 * 24) + 1) / formData.duration * 100), 100)}%
                       </div>
@@ -279,7 +282,7 @@ const EditMedicationModal = ({
               onClick={onClose}
             >
               <i className="bi bi-x-circle me-1"></i>
-              Cancel
+              {t('common.cancel')}
             </button>
             <button 
               type="button" 
@@ -288,7 +291,7 @@ const EditMedicationModal = ({
               disabled={!formData.name.trim()}
             >
               <i className="bi bi-check-circle me-1"></i>
-              Save Changes
+              {t('medicationModal.saveChanges')}
             </button>
           </div>
         </div>

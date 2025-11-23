@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from '../hooks/useTranslation';
 import { fetchMedicamentos } from '../utils/medicationAPI';
 
 const MedicationReminders = ({ user }) => {
+  const { t } = useTranslation();
   const [reminders, setReminders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -63,7 +65,7 @@ const MedicationReminders = ({ user }) => {
       setReminders(todayReminders);
     } catch (error) {
       console.error('Error loading reminders:', error);
-      setError('Failed to load medication reminders');
+      setError(t('reminders.errorLoading'));
     } finally {
       setIsLoading(false);
     }
@@ -97,15 +99,15 @@ const MedicationReminders = ({ user }) => {
   const getStatusText = (status) => {
     switch (status) {
       case 'taken':
-        return 'Taken';
+        return t('reminders.status.taken');
       case 'due':
-        return 'Due now';
+        return t('reminders.status.dueNow');
       case 'missed':
-        return 'Missed';
+        return t('reminders.status.missed');
       case 'soon':
-        return 'Due soon';
+        return t('reminders.status.dueSoon');
       default:
-        return 'Upcoming';
+        return t('reminders.status.upcoming');
     }
   };
 
@@ -114,9 +116,9 @@ const MedicationReminders = ({ user }) => {
       <div className="card">
         <div className="card-body text-center">
           <div className="spinner-border spinner-border-sm me-2" role="status">
-            <span className="visually-hidden">Loading...</span>
+            <span className="visually-hidden">{t('common.loading')}</span>
           </div>
-          Loading reminders...
+          {t('reminders.loadingReminders')}
         </div>
       </div>
     );
@@ -141,12 +143,12 @@ const MedicationReminders = ({ user }) => {
         <div className="card-header">
           <h5 className="mb-0">
             <i className="bi bi-bell me-2"></i>
-            Today's Medication Reminders
+            {t('dashboard.todaysReminders')}
           </h5>
         </div>
         <div className="card-body text-center">
           <i className="bi bi-calendar-check text-muted" style={{ fontSize: '2rem' }}></i>
-          <p className="text-muted mt-2 mb-0">No medication reminders for today</p>
+          <p className="text-muted mt-2 mb-0">{t('reminders.noRemindersToday')}</p>
         </div>
       </div>
     );
@@ -157,10 +159,10 @@ const MedicationReminders = ({ user }) => {
       <div className="card-header d-flex justify-content-between align-items-center">
         <h5 className="mb-0">
           <i className="bi bi-bell me-2"></i>
-          Today's Medication Reminders
+          {t('dashboard.todaysReminders')}
         </h5>
         <span className="badge bg-primary">
-          {reminders.filter(r => !r.taken).length} pending
+          {reminders.filter(r => !r.taken).length} {t('reminders.pending')}
         </span>
       </div>
       <div className="card-body p-0">
@@ -205,7 +207,7 @@ const MedicationReminders = ({ user }) => {
                 <button
                   className="btn btn-sm btn-outline-success"
                   onClick={() => markAsTaken(reminder.id)}
-                  title="Mark as taken"
+                  title={t('reminders.markAsTaken')}
                 >
                   <i className="bi bi-check2"></i>
                 </button>
@@ -218,7 +220,7 @@ const MedicationReminders = ({ user }) => {
           <div className="card-footer bg-light">
             <small className="text-muted">
               <i className="bi bi-info-circle me-1"></i>
-              Tap the checkmark to mark medications as taken
+              {t('reminders.tapToMarkTaken')}
             </small>
           </div>
         )}
