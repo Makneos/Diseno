@@ -1,4 +1,23 @@
 {
+  "common": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "view": "View",
+    "loading": "Loading...",
+    "search": "Search",
+    "error": "Error",
+    "success": "Success",
+    "unknown": "Unknown",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "clear": "Clear"
+  },
   "nav": {
     "brand": "Farmafia",
     "home": "Home",
@@ -22,7 +41,9 @@
     "popularMedications": "Popular Medications:",
     "nearbyPharmacies": "Nearby Pharmacies",
     "whyChoose": "Why Choose Farmafia?",
-    "yourCompanion": "Your complete pharmacy companion"
+    "yourCompanion": "Your complete pharmacy companion",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
   },
   "auth": {
     "email": "Email",
@@ -43,7 +64,16 @@
     "registrationError": "Error registering user",
     "connectionError": "Cannot connect to server. Please check your internet connection.",
     "passwordsNotMatch": "Passwords do not match",
-    "passwordMinLength": "Password must be at least 6 characters long"
+    "passwordMinLength": "Password must be at least 6 characters long",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "verifying": "Verifying authentication...",
+    "errors": {
+      "invalidEmail": "Invalid email address",
+      "requiredField": "This field is required",
+      "passwordTooShort": "Password must be at least 6 characters long"
+    }
   },
   "profile": {
     "title": "User Profile",
@@ -74,7 +104,28 @@
     "tipRemindersDesc": "Use our reminder system to never miss a dose of your important medications.",
     "tipTrackTitle": "Track Progress",
     "tipTrackDesc": "Monitor your treatment progress and note any side effects or improvements.",
-    "disclaimer": "Always consult with healthcare professionals before making changes to your medication regimen."
+    "disclaimer": "Always consult with healthcare professionals before making changes to your medication regimen.",
+    "status": {
+      "title": "Status",
+      "active": "Active",
+      "standby": "On Hold",
+      "completed": "Completed",
+      "all": "All"
+    },
+    "frequency": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "asNeeded": "As Needed"
+    },
+    "schedule": "Schedule",
+    "treatmentProgress": "Treatment Progress",
+    "day": "Day",
+    "of": "of",
+    "remindersEnabled": "Reminders enabled",
+    "viewDetails": "View details",
+    "daysCompleted": "Days completed",
+    "progress": "Progress",
+    "startTracking": "Start tracking your medication"
   },
   "priceComparison": {
     "title": "Medication Price Comparison",
@@ -108,7 +159,14 @@
     "tipDetailsDesc": "Click \"View Details\" to see prices across all pharmacies",
     "tipPriceTitle": "Find best prices",
     "tipPriceDesc": "Compare medications with the same active ingredient",
-    "connectionError": "Connection error. Could not connect to the server."
+    "connectionError": "Connection error. Could not connect to the server.",
+    "pharmacies": "pharmacies",
+    "products": "products",
+    "product": "product",
+    "selected": "Selected",
+    "bestPrice": "Best Price",
+    "viewOnSite": "View on Site",
+    "linkNotAvailable": "Link not available"
   },
   "medicationDetail": {
     "couldNotLoadDetails": "Could not load medication details",
@@ -121,17 +179,6 @@
     "title": "Page Not Found",
     "message": "Sorry, the page you're looking for doesn't exist or has been moved.",
     "backHome": "Back to Home"
-  },
-  "common": {
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "cancel": "Cancel",
-    "save": "Save",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
-    "unknown": "Unknown"
   },
   "tools": {
     "pharmacyTools": "Pharmacy Tools",
@@ -228,7 +275,18 @@
     "sleepTitle": "Sleep Well",
     "sleepDesc": "Good sleep helps your body heal and process medications",
     "activeTitle": "Stay Active",
-    "activeDesc": "Regular exercise supports overall health and medication effectiveness"
+    "activeDesc": "Regular exercise supports overall health and medication effectiveness",
+    "todaysReminders": "Today's Reminders",
+    "stats": {
+      "activeTreatments": "Active Treatments",
+      "todaysDoses": "Today's Doses",
+      "upcomingReminders": "Upcoming Reminders",
+      "completed": "Completed",
+      "medicationsInProgress": "Medications in progress",
+      "scheduledForToday": "Scheduled for today",
+      "inNext2Hours": "In the next 2 hours",
+      "treatmentsFinished": "Treatments finished"
+    }
   },
   "medicationModal": {
     "addTitle": "Add New Medication",
@@ -254,6 +312,15 @@
     "addButton": "Add Medication",
     "updateButton": "Update Medication",
     "cancel": "Cancel",
+    "otc": "Over the Counter",
+    "supplement": "Supplement",
+    "generic": "Generic",
+    "brand": "Brand",
+    "saveChanges": "Save Changes",
+    "adding": "Adding...",
+    "searching": "Searching...",
+    "selectHint": "Select a medication from the list",
+    "noResults": "No results found for \"{name}\"",
     "categories": {
       "antibiotic": "Antibiotic",
       "painkiller": "Painkiller",
@@ -270,5 +337,158 @@
       "scheduleRequired": "Add at least one time slot",
       "startDateRequired": "Start date is required"
     }
+  },
+  "reminders": {
+    "errorLoading": "Error loading reminders",
+    "loadingReminders": "Loading reminders...",
+    "noRemindersToday": "No medication reminders for today",
+    "pending": "pending",
+    "markAsTaken": "Mark as taken",
+    "tapToMarkTaken": "Tap the checkmark to mark medications as taken",
+    "status": {
+      "taken": "Taken",
+      "dueNow": "Due Now",
+      "missed": "Missed",
+      "dueSoon": "Due Soon",
+      "upcoming": "Upcoming"
+    }
+  },
+  "medicationStats": {
+    "activeTreatments": "Active Treatments",
+    "withReminders": "With Reminders",
+    "dailyDoses": "Daily Doses",
+    "completed": "Completed"
+  },
+  "upcomingDoses": {
+    "title": "Upcoming Doses",
+    "loading": "Loading...",
+    "noDoses": "No upcoming doses in the next 6 hours",
+    "inMinutes": "in {minutes}m",
+    "inHours": "in {hours}h",
+    "inHoursMinutes": "in {hours}h {minutes}m"
+  },
+  "medicationHeader": {
+    "title": "Medication Details and Price Comparison",
+    "activeIngredient": "Active Ingredient",
+    "type": "Type",
+    "medicationId": "Medication ID",
+    "lastUpdate": "Last update",
+    "comparing": "Comparing medications with"
+  },
+  "priceSummary": {
+    "title": "Price Summary",
+    "lowestPrice": "Lowest Price",
+    "highestPrice": "Highest Price",
+    "averagePrice": "Average Price",
+    "maxSavings": "Maximum Savings",
+    "quickTip": "Quick Tip",
+    "tipText": "Generic medications contain the same active ingredients as brand names but at a lower price."
+  },
+  "priceCharts": {
+    "price": "Price",
+    "pharmacy": "Pharmacy",
+    "date": "Date",
+    "loadingChart": "Loading chart...",
+    "loadingPriceData": "Loading price data...",
+    "noPriceData": "No price data available to display the chart.",
+    "comparisonByPharmacy": "Price Comparison by Pharmacy",
+    "minimumPrice": "Minimum Price",
+    "maximumPrice": "Maximum Price",
+    "difference": "Difference",
+    "priceTrend": "Price Trend",
+    "realPrices": "real price",
+    "realDataOnly": "Real Data Only",
+    "priceTrendTab": "Price Trend",
+    "pharmacyComparisonTab": "Pharmacy Comparison",
+    "showingTrendFor": "Showing price trend for",
+    "foundRealPrices": "Found {count} real price(s) for this specific medication.",
+    "displayingSinglePoint": "Displaying single data point.",
+    "connectingRealPrices": "Connecting real price points from different pharmacies.",
+    "noPricesForMedication": "No specific prices found for {name}.",
+    "showingFallbackData": "Showing data from the first medication with the same active ingredient as reference.",
+    "notEnoughData": "Not enough data to display price trend.",
+    "noRealPriceData": "No real price data available for this medication.",
+    "notEnoughDataComparison": "Not enough data to display pharmacy comparison.",
+    "noPriceDataAvailable": "No price data available to display the chart.",
+    "elements": "elements",
+    "invalidDataFormat": "Price data is not in the correct format to display charts.",
+    "foundElements": "Found {count} elements, but none have valid structure.",
+    "priceSummaryFor": "Price Summary for \"{name}\""
+  },
+  "chatbot": {
+    "title": "FarmaBot",
+    "subtitle": "Virtual Pharmacy Assistant",
+    "disclaimer": "This chatbot provides general information. It does not replace consultation with a healthcare professional.",
+    "inputPlaceholder": "Describe your symptoms...",
+    "suggestions": "Quick suggestions:",
+    "listen": "Listen",
+    "clear": "Clear chat",
+    "audioOn": "Turn off audio",
+    "audioOff": "Turn on audio",
+    "errorProcessing": "Sorry, there was an error processing your query. Please try again.",
+    "greeting": "Hello! I'm FarmaBot, your virtual pharmacy assistant. How can I help you today? You can tell me your symptoms and I'll recommend over-the-counter medications.",
+    "send": "Send",
+    "quickSuggestions": {
+      "headache": "I have a headache",
+      "cough": "I have a dry cough",
+      "stomach": "Stomach pain",
+      "fever": "I have a fever",
+      "muscle": "Muscle pain"
+    }
+  },
+  "chatbotFloating": {
+    "open": "Consult with FarmaBot",
+    "close": "Close FarmaBot"
+  },
+  "audioTest": {
+    "title": "Audio Test - Farmafia",
+    "placeholder": "Type the text to convert...",
+    "play": "Play Audio",
+    "generating": "Generating..."
+  },
+  "medicationImage": {
+    "noImage": "No image",
+    "errorLoading": "Error loading",
+    "loading": "Loading..."
+  },
+  "stock": {
+    "high": "In Stock",
+    "medium": "Limited Stock",
+    "low": "Low Stock",
+    "out": "Out of Stock",
+    "units": "units",
+    "updated": "Updated",
+    "justNow": "Just now",
+    "ago": "ago",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "inStock": "In Stock",
+    "limited": "Limited",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock"
+  },
+  "pharmacyMap": {
+    "searchPlaceholder": "Search medications on the map...",
+    "clearSearch": "Clear search",
+    "showingAvailability": "Showing availability of",
+    "popularMedications": "Popular Medications:",
+    "noResults": "No medications found with",
+    "pharmacies": "pharmacies",
+    "legend": "Map Legend:",
+    "inStock": "In Stock",
+    "limited": "Limited",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "availableAt": "Available at",
+    "showingIn": "Showing in",
+    "nearbyPharmacies": "nearby pharmacies",
+    "morePlaces": "more places"
+  },
+  "simpleMedicationSearch": {
+    "searchPlaceholder": "Search medications...",
+    "searching": "Searching...",
+    "noResults": "No results found",
+    "popularMedications": "Popular Medications",
+    "available": "Available"
   }
 }

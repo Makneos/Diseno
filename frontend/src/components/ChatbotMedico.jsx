@@ -7,7 +7,7 @@ import { consultarChatbotConAudio, reproducirRespuesta } from '../services/chatb
 import './ChatbotMedico.css';
 
 function ChatbotMedico() {
-    const { t } = useTranslation();
+    const { t, language } = useTranslation(); // 🎯 Added language
     const [mensajes, setMensajes] = useState([
         {
             rol: 'bot',
@@ -22,6 +22,17 @@ function ChatbotMedico() {
     
     const chatEndRef = useRef(null);
     const audioRef = useRef(null);
+
+    // 🎯 Update greeting when language changes
+    useEffect(() => {
+        setMensajes([
+            {
+                rol: 'bot',
+                texto: t('chatbot.greeting'),
+                timestamp: new Date()
+            }
+        ]);
+    }, [language]); // Only depends on language
 
     // Auto-scroll al último mensaje
     useEffect(() => {

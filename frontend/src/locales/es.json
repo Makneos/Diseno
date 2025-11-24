@@ -32,16 +32,39 @@
   "home": {
     "welcome": "Bienvenido a Farmafia",
     "subtitle": "Tu plataforma de comparación de medicamentos",
+    "welcomeBack": "Bienvenido de Vuelta",
+    "manageHealth": "Administra tu salud y medicamentos con facilidad",
+    "filterPharmacies": "Filtrar Farmacias",
+    "distance": "Distancia (km):",
+    "searchMedication": "Buscar Disponibilidad de Medicamentos",
     "searchPlaceholder": "Buscar medicamentos...",
     "popularMedications": "Medicamentos Populares",
+    "nearbyPharmacies": "Farmacias Cercanas",
+    "whyChoose": "¿Por qué elegir Farmafia?",
+    "yourCompanion": "Tu compañero completo de farmacia",
     "getStarted": "Comenzar",
     "learnMore": "Saber Más"
   },
   "auth": {
     "email": "Correo Electrónico",
     "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "name": "Nombre",
     "login": "Iniciar Sesión",
     "register": "Registrarse",
+    "dontHaveAccount": "¿No tienes cuenta?",
+    "alreadyHaveAccount": "¿Ya tienes cuenta?",
+    "returnHome": "Volver a la Página Principal",
+    "loggingIn": "Iniciando sesión...",
+    "registering": "Registrando usuario...",
+    "loginSuccess": "¡Inicio de sesión exitoso! Redirigiendo...",
+    "registerSuccess": "¡Registro exitoso! Redirigiendo al inicio de sesión...",
+    "fillAllFields": "Por favor completa todos los campos",
+    "noTokenReceived": "No se recibió token del servidor",
+    "registrationError": "Error al registrar usuario",
+    "connectionError": "No se puede conectar al servidor. Por favor verifica tu conexión a internet.",
+    "passwordsNotMatch": "Las contraseñas no coinciden",
+    "passwordMinLength": "La contraseña debe tener al menos 6 caracteres",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "noAccount": "¿No tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
@@ -56,12 +79,32 @@
     "title": "Mi Perfil",
     "userId": "ID de Usuario",
     "logout": "Cerrar Sesión",
-    "loggingOut": "Cerrando sesión..."
+    "loggingOut": "Cerrando sesión...",
+    "loggedOut": "Has cerrado sesión. Redirigiendo..."
   },
   "medications": {
     "myMedications": "Mis Medicamentos",
     "addMedication": "Agregar Medicamento",
+    "loading": "Cargando tus medicamentos...",
     "manage": "Administrar Medicamentos",
+    "noMedications": "No hay medicamentos en esta categoría",
+    "addFirst": "Agrega Tu Primer Medicamento",
+    "errorLoading": "Error al cargar medicamentos. Por favor recarga la página.",
+    "errorAdding": "Error al agregar medicamento. Por favor intenta de nuevo.",
+    "errorDeleting": "Error al eliminar medicamento. Por favor intenta de nuevo.",
+    "errorOccurred": "Ocurrió un error al procesar tu solicitud.",
+    "editComingSoon": "¡La funcionalidad de edición se implementará pronto!",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar \"{name}\"?",
+    "confirmLogout": "¿Estás seguro de que deseas cerrar sesión?",
+    "addToStartTracking": "Agrega algunos medicamentos para comenzar a rastrear tus tratamientos",
+    "tipsTitle": "Consejos para Administrar tus Medicamentos",
+    "tipRegularTitle": "Establece Horarios Regulares",
+    "tipRegularDesc": "Toma los medicamentos a la misma hora cada día para mantener niveles consistentes.",
+    "tipRemindersTitle": "Activa Recordatorios",
+    "tipRemindersDesc": "Usa nuestro sistema de recordatorios para nunca perder una dosis de tus medicamentos importantes.",
+    "tipTrackTitle": "Rastrea el Progreso",
+    "tipTrackDesc": "Monitorea el progreso de tu tratamiento y anota cualquier efecto secundario o mejora.",
+    "disclaimer": "Siempre consulta con profesionales de la salud antes de hacer cambios en tu régimen de medicamentos.",
     "status": {
       "title": "Estado",
       "active": "Activo",
@@ -84,37 +127,128 @@
     "progress": "Progreso",
     "startTracking": "Comienza a rastrear tu medicación"
   },
-  "medicationModal": {
-    "editTitle": "Editar Medicamento",
-    "addTitle": "Agregar Nuevo Medicamento",
-    "medicationName": "Nombre del Medicamento",
-    "dosage": "Dosis",
-    "dosagePlaceholder": "ej. 500mg",
-    "category": "Categoría",
-    "frequency": "Frecuencia",
-    "dailySchedule": "Horario Diario",
-    "addTimeSlot": "Agregar Horario",
-    "startDate": "Fecha de Inicio",
-    "duration": "Duración (días)",
-    "durationHint": "Días totales del tratamiento",
-    "notes": "Notas",
-    "notesPlaceholder": "Instrucciones especiales...",
-    "enableReminders": "Activar recordatorios",
-    "prescription": "Con Receta",
-    "otc": "Venta Libre",
-    "supplement": "Suplemento",
+  "priceComparison": {
+    "title": "Comparación de Precios",
+    "subtitle": "Compara precios de medicamentos entre farmacias",
+    "searchPlaceholder": "Buscar medicamento para comparar...",
+    "search": "Buscar",
+    "searching": "Buscando...",
+    "searchResults": "Resultados de Búsqueda",
+    "found": "encontrado",
+    "viewDetails": "Ver Detalles y Comparar",
+    "comparePrice": "Comparar Precios",
+    "backToResults": "Volver a Resultados",
+    "backToSearch": "Volver a Búsqueda",
+    "priceComparison": "Comparación de precios para medicamentos con",
+    "available": "Disponible",
+    "notAvailable": "No disponible",
     "generic": "Genérico",
     "brand": "Marca",
-    "daily": "Diario",
-    "weekly": "Semanal",
-    "asNeeded": "Cuando sea necesario",
-    "saveChanges": "Guardar Cambios",
-    "addButton": "Agregar Medicamento",
-    "adding": "Agregando...",
-    "searching": "Buscando...",
-    "searchPlaceholder": "Buscar medicamento...",
-    "selectHint": "Selecciona un medicamento de la lista",
-    "noResults": "No se encontraron resultados para \"{name}\""
+    "noMedicationsFound": "No se encontraron medicamentos. Intenta con un término diferente.",
+    "noMatchingMedications": "No se encontraron medicamentos coincidentes",
+    "minCharacters": "Ingresa al menos 3 caracteres para buscar",
+    "image": "Imagen",
+    "name": "Nombre",
+    "activeIngredient": "Principio Activo",
+    "type": "Tipo",
+    "action": "Acción",
+    "searchTips": "Consejos de Búsqueda",
+    "tipSearchTitle": "Buscar por nombre o ingrediente",
+    "tipSearchDesc": "Prueba \"Paracetamol\", \"Tapsin\", o \"Gesidol\"",
+    "tipDetailsTitle": "Ver comparación detallada",
+    "tipDetailsDesc": "Haz clic en \"Ver Detalles\" para ver precios en todas las farmacias",
+    "tipPriceTitle": "Encontrar mejores precios",
+    "tipPriceDesc": "Compara medicamentos con el mismo principio activo",
+    "connectionError": "Error de conexión. No se pudo conectar al servidor.",
+    "pharmacies": "farmacias",
+    "products": "productos",
+    "product": "producto",
+    "selected": "Seleccionado",
+    "bestPrice": "Mejor Precio",
+    "viewOnSite": "Ver en Sitio",
+    "linkNotAvailable": "Enlace no disponible"
+  },
+  "medicationDetail": {
+    "couldNotLoadDetails": "No se pudieron cargar los detalles del medicamento",
+    "unknownMedication": "Medicamento Desconocido",
+    "noPriceData": "No hay datos de precios disponibles",
+    "apiError": "Error de API. Mostrando datos de muestra.",
+    "notFound": "Medicamento no encontrado."
+  },
+  "notFound": {
+    "title": "Página No Encontrada",
+    "message": "Lo sentimos, la página que buscas no existe o ha sido movida.",
+    "backHome": "Volver al Inicio"
+  },
+  "tools": {
+    "pharmacyTools": "Herramientas de Farmacia",
+    "priceComparison": {
+      "title": "Comparación de Precios",
+      "description": "Compara precios de medicamentos entre farmacias"
+    },
+    "medicationReminder": {
+      "title": "Recordatorios de Medicamentos",
+      "description": "Configura recordatorios para tus medicamentos",
+      "loginRequired": "Inicio de Sesión Requerido"
+    },
+    "medicationInfo": {
+      "title": "Información de Medicamentos",
+      "description": "Información detallada sobre medicamentos",
+      "comingSoon": "Próximamente"
+    },
+    "pharmacyChat": {
+      "title": "Chat de Farmacia",
+      "description": "Chatea con profesionales de farmacia",
+      "comingSoon": "Próximamente"
+    }
+  },
+  "features": {
+    "realTime": {
+      "title": "Datos en Tiempo Real",
+      "description": "Verifica el stock de medicamentos en tiempo real en farmacias cercanas"
+    },
+    "priceComparison": {
+      "title": "Comparación de Precios",
+      "description": "Compara precios y encuentra las mejores ofertas en tus medicamentos"
+    },
+    "healthManagement": {
+      "title": "Gestión de Salud",
+      "description": "Rastrea tus tratamientos y horarios de medicamentos"
+    }
+  },
+  "footer": {
+    "about": "Acerca de",
+    "description": "Tu plataforma confiable de información de medicamentos",
+    "quickLinks": "Enlaces Rápidos",
+    "contact": "Contacto",
+    "followUs": "Síguenos",
+    "rights": "Todos los derechos reservados"
+  },
+  "loading": {
+    "refreshing": "Actualizando...",
+    "loadingProfile": "Cargando perfil...",
+    "findingPharmacies": "Encontrando farmacias cercanas...",
+    "loadingMedications": "Cargando tus medicamentos...",
+    "loadingComparison": "Cargando comparación de precios...",
+    "loadingRegistration": "Cargando página de registro...",
+    "loadingLogin": "Cargando página de inicio de sesión...",
+    "loadingTool": "Cargando herramienta de comparación de precios..."
+  },
+  "map": {
+    "showingAvailability": "Mostrando disponibilidad de",
+    "availability": "",
+    "you": "Tú",
+    "distance": "distancia",
+    "selectPharmacy": "Por favor selecciona al menos una farmacia para mostrar resultados en el mapa",
+    "errorLocation": "Error al obtener ubicación",
+    "errorGeolocation": "Tu navegador no soporta geolocalización. Usando ubicación predeterminada.",
+    "errorLoadingPharmacies": "No se pueden cargar las farmacias. Usando datos de muestra.",
+    "apiKeyMissing": "Falta clave de API de Google Maps",
+    "apiKeyError": "La clave de API de Google Maps no está configurada correctamente.",
+    "checkEnvFile": "Asegúrate de que REACT_APP_GOOGLE_MAPS_API_KEY esté configurado en tu archivo .env",
+    "loadError": "Error al cargar Google Maps",
+    "checkConnection": "Verifica tu clave de API y conexión a internet",
+    "loadingMap": "Cargando mapa..."
   },
   "counter": {
     "quantity": "Cantidad",
@@ -154,6 +288,56 @@
       "treatmentsFinished": "Tratamientos finalizados"
     }
   },
+  "medicationModal": {
+    "editTitle": "Editar Medicamento",
+    "addTitle": "Agregar Nuevo Medicamento",
+    "medicationName": "Nombre del Medicamento",
+    "searchPlaceholder": "Buscar medicamento...",
+    "dosage": "Dosis",
+    "dosagePlaceholder": "ej. 500mg",
+    "category": "Categoría",
+    "prescription": "Con Receta",
+    "frequency": "Frecuencia",
+    "daily": "Diario",
+    "weekly": "Semanal",
+    "asNeeded": "Cuando sea necesario",
+    "dailySchedule": "Horario Diario",
+    "addTimeSlot": "Agregar Horario",
+    "startDate": "Fecha de Inicio",
+    "duration": "Duración (días)",
+    "durationHint": "Días totales del tratamiento",
+    "notes": "Notas",
+    "notesPlaceholder": "Instrucciones especiales...",
+    "enableReminders": "Activar recordatorios",
+    "addButton": "Agregar Medicamento",
+    "updateButton": "Actualizar Medicamento",
+    "cancel": "Cancelar",
+    "otc": "Venta Libre",
+    "supplement": "Suplemento",
+    "generic": "Genérico",
+    "brand": "Marca",
+    "saveChanges": "Guardar Cambios",
+    "adding": "Agregando...",
+    "searching": "Buscando...",
+    "selectHint": "Selecciona un medicamento de la lista",
+    "noResults": "No se encontraron resultados para \"{name}\"",
+    "categories": {
+      "antibiotic": "Antibiótico",
+      "painkiller": "Analgésico",
+      "vitamin": "Vitamina",
+      "heartMedication": "Medicamento Cardíaco",
+      "diabetesMedication": "Medicamento para Diabetes",
+      "other": "Otro"
+    },
+    "validation": {
+      "nameRequired": "El nombre del medicamento es requerido",
+      "dosageRequired": "La dosis es requerida",
+      "categoryRequired": "Por favor selecciona una categoría",
+      "frequencyRequired": "Por favor selecciona una frecuencia",
+      "scheduleRequired": "Agrega al menos un horario",
+      "startDateRequired": "La fecha de inicio es requerida"
+    }
+  },
   "reminders": {
     "errorLoading": "Error al cargar recordatorios",
     "loadingReminders": "Cargando recordatorios...",
@@ -168,59 +352,6 @@
       "dueSoon": "Próximamente",
       "upcoming": "Por venir"
     }
-  },
-  "priceComparison": {
-    "title": "Comparación de Precios",
-    "subtitle": "Compara precios de medicamentos entre farmacias",
-    "searchPlaceholder": "Buscar medicamento para comparar...",
-    "available": "Disponible",
-    "notAvailable": "No disponible",
-    "pharmacies": "farmacias",
-    "products": "productos",
-    "product": "producto",
-    "selected": "Seleccionado",
-    "bestPrice": "Mejor Precio",
-    "viewOnSite": "Ver en Sitio",
-    "linkNotAvailable": "Enlace no disponible",
-    "searching": "Buscando..."
-  },
-  "medicationDetail": {
-    "couldNotLoadDetails": "No se pudieron cargar los detalles del medicamento",
-    "unknownMedication": "Medicamento Desconocido",
-    "noPriceData": "No hay datos de precios disponibles"
-  },
-  "tools": {
-    "pharmacyTools": "Herramientas de Farmacia",
-    "priceComparison": "Comparación de Precios",
-    "medicationReminder": "Recordatorios de Medicamentos",
-    "medicationInfo": "Información de Medicamentos",
-    "pharmacyChat": "Chat de Farmacia"
-  },
-  "features": {
-    "realTime": "Datos en Tiempo Real",
-    "priceComparison": "Comparación de Precios",
-    "healthManagement": "Gestión de Salud"
-  },
-  "footer": {
-    "about": "Acerca de",
-    "description": "Tu plataforma confiable de información de medicamentos",
-    "quickLinks": "Enlaces Rápidos",
-    "contact": "Contacto",
-    "followUs": "Síguenos",
-    "rights": "Todos los derechos reservados"
-  },
-  "loading": {
-    "refreshing": "Actualizando...",
-    "loadingProfile": "Cargando perfil...",
-    "findingPharmacies": "Encontrando farmacias cercanas..."
-  },
-  "map": {
-    "showingAvailability": "Mostrando disponibilidad de",
-    "you": "Tú",
-    "distance": "distancia",
-    "errorLocation": "Error al obtener ubicación",
-    "apiKeyMissing": "Falta clave de API de Google Maps",
-    "loadingMap": "Cargando mapa..."
   },
   "medicationStats": {
     "activeTreatments": "Tratamientos Activos",
